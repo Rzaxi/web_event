@@ -1,0 +1,32 @@
+{
+  "name": "event-management-system",
+  "version": "1.0.0",
+  "description": "Sistem Manajemen Event Sekolah",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && npm start",
+    "frontend": "cd frontend && npm run dev",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "event",
+    "management",
+    "school",
+    "nodejs",
+    "react"
+  ],
+  "author": "Rajib",
+  "license": "MIT",
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
+    "bcryptjs": "^3.0.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "jade": "^1.11.0",
+    "lucide-react": "^0.541.0",
+    "tailwind-merge": "^3.3.1"
+  }
+}
