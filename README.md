@@ -1,247 +1,230 @@
-# Sistem Informasi Manajemen Event Sekolah
+# 📋 EVENT MANAGEMENT SYSTEM - PROJECT OVERVIEW
 
-Sistem manajemen event sekolah yang lengkap dengan fitur registrasi, absensi, dan dashboard admin.
+## 🎯 DESKRIPSI PROJECT
 
-## Fitur Utama
+**Sistem Informasi Manajemen Event Sekolah** adalah aplikasi web full-stack yang dirancang untuk memudahkan pengelolaan event sekolah secara digital. Sistem ini menyediakan platform terintegrasi untuk registrasi peserta, manajemen event, sistem absensi digital, dan dashboard admin yang komprehensif.
 
-### Untuk Peserta:
-- ✅ Registrasi akun dengan verifikasi email
-- ✅ Login/logout dengan session timeout (5 menit inactivity)
-- ✅ Melihat daftar event dengan search dan pagination
-- ✅ Mendaftar event dan mendapat token absensi via email
-- ✅ Melakukan absensi dengan token 10 digit
-- ✅ Melihat riwayat event yang diikuti
-- ✅ Reset password via email
+### 🎪 Tujuan Utama:
+- Digitalisasi proses manajemen event sekolah
+- Otomatisasi sistem registrasi dan absensi
+- Penyediaan dashboard analytics untuk admin
+- Meningkatkan efisiensi pengelolaan event
 
-### Untuk Admin:
-- ✅ Semua fitur peserta
-- ✅ Mengelola event (CRUD operations)
-- ✅ Dashboard dengan statistik lengkap
-- ✅ Export data event dan peserta ke Excel
-- ✅ Melihat laporan kehadiran per event
+---
 
-## Teknologi yang Digunakan
+## 🛠️ TEKNOLOGI & TOOLS YANG DIGUNAKAN
 
-### Backend:
-- Node.js + Express.js
-- MySQL + Sequelize ORM
-- JWT untuk autentikasi
-- Bcrypt untuk hash password
-- Nodemailer untuk email
-- Express-validator untuk validasi
-- XLSX untuk export Excel
-- Express-session untuk session management
+### **Backend Technologies:**
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| **Node.js** | Latest | Server-side JavaScript runtime |
+| **Express.js** | ^4.16.1 | Web application framework |
+| **MySQL** | Latest | Relational database |
+| **Sequelize** | ^6.37.7 | Object-Relational Mapping (ORM) |
+| **JWT** | ^9.0.2 | JSON Web Token authentication |
+| **Bcrypt.js** | ^2.4.3 | Password hashing |
+| **Nodemailer** | ^6.9.8 | Email service integration |
+| **Multer** | ^1.4.5 | File upload handling |
+| **XLSX** | ^0.18.5 | Excel file generation |
+| **Express-Validator** | ^7.0.1 | Input validation |
+| **CORS** | ^2.8.5 | Cross-Origin Resource Sharing |
+| **Dotenv** | ^17.2.1 | Environment variables |
 
-### Frontend:
-- React.js dengan Vite
-- Axios untuk HTTP requests
-- React Router untuk routing
-- React Toastify untuk notifikasi
-- CSS modern dengan responsive design
+### **Frontend Technologies:**
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| **React.js** | ^18.2.0 | Frontend JavaScript library |
+| **Vite** | ^5.2.0 | Build tool and dev server |
+| **React Router** | ^6.24.0 | Client-side routing |
+| **Axios** | ^1.7.2 | HTTP client |
+| **Tailwind CSS** | ^3.4.17 | Utility-first CSS framework |
+| **Chart.js** | ^4.4.3 | Data visualization |
+| **React Hook Form** | ^7.62.0 | Form handling |
+| **React Toastify** | ^10.0.5 | Toast notifications |
+| **Lucide React** | ^0.400.0 | Icon library |
+| **React Scroll** | ^1.9.3 | Smooth scrolling |
 
-## Instalasi dan Setup
+### **Development Tools:**
+- **ESLint** - Code linting
+- **Nodemon** - Auto-restart development server
+- **PostCSS** - CSS processing
+- **Autoprefixer** - CSS vendor prefixes
 
-### 1. Prerequisites
-- Node.js (v16 atau lebih baru)
-- MySQL Server
-- Git
+### **Database:**
+- **MySQL Server** - Primary database
+- **Sequelize Migrations** - Database schema management
 
-### 2. Clone Repository
+### **Security & Authentication:**
+- **JWT (JSON Web Tokens)** - Stateless authentication
+- **Bcrypt** - Password hashing with salt
+- **Express Session** - Session management
+- **CORS** - Cross-origin security
+- **Input Validation** - SQL injection prevention
+
+---
+
+## ⭐ FITUR UTAMA SISTEM
+
+### **👥 FITUR UNTUK PESERTA:**
+
+#### 🔐 **Authentication & Security**
+- ✅ **Registrasi Akun** dengan validasi email
+- ✅ **Verifikasi Email** wajib sebelum login
+- ✅ **Login/Logout** dengan JWT authentication
+- ✅ **Reset Password** via email
+- ✅ **Session Timeout** otomatis (5 menit inactivity)
+
+#### 📅 **Event Management**
+- ✅ **Browse Events** dengan search dan filter
+- ✅ **Pagination** untuk performa optimal
+- ✅ **Event Details** lengkap dengan flyer
+- ✅ **Event Registration** satu klik
+- ✅ **Event History** riwayat keikutsertaan
+
+#### 📧 **Digital Attendance System**
+- ✅ **Token Absensi** 10 digit via email
+- ✅ **QR Code Integration** (future enhancement)
+- ✅ **Real-time Attendance** tracking
+- ✅ **Attendance Verification** otomatis
+
+#### 📱 **User Experience**
+- ✅ **Responsive Design** mobile-friendly
+- ✅ **Modern UI/UX** dengan Tailwind CSS
+- ✅ **Toast Notifications** real-time feedback
+- ✅ **Loading States** smooth user experience
+
+### **👨‍💼 FITUR UNTUK ADMIN:**
+
+#### 📊 **Dashboard & Analytics**
+- ✅ **Statistics Dashboard** dengan charts
+- ✅ **Event Analytics** participation rates
+- ✅ **User Management** overview
+- ✅ **Real-time Data** updates
+
+#### 🎪 **Event Management (CRUD)**
+- ✅ **Create Events** dengan flyer upload
+- ✅ **Edit Events** real-time updates
+- ✅ **Delete Events** dengan confirmation
+- ✅ **Event Status** management
+
+#### 📈 **Reporting & Export**
+- ✅ **Excel Export** event data
+- ✅ **Participant Lists** per event
+- ✅ **Attendance Reports** detailed analytics
+- ✅ **Custom Date Ranges** filtering
+
+#### 👥 **User Management**
+- ✅ **User Roles** (Admin/Peserta)
+- ✅ **User Verification** status
+- ✅ **Bulk Operations** efficiency tools
+
+---
+
+## 🏗️ ARSITEKTUR SISTEM
+
+### **Frontend Architecture:**
+```
+React App (SPA)
+├── Components (Reusable UI)
+├── Pages (Route Components)
+├── Services (API Calls)
+├── Hooks (Custom React Hooks)
+├── Utils (Helper Functions)
+└── Context (State Management)
+```
+
+### **Backend Architecture:**
+```
+Express.js Server
+├── Controllers (Business Logic)
+├── Models (Database Schema)
+├── Routes (API Endpoints)
+├── Middleware (Auth, Validation)
+├── Utils (Helper Functions)
+└── Config (Database, Email)
+```
+
+### **Database Schema:**
+- **Users** - User accounts and profiles
+- **Events** - Event information and metadata
+- **Event_Registrations** - User-Event relationships
+- **Password_Resets** - Password reset tokens
+
+---
+
+## 🚀 SETUP & INSTALLATION
+
+### 1. Clone Repository
 ```bash
-git clone <repository-url>
+git clone <your-repo-url>
 cd event_rajib
 ```
 
-### 3. Setup Backend
-
+### 2. Backend Setup
 ```bash
 cd backend
 npm install
 ```
 
-### 4. Konfigurasi Database
-1. Buat database MySQL dengan nama `event_db`
-2. Update file `.env` dengan konfigurasi database Anda:
+**Configure Environment:**
+1. Copy `.env.example` to `.env`
+2. Copy `config/config.json.example` to `config/config.json`
+3. Update both files with your actual database credentials
 
-```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=event_db
-DB_PORT=3306
-
-# JWT Configuration
-JWT_SECRET=your_jwt_secret_change_this_in_production
-
-# Session Configuration
-SESSION_SECRET=your_session_secret_change_this_in_production
-
-# Email Configuration (Gmail example)
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_password
-
-# Frontend URL
-FRONTEND_URL=http://localhost:3000
-
-# Server Configuration
-PORT=3001
-```
-
-### 5. Setup Email (Gmail)
-1. Aktifkan 2-Factor Authentication di Gmail
-2. Generate App Password di Google Account Settings
-3. Gunakan App Password sebagai `EMAIL_PASS` di file `.env`
-
-### 6. Jalankan Backend
-```bash
-npm run dev
-```
-
-Backend akan berjalan di `http://localhost:3001`
-
-### 7. Setup Frontend
+### 3. Frontend Setup
 ```bash
 cd ../frontend
 npm install
+```
+
+### 4. Database Setup
+- Create MySQL database named `event_db`
+- Run migrations if available
+- Import sample data if needed
+
+### 5. Run Application
+**Backend:**
+```bash
+cd backend
+npm start
+```
+
+**Frontend:**
+```bash
+cd frontend
 npm run dev
 ```
 
-Frontend akan berjalan di `http://localhost:3000`
+## 🔒 Security Notes
 
-## Struktur Database
+**NEVER commit these files to public repositories:**
+- `.env` files
+- `config/config.json`
+- `uploads/` folder contents
+- Any files containing passwords, API keys, or sensitive data
 
-### Tabel `users`
-- id (PK, Auto Increment)
-- nama_lengkap (VARCHAR, NOT NULL)
-- email (VARCHAR, UNIQUE, NOT NULL)
-- no_handphone (VARCHAR, NOT NULL)
-- alamat (TEXT)
-- pendidikan_terakhir (VARCHAR)
-- password_hash (VARCHAR, NOT NULL)
-- is_verified (BOOLEAN, DEFAULT false)
-- verification_token (VARCHAR)
-- verification_expiry (DATETIME)
-- role (ENUM: 'admin', 'peserta', DEFAULT 'peserta')
+**Always use the `.example` files as templates for new deployments.**
 
-### Tabel `events`
-- id (PK, Auto Increment)
-- judul (VARCHAR, NOT NULL)
-- tanggal (DATE, NOT NULL)
-- waktu (TIME, NOT NULL)
-- lokasi (VARCHAR, NOT NULL)
-- flyer_url (VARCHAR)
-- sertifikat_template (VARCHAR)
-- deskripsi (TEXT)
-- created_by (FK ke users, NOT NULL)
+## 📝 Environment Variables Required
 
-### Tabel `event_registrations`
-- id (PK, Auto Increment)
-- user_id (FK ke users, NOT NULL)
-- event_id (FK ke events, NOT NULL)
-- token_absen (VARCHAR(10), UNIQUE, NOT NULL)
-- token_sent_at (DATETIME)
-- hadir (BOOLEAN, DEFAULT false)
-- absen_at (DATETIME)
-- sertifikat_url (VARCHAR)
-
-### Tabel `password_resets`
-- id (PK, Auto Increment)
-- user_id (FK ke users, NOT NULL)
-- reset_token (VARCHAR, UNIQUE, NOT NULL)
-- reset_expiry (DATETIME, NOT NULL)
-
-## API Endpoints
-
-### Authentication
-- `POST /api/register` - Registrasi akun
-- `POST /api/verify-email` - Verifikasi email
-- `POST /api/login` - Login
-- `POST /api/logout` - Logout
-- `POST /api/password-reset/request` - Request reset password
-- `POST /api/password-reset/confirm` - Konfirmasi reset password
-
-### User
-- `GET /api/user/history` - Riwayat event peserta (Protected)
-
-### Events
-- `GET /api/events` - List event (dengan pagination, search, sort)
-- `GET /api/events/:id` - Detail event
-- `POST /api/events` - Tambah event (Admin only)
-- `PUT /api/events/:id` - Edit event (Admin only)
-- `DELETE /api/events/:id` - Hapus event (Admin only)
-
-### Event Registration
-- `POST /api/events/:id/register` - Daftar event (Protected)
-- `POST /api/events/:id/absen` - Absensi dengan token
-
-### Export
-- `GET /api/events/export` - Export semua event ke Excel (Admin only)
-- `GET /api/events/:id/participants/export` - Export peserta event ke Excel (Admin only)
-
-### Dashboard
-- `GET /api/dashboard/statistics` - Statistik dashboard (Admin only)
-
-## Fitur Keamanan
-
-1. **Password Hashing**: Menggunakan bcrypt dengan salt rounds 12
-2. **JWT Authentication**: Token dengan expiry 24 jam
-3. **Session Management**: Session timeout 5 menit inactivity
-4. **Email Verification**: Wajib verifikasi email sebelum login
-5. **Input Validation**: Validasi semua input menggunakan express-validator
-6. **CORS Protection**: Konfigurasi CORS untuk frontend
-7. **SQL Injection Protection**: Menggunakan Sequelize ORM
-
-## Cara Penggunaan
-
-### Untuk Peserta:
-1. **Registrasi**: Daftar akun baru dengan email valid
-2. **Verifikasi**: Cek email dan klik link verifikasi
-3. **Login**: Masuk dengan email dan password
-4. **Browse Events**: Lihat daftar event yang tersedia
-5. **Daftar Event**: Klik "Daftar Event" pada event yang diinginkan
-6. **Terima Token**: Cek email untuk mendapat token absensi 10 digit
-7. **Absensi**: Pada saat event, masuk ke halaman Absensi dan input token
-
-### Untuk Admin:
-1. **Login**: Masuk dengan akun admin
-2. **Dashboard**: Lihat statistik dan laporan
-3. **Kelola Event**: Tambah, edit, atau hapus event
-4. **Export Data**: Download data event atau peserta dalam format Excel
-5. **Monitor**: Pantau tingkat kehadiran dan registrasi
-
-## Troubleshooting
-
-### Backend tidak bisa start:
-- Pastikan MySQL server berjalan
-- Cek konfigurasi database di file `.env`
-- Pastikan port 3001 tidak digunakan aplikasi lain
-
-### Email tidak terkirim:
-- Pastikan konfigurasi email di `.env` benar
-- Gunakan App Password untuk Gmail
-- Cek firewall dan koneksi internet
-
-### Frontend tidak bisa connect ke backend:
-- Pastikan backend berjalan di port 3001
-- Cek konfigurasi CORS di backend
-- Pastikan `FRONTEND_URL` di `.env` sesuai
-
-## Kontribusi
-
-1. Fork repository ini
-2. Buat branch baru (`git checkout -b feature/AmazingFeature`)
-3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buat Pull Request
-
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## Support
-
-Jika ada pertanyaan atau masalah, silakan buat issue di repository ini.
+### Backend (.env)
+- `DB_HOST` - Database host
+- `DB_USER` - Database username  
+- `DB_PASSWORD` - Database password
+- `DB_NAME` - Database name
+- `JWT_SECRET` - JWT signing secret
+- `SESSION_SECRET` - Session secret
+- `EMAIL_USER` - Email for notifications
+- `EMAIL_PASS` - Email app password
+- `FRONTEND_URL` - Frontend URL for CORS
 
 ---
 
-**Sistem Informasi Manajemen Event Sekolah** - Dibuat dengan ❤️ untuk memudahkan pengelolaan event sekolah.
+**📅 Dibuat:** 2024  
+**👨‍💻 Developer:** Rajib  
+**🎯 Purpose:** Ujian Kompetensi Keahlian (UKK)  
+**🏫 Institution:** Sekolah  
+
+---
+
+*Sistem ini dirancang untuk memenuhi kebutuhan modern pengelolaan event sekolah dengan teknologi terkini dan standar keamanan tinggi.*

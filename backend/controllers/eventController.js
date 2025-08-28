@@ -34,8 +34,21 @@ const getEvents = async (req, res) => {
       offset: parseInt(offset)
     });
 
+    // Add participant count to each event
+    const eventsWithParticipants = await Promise.all(
+      events.map(async (event) => {
+        const participantCount = await EventRegistration.count({
+          where: { event_id: event.id }
+        });
+        return {
+          ...event.toJSON(),
+          participantCount
+        };
+      })
+    );
+
     res.json({
-      events,
+      events: eventsWithParticipants,
       pagination: {
         total: count,
         page: parseInt(page),
@@ -71,9 +84,22 @@ const getEventById = async (req, res) => {
       where: { event_id: id }
     });
 
+    // Check if current user is registered (if authenticated)
+    let isRegistered = false;
+    if (req.user) {
+      const registration = await EventRegistration.findOne({
+        where: { 
+          event_id: id,
+          user_id: req.user.id 
+        }
+      });
+      isRegistered = !!registration;
+    }
+
     res.json({
       ...event.toJSON(),
-      participantCount
+      participantCount,
+      isRegistered
     });
   } catch (error) {
     console.error('Get event by ID error:', error);
@@ -238,6 +264,70 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+// Register for event (User only)
+const registerForEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Check if event exists
+    const event = await Event.findByPk(id);
+    if (!event) {
+      return res.status(404).json({ message: 'Event tidak ditemukan' });
+    }
+
+    // Check if user is already registered
+    const existingRegistration = await EventRegistration.findOne({
+      where: {
+        event_id: id,
+        user_id: userId
+      }
+    });
+
+    if (existingRegistration) {
+      return res.status(400).json({ message: 'Anda sudah terdaftar untuk event ini' });
+    }
+
+    // Create registration
+    await EventRegistration.create({
+      event_id: id,
+      user_id: userId
+    });
+
+    res.status(201).json({ message: 'Berhasil mendaftar event' });
+  } catch (error) {
+    console.error('Register event error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan server' });
+  }
+};
+
+// Unregister from event (User only)
+const unregisterFromEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Find and delete registration
+    const registration = await EventRegistration.findOne({
+      where: {
+        event_id: id,
+        user_id: userId
+      }
+    });
+
+    if (!registration) {
+      return res.status(404).json({ message: 'Anda belum terdaftar untuk event ini' });
+    }
+
+    await registration.destroy();
+
+    res.json({ message: 'Berhasil membatalkan pendaftaran event' });
+  } catch (error) {
+    console.error('Unregister event error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan server' });
+  }
+};
+
 // Export events to Excel (Admin only)
 const exportEvents = async (req, res) => {
   try {
@@ -374,6 +464,8 @@ module.exports = {
   createEvent,
   updateEvent,
   deleteEvent,
+  registerForEvent,
+  unregisterFromEvent,
   exportEvents,
   exportEventParticipants,
   issueCertificates,

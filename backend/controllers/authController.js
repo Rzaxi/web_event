@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
-const { User, PasswordReset } = require('../models');
+const { User, PasswordReset, Event, EventRegistration } = require('../models');
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../utils/emailService');
 const { generateVerificationToken, generateResetToken } = require('../utils/tokenGenerator');
 
@@ -19,6 +19,14 @@ const register = async (req, res) => {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: 'Email sudah terdaftar' });
+    }
+
+    // Validate password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ 
+        message: 'Password harus minimal 8 karakter dan mengandung huruf besar, huruf kecil, angka, dan karakter khusus' 
+      });
     }
 
     // Hash password
@@ -77,15 +85,20 @@ const verifyEmail = async (req, res) => {
       return res.status(400).json({ message: 'Token verifikasi diperlukan' });
     }
 
-    // Check if any user was previously verified with this token pattern
-    // Look for users who might have had this token but are now verified
+    // Debug: Check all users and their tokens
     const allUsers = await User.findAll({
-      attributes: ['id', 'email', 'is_verified', 'verification_token', 'verification_expiry']
+      attributes: ['id', 'email', 'verification_token', 'verification_expiry', 'is_verified'],
+      order: [['createdAt', 'DESC']]
     });
     
-    console.log('All users in database:', allUsers.length);
-    
-    // Don't assume - only return success if we can actually verify the specific user
+    console.log('=== DEBUG: All users in database ===');
+    allUsers.forEach(user => {
+      console.log(`User: ${user.email}`);
+      console.log(`  Token: ${user.verification_token ? user.verification_token.substring(0, 20) + '...' : 'null'}`);
+      console.log(`  Verified: ${user.is_verified}`);
+      console.log(`  Expiry: ${user.verification_expiry}`);
+      console.log('---');
+    });
 
     // First, check if any user has this exact token
     const userWithToken = await User.findOne({
@@ -100,17 +113,23 @@ const verifyEmail = async (req, res) => {
       console.log('Token expiry:', userWithToken.verification_expiry);
       console.log('Current time:', new Date());
       console.log('Is verified:', userWithToken.is_verified);
-      
+
       // Check if already verified
       if (userWithToken.is_verified) {
-        return res.json({ message: 'Email sudah diverifikasi sebelumnya. Anda dapat login sekarang!' });
+        return res.status(200).json({
+          success: true,
+          message: 'Email sudah diverifikasi sebelumnya. Anda dapat login sekarang!'
+        });
       }
-      
+
       // Check if expired
       if (userWithToken.verification_expiry && new Date() > userWithToken.verification_expiry) {
-        return res.status(400).json({ message: 'Token sudah kedaluwarsa. Silakan minta token baru.' });
+        return res.status(400).json({
+          success: false,
+          message: 'Token sudah kedaluwarsa. Silakan minta token baru.'
+        });
       }
-      
+
       // Token is valid and not expired, verify the user
       console.log('Updating user verification status...');
       await userWithToken.update({
@@ -120,15 +139,37 @@ const verifyEmail = async (req, res) => {
       });
 
       console.log('Email verification successful');
-      return res.json({ message: 'Email berhasil diverifikasi!' });
+      return res.status(200).json({
+        success: true,
+        message: 'Email berhasil diverifikasi! Silakan login untuk melanjutkan.'
+      });
     }
 
     console.log('Token not found in database');
-    return res.status(400).json({ message: 'Token tidak valid atau sudah kedaluwarsa' });
+    console.log('Looking for token:', token);
     
+    // Check if there are any users with tokens that might match partially
+    const usersWithTokens = allUsers.filter(user => user.verification_token);
+    console.log('Users with tokens:', usersWithTokens.length);
+    
+    if (usersWithTokens.length > 0) {
+      console.log('Available tokens in database:');
+      usersWithTokens.forEach((user, index) => {
+        console.log(`${index + 1}. ${user.email}: ${user.verification_token}`);
+      });
+    }
+    
+    return res.status(400).json({ 
+      success: false,
+      message: 'Token tidak valid atau sudah kedaluwarsa' 
+    });
+
   } catch (error) {
     console.error('Email verification error:', error);
-    res.status(500).json({ message: 'Terjadi kesalahan server' });
+    res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan server'
+    });
   }
 };
 
@@ -256,6 +297,14 @@ const confirmPasswordReset = async (req, res) => {
       return res.status(400).json({ message: 'Token tidak valid atau sudah kedaluwarsa' });
     }
 
+    // Validate password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({ 
+        message: 'Password harus minimal 8 karakter dan mengandung huruf besar, huruf kecil, angka, dan karakter khusus' 
+      });
+    }
+
     // Hash new password
     const saltRounds = 12;
     const password_hash = await bcrypt.hash(newPassword, saltRounds);
@@ -278,26 +327,52 @@ const getUserHistory = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const user = await User.findByPk(userId, {
+    const registrations = await EventRegistration.findAll({
+      where: { user_id: userId },
       include: [{
-        model: require('../models').EventRegistration,
-        include: [{
-          model: require('../models').Event,
-          attributes: ['id', 'judul', 'tanggal', 'waktu', 'lokasi']
-        }]
-      }]
+        model: Event,
+        as: 'event',
+        required: true
+      }],
+      order: [['createdAt', 'DESC']]
     });
 
-    const history = user.EventRegistrations.map(registration => ({
-      event: registration.Event,
-      registered_at: registration.createdAt,
-      sertifikat_url: registration.sertifikat_url
-    }));
+    const events = registrations.map(reg => {
+      const eventData = reg.event.toJSON();
+      const eventDate = new Date(eventData.tanggal);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      eventDate.setHours(0, 0, 0, 0);
 
-    res.json({ history });
+      let status = 'upcoming';
+      if (eventDate < today) {
+        status = 'completed';
+      } else if (eventDate.getTime() === today.getTime()) {
+        status = 'ongoing';
+      }
+
+      return {
+        id: eventData.id,
+        nama_event: eventData.judul,
+        tanggal: eventData.tanggal,
+        waktu_mulai: eventData.waktu,
+        waktu_selesai: eventData.waktu, // Assuming same start/end time from data model
+        lokasi: eventData.lokasi,
+        kategori: 'General', // Placeholder as in original query
+        flyer: eventData.flyer_url,
+        jumlah_peserta: 0, // Placeholder as in original query
+        deskripsi: eventData.deskripsi,
+        registered_at: reg.createdAt,
+        sertifikat_url: reg.sertifikat_url,
+        status: status
+      };
+    });
+
+    res.json(events);
+
   } catch (error) {
     console.error('Get user history error:', error);
-    res.status(500).json({ message: 'Terjadi kesalahan server' });
+    res.status(500).json({ message: 'Failed to retrieve user events.', error: error.message });
   }
 };
 
@@ -335,20 +410,47 @@ const getUserProfile = async (req, res) => {
 // Update user profile
 const updateUserProfile = async (req, res) => {
   try {
+    console.log('Update profile request body:', req.body);
+    console.log('User ID from token:', req.user?.id);
+
     const { nama_lengkap, email, no_handphone, alamat, pendidikan_terakhir } = req.body;
 
+    if (!req.user || !req.user.id) {
+      console.log('No user ID found in request');
+      return res.status(401).json({
+        success: false,
+        message: 'User not authenticated'
+      });
+    }
+
     const user = await User.findByPk(req.user.id);
+    console.log('User found:', user ? 'Yes' : 'No');
+
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
     }
 
     // Check if email is already taken by another user
     if (email && email !== user.email) {
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser) {
-        return res.status(400).json({ message: 'Email already in use' });
+        return res.status(400).json({
+          success: false,
+          message: 'Email already in use'
+        });
       }
     }
+
+    console.log('Updating user with data:', {
+      nama_lengkap: nama_lengkap || user.nama_lengkap,
+      email: email || user.email,
+      no_handphone: no_handphone || user.no_handphone,
+      alamat: alamat || user.alamat,
+      pendidikan_terakhir: pendidikan_terakhir || user.pendidikan_terakhir
+    });
 
     await user.update({
       nama_lengkap: nama_lengkap || user.nama_lengkap,
@@ -358,18 +460,29 @@ const updateUserProfile = async (req, res) => {
       pendidikan_terakhir: pendidikan_terakhir || user.pendidikan_terakhir
     });
 
+    console.log('Profile updated successfully');
+
     res.json({
+      success: true,
       message: 'Profile updated successfully',
       user: {
         id: user.id,
         nama_lengkap: user.nama_lengkap,
         email: user.email,
-        role: user.role
+        no_handphone: user.no_handphone,
+        alamat: user.alamat,
+        pendidikan_terakhir: user.pendidikan_terakhir,
+        role: user.role,
+        profileCompleted: true
       }
     });
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error stack:', error.stack);
+    res.status(500).json({
+      success: false,
+      message: 'Server error: ' + error.message
+    });
   }
 };
 
@@ -381,7 +494,7 @@ const debugUsers = async (req, res) => {
       order: [['createdAt', 'DESC']],
       limit: 10
     });
-    
+
     console.log('All users with tokens:', JSON.stringify(users, null, 2));
     res.json({ users });
   } catch (error) {
@@ -394,7 +507,7 @@ const debugUsers = async (req, res) => {
 const forceVerifyUser = async (req, res) => {
   try {
     const { email } = req.body;
-    
+
     if (!email) {
       return res.status(400).json({ message: 'Email diperlukan' });
     }
@@ -426,21 +539,21 @@ const forceVerifyUser = async (req, res) => {
 const checkVerificationStatus = async (req, res) => {
   try {
     const { email } = req.query;
-    
+
     if (!email) {
       return res.status(400).json({ message: 'Email diperlukan' });
     }
 
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       where: { email },
       attributes: ['id', 'email', 'is_verified', 'verification_token', 'verification_expiry']
     });
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User tidak ditemukan' });
     }
 
-    res.json({ 
+    res.json({
       email: user.email,
       is_verified: user.is_verified,
       has_token: !!user.verification_token,
@@ -452,11 +565,49 @@ const checkVerificationStatus = async (req, res) => {
   }
 };
 
+// Change password for authenticated user
+const changePassword = async (req, res) => {
+  try {
+    const { current_password, new_password } = req.body;
+
+    if (!current_password || !new_password) {
+      return res.status(400).json({ message: 'Password lama dan password baru diperlukan' });
+    }
+
+    if (new_password.length < 6) {
+      return res.status(400).json({ message: 'Password baru minimal 6 karakter' });
+    }
+
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+
+    // Verify current password
+    const isValidPassword = await bcrypt.compare(current_password, user.password_hash);
+    if (!isValidPassword) {
+      return res.status(400).json({ message: 'Password lama tidak benar' });
+    }
+
+    // Hash new password
+    const saltRounds = 12;
+    const password_hash = await bcrypt.hash(new_password, saltRounds);
+
+    // Update password
+    await user.update({ password_hash });
+
+    res.json({ message: 'Password berhasil diubah' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan server' });
+  }
+};
+
 // Generate new verification token for existing user
 const generateNewToken = async (req, res) => {
   try {
     const { email } = req.body;
-    
+
     if (!email) {
       return res.status(400).json({ message: 'Email diperlukan' });
     }
@@ -489,7 +640,7 @@ const generateNewToken = async (req, res) => {
       console.error('Failed to send verification email:', emailError);
     }
 
-    res.json({ 
+    res.json({
       message: 'Token verifikasi baru telah dikirim ke email Anda',
       token: verification_token // For debugging - remove in production
     });
@@ -509,6 +660,7 @@ module.exports = {
   getUserHistory,
   getUserProfile,
   updateUserProfile,
+  changePassword,
   registerValidation,
   loginValidation,
   debugUsers,

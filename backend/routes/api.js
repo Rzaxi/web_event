@@ -28,17 +28,19 @@ router.get('/events', eventController.getEvents);
 router.get('/events/:id', eventController.getEventById);
 
 // Protected routes (require authentication)
-router.use(authenticateToken);
+router.use(authenticateToken          );
 router.use(sessionTimeout);
 
 // User routes
 router.get('/users/profile', authController.getUserProfile);
 router.put('/users/profile', authController.updateUserProfile);
+router.put('/users/change-password', authController.changePassword);
 router.get('/users/events', authController.getUserHistory);
+router.get('/users/events/:id', eventController.getEventById); // Event detail with registration status
 
 // Event registration routes
-router.post('/events/:id/register', eventRegistrationController.registerForEvent);
-router.delete('/events/:id/register', eventRegistrationController.cancelRegistration);
+router.post('/events/:id/register', eventController.registerForEvent);
+router.delete('/events/:id/register', eventController.unregisterFromEvent);
 router.get('/events/:id/registrations', eventRegistrationController.getEventRegistrations);
 
 // Admin only routes

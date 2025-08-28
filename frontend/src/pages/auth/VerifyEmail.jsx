@@ -14,7 +14,7 @@ const VerifyEmail = () => {
         try {
             const response = await fetch(`http://localhost:3000/api/auth/check-status?email=${encodeURIComponent(email)}`);
             const data = await response.json();
-            
+
             if (response.ok && data.is_verified) {
                 setStatus('success');
                 setMessage('Email sudah diverifikasi sebelumnya. Anda dapat login sekarang!');
@@ -44,7 +44,7 @@ const VerifyEmail = () => {
                 // This handles the case where token is missing but user is verified
                 const debugResponse = await fetch('http://localhost:3000/api/debug/users');
                 const debugData = await debugResponse.json();
-                
+
                 // Find any verified user and check their status
                 const verifiedUser = debugData.users?.find(user => user.is_verified);
                 if (verifiedUser) {
@@ -54,7 +54,7 @@ const VerifyEmail = () => {
                         return;
                     }
                 }
-                
+
                 // If no verified users found or check failed, show error
                 setStatus('error');
                 setMessage(error.response?.data?.message || 'Token tidak valid atau sudah kedaluwarsa.');
@@ -78,23 +78,25 @@ const VerifyEmail = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8 text-center">
-                <div className="mb-6">
-                    {renderIcon()}
+        <div className="min-h-screen bg-white flex items-center justify-center p-4">
+            <div className="w-full max-w-sm">
+                <div className="text-center">
+                    <div className="mb-6">
+                        {renderIcon()}
+                    </div>
+                    <h2 className="text-xl font-semibold mb-3 text-gray-900 h-7">
+                        {status === 'verifying' ? 'Memverifikasi...' : status === 'success' ? 'Berhasil!' : 'Gagal'}
+                    </h2>
+                    <p className="text-gray-600 text-sm mb-6 leading-relaxed min-h-[3rem] flex items-center justify-center">{message}</p>
+                    {status !== 'verifying' && (
+                        <Link
+                            to="/login"
+                            className="inline-block bg-blue-600 text-white py-2.5 px-6 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                        >
+                            Login
+                        </Link>
+                    )}
                 </div>
-                <h2 className={`text-2xl font-bold mb-4 ${status === 'success' ? 'text-gray-900' : 'text-gray-800'}`}>
-                    {status === 'verifying' ? 'Verifikasi Email' : status === 'success' ? 'Verifikasi Berhasil' : 'Verifikasi Gagal'}
-                </h2>
-                <p className="text-gray-600 mb-8">{message}</p>
-                {status !== 'verifying' && (
-                    <Link
-                        to="/login"
-                        className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-all"
-                    >
-                        Lanjutkan ke Login
-                    </Link>
-                )}
             </div>
         </div>
     );

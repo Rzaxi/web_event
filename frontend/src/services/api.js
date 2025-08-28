@@ -25,7 +25,8 @@ export const authAPI = {
     register: (userData) => api.post('/auth/register', userData),
     verifyEmail: (token) => api.get(`/auth/verify-email/${token}`),
     forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
-    resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
+    resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, newPassword }),
+    updateProfile: (userData) => api.put('/users/profile', userData),
     logout: () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -36,13 +37,21 @@ export const authAPI = {
 export const userAPI = {
     getProfile: () => api.get('/users/profile'),
     updateProfile: (userData) => api.put('/users/profile', userData),
+    changePassword: (passwordData) => api.put('/users/change-password', passwordData),
     getMyEvents: () => api.get('/users/events'), // User event history
 };
 
 // Events API (User/Public - hanya read dan register)
 export const eventsAPI = {
-    getAll: () => api.get('/events'),
-    getById: (id) => api.get(`/events/${id}`),
+    getAll: (params) => api.get('/events', { params }),
+    getById: (id) => {
+        // Try authenticated route first (with registration status), fallback to public route
+        const token = localStorage.getItem('token');
+        if (token) {
+            return api.get(`/users/events/${id}`);
+        }
+        return api.get(`/events/${id}`);
+    },
     register: (eventId) => api.post(`/events/${eventId}/register`),
     unregister: (eventId) => api.delete(`/events/${eventId}/register`),
 };

@@ -1,99 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, Calendar, MapPin, Users } from 'lucide-react';
-import EventCard from '../components/EventCard';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Search, Calendar } from 'lucide-react';
+import EventCard from '../components/event/EventCard';
 import { eventsAPI } from '../services/api';
+import { useDebounce } from '../hooks/useDebounce'; // Assuming you have a debounce hook
 
 const Events = () => {
   const [events, setEvents] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  // Filters and Pagination State
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('date');
+  const [sortBy, setSortBy] = useState('tanggal'); // Default sort by date
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalEvents, setTotalEvents] = useState(0);
 
-  const filters = [
-    { key: 'all', label: 'All Events', count: 0 },
-    { key: 'kompetisi', label: 'Competitions', count: 0 },
-    { key: 'seminar', label: 'Seminars', count: 0 },
-    { key: 'workshop', label: 'Workshops', count: 0 }
-  ];
+  const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms delay
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  const fetchEvents = async () => {
-    try {
+  const fetchEvents = useCallback(async (page, search, sort, loadMore = false) => {
+    if (loadMore) {
+      setLoadingMore(true);
+    } else {
       setLoading(true);
-      const response = await eventsAPI.getAll();
-      const eventsData = (response.data && response.data.events) || [];
-      setEvents(eventsData);
-      setFilteredEvents(eventsData);
+    }
 
-      // Update filter counts
-      filters[0].count = eventsData.length;
-      filters[1].count = eventsData.filter(e => e.kategori?.toLowerCase() === 'kompetisi').length;
-      filters[2].count = eventsData.filter(e => e.kategori?.toLowerCase() === 'seminar').length;
-      filters[3].count = eventsData.filter(e => e.kategori?.toLowerCase() === 'workshop').length;
+    try {
+      const params = {
+        page,
+        limit: 9,
+        search: search || undefined,
+        sortBy: sort,
+        sortOrder: 'ASC',
+      };
+
+      const response = await eventsAPI.getAll(params);
+      const { events: newEvents, pagination } = response.data;
+
+      setEvents(prevEvents => loadMore ? [...prevEvents, ...newEvents] : newEvents);
+      setTotalPages(pagination.totalPages || 1);
+      setTotalEvents(pagination.total || 0);
+      setCurrentPage(pagination.page || 1);
+
     } catch (error) {
       console.error('Error fetching events:', error);
-      setEvents([]);
-      setFilteredEvents([]);
+      // Optionally, show a toast notification to the user
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+    }
+  }, []);
+
+  // Initial fetch and fetch on filter change
+  useEffect(() => {
+    fetchEvents(1, debouncedSearchTerm, sortBy);
+  }, [debouncedSearchTerm, sortBy, fetchEvents]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
+  const handleLoadMore = () => {
+    if (currentPage < totalPages) {
+      fetchEvents(currentPage + 1, debouncedSearchTerm, sortBy, true);
     }
   };
 
-  const handleSearch = (e) => {
-    const term = e.target.value;
-    setSearchTerm(term);
-    filterAndSortEvents(term, activeFilter, sortBy);
-  };
-
-  const handleFilterChange = (filter) => {
-    setActiveFilter(filter);
-    filterAndSortEvents(searchTerm, filter, sortBy);
-  };
-
-  const handleSortChange = (sort) => {
-    setSortBy(sort);
-    filterAndSortEvents(searchTerm, activeFilter, sort);
-  };
-
-  const filterAndSortEvents = (search, filter, sort) => {
-    let filtered = [...events];
-
-    // Filter by search term
-    if (search) {
-      filtered = filtered.filter(event =>
-        event.judul.toLowerCase().includes(search.toLowerCase()) ||
-        event.deskripsi.toLowerCase().includes(search.toLowerCase()) ||
-        event.lokasi.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    // Filter by category
-    if (filter !== 'all') {
-      filtered = filtered.filter(event =>
-        event.kategori && event.kategori.toLowerCase() === filter.toLowerCase()
-      );
-    }
-
-    // Sort events
-    filtered.sort((a, b) => {
-      switch (sort) {
-        case 'date':
-          return new Date(a.tanggal) - new Date(b.tanggal);
-        case 'popularity':
-          return (b.registered_count || 0) - (a.registered_count || 0);
-        case 'name':
-          return a.judul.localeCompare(b.judul);
-        default:
-          return 0;
-      }
-    });
-
-    setFilteredEvents(filtered);
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSortBy('tanggal');
   };
 
   return (
@@ -117,8 +96,8 @@ const Events = () => {
                 <input
                   type="text"
                   value={searchTerm}
-                  onChange={handleSearch}
-                  placeholder="Search events, competitions, workshops..."
+                  onChange={handleSearchChange}
+                  placeholder="Search events by title, description, or location..."
                   className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -128,52 +107,20 @@ const Events = () => {
             <div className="lg:w-48">
               <select
                 value={sortBy}
-                onChange={(e) => handleSortChange(e.target.value)}
+                onChange={handleSortChange}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="date">Sort by Date</option>
-                <option value="popularity">Sort by Popularity</option>
-                <option value="name">Sort by Name</option>
+                <option value="tanggal">Sort by Date</option>
+                <option value="judul">Sort by Name</option>
               </select>
             </div>
-          </div>
-
-          {/* Filter Pills */}
-          <div className="flex flex-wrap gap-3 mt-6">
-            {filters.map((filter) => (
-              <button
-                key={filter.key}
-                onClick={() => handleFilterChange(filter.key)}
-                className={`
-                  flex items-center space-x-2 px-4 py-2 rounded-full font-medium transition-all duration-200
-                  ${activeFilter === filter.key
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }
-                `}
-              >
-                <span>{filter.label}</span>
-                <span className={`
-                  px-2 py-1 rounded-full text-xs font-bold
-                  ${activeFilter === filter.key
-                    ? 'bg-white/20 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                  }
-                `}>
-                  {filter.count}
-                </span>
-              </button>
-            ))}
           </div>
         </div>
 
         {/* Results Header */}
         <div className="flex justify-between items-center mb-8">
           <div className="text-gray-600">
-            Showing <span className="font-semibold text-gray-900">{filteredEvents.length}</span> events
-            {activeFilter !== 'all' && (
-              <span> in <span className="font-semibold text-blue-600 capitalize">{activeFilter}</span></span>
-            )}
+            Showing <span className="font-semibold text-gray-900">{events.length}</span> of <span className="font-semibold text-gray-900">{totalEvents}</span> events
           </div>
         </div>
 
@@ -192,9 +139,9 @@ const Events = () => {
               </div>
             ))}
           </div>
-        ) : filteredEvents.length > 0 ? (
+        ) : events.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredEvents.map((event) => (
+            {events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>
@@ -208,11 +155,7 @@ const Events = () => {
               Try adjusting your search terms or filter criteria
             </p>
             <button
-              onClick={() => {
-                setSearchTerm('');
-                setActiveFilter('all');
-                setFilteredEvents(events);
-              }}
+              onClick={clearFilters}
               className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors"
             >
               Clear Filters
@@ -221,10 +164,14 @@ const Events = () => {
         )}
 
         {/* Load More Button */}
-        {filteredEvents.length > 0 && filteredEvents.length >= 9 && (
+        {currentPage < totalPages && (
           <div className="text-center mt-12">
-            <button className="bg-white text-gray-700 px-8 py-3 rounded-xl font-medium border border-gray-200 hover:bg-gray-50 transition-colors">
-              Load More Events
+            <button
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="bg-white text-gray-700 px-8 py-3 rounded-xl font-medium border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loadingMore ? 'Loading...' : 'Load More Events'}
             </button>
           </div>
         )}
