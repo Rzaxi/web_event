@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Users, Award, ArrowRight, CheckCircle, Star, MapPin, Clock } from 'lucide-react';
-import ProfileDebugger from '../components/debug/ProfileDebugger';
 import Hero from 'src/components/home/Hero';
 import AdvantagesSection from 'src/components/home/AdvantagesSection';
 import EventCard from 'src/components/event/EventCard';
@@ -267,8 +266,7 @@ const Home = () => {
         </AnimatedSection>
 
       </div>
-      <ProfileDebugger />
-    </PageTransition>
+          </PageTransition>
   );
 };
 
