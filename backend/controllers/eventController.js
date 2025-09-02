@@ -8,18 +8,49 @@ const XLSX = require('xlsx');
 // Get all events (public)
 const getEvents = async (req, res) => {
   try {
-    const { page = 1, limit = 10, search, sortBy = 'tanggal', sortOrder = 'ASC' } = req.query;
+    const { 
+      page = 1, 
+      limit = 10, 
+      search, 
+      sortBy = 'tanggal', 
+      sortOrder = 'DESC',
+      kategori,
+      tingkat_kesulitan,
+      price_filter
+    } = req.query;
     const offset = (page - 1) * limit;
 
     let whereClause = {};
-    if (search) {
-      whereClause = {
-        [Op.or]: [
-          { judul: { [Op.like]: `%${search}%` } },
-          { lokasi: { [Op.like]: `%${search}%` } },
-          { deskripsi: { [Op.like]: `%${search}%` } }
-        ]
-      };
+    
+    // Search filter
+    if (search && search.trim()) {
+      whereClause[Op.or] = [
+        { judul: { [Op.like]: `%${search}%` } },
+        { lokasi: { [Op.like]: `%${search}%` } },
+        { deskripsi: { [Op.like]: `%${search}%` } }
+      ];
+    }
+
+    // Category filter
+    if (kategori && kategori.trim()) {
+      whereClause.kategori = kategori;
+    }
+
+    // Difficulty filter
+    if (tingkat_kesulitan && tingkat_kesulitan.trim()) {
+      whereClause.tingkat_kesulitan = tingkat_kesulitan;
+    }
+
+    // Price filter
+    if (price_filter && price_filter.trim()) {
+      if (price_filter === 'gratis') {
+        whereClause[Op.or] = [
+          { biaya: null },
+          { biaya: 0 }
+        ];
+      } else if (price_filter === 'berbayar') {
+        whereClause.biaya = { [Op.gt]: 0 };
+      }
     }
 
     const { count, rows: events } = await Event.findAndCountAll({
@@ -29,7 +60,7 @@ const getEvents = async (req, res) => {
         as: 'creator',
         attributes: ['nama_lengkap']
       }],
-      order: [[sortBy, sortOrder]],
+      order: [[sortBy === 'created_at' ? 'createdAt' : sortBy, sortOrder]],
       limit: parseInt(limit),
       offset: parseInt(offset)
     });
@@ -48,8 +79,9 @@ const getEvents = async (req, res) => {
     );
 
     res.json({
-      events: eventsWithParticipants,
-      pagination: {
+      success: true,
+      data: {
+        events: eventsWithParticipants,
         total: count,
         page: parseInt(page),
         limit: parseInt(limit),
@@ -58,7 +90,11 @@ const getEvents = async (req, res) => {
     });
   } catch (error) {
     console.error('Get events error:', error);
-    res.status(500).json({ message: 'Terjadi kesalahan server' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Terjadi kesalahan server',
+      error: error.message 
+    });
   }
 };
 
@@ -119,7 +155,19 @@ const createEvent = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { judul, tanggal, waktu, lokasi, sertifikat_template, deskripsi } = req.body;
+    const { 
+      judul, 
+      tanggal, 
+      waktu, 
+      lokasi, 
+      sertifikat_template, 
+      deskripsi,
+      kategori = 'lainnya',
+      tingkat_kesulitan = 'pemula',
+      kapasitas_peserta,
+      biaya = 0,
+      status_event = 'published'
+    } = req.body;
     const created_by = req.user.id;
 
     let flyerUrl = null;
@@ -135,6 +183,11 @@ const createEvent = async (req, res) => {
       flyer_url: flyerUrl,
       sertifikat_template,
       deskripsi,
+      kategori,
+      tingkat_kesulitan,
+      kapasitas_peserta: kapasitas_peserta ? parseInt(kapasitas_peserta) : null,
+      biaya: parseFloat(biaya),
+      status_event,
       created_by
     });
 
@@ -172,7 +225,19 @@ const updateEvent = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { judul, tanggal, waktu, lokasi, sertifikat_template, deskripsi } = req.body;
+    const { 
+      judul, 
+      tanggal, 
+      waktu, 
+      lokasi, 
+      sertifikat_template, 
+      deskripsi,
+      kategori,
+      tingkat_kesulitan,
+      kapasitas_peserta,
+      biaya,
+      status_event
+    } = req.body;
 
     const event = await Event.findByPk(id);
     if (!event) {
@@ -202,7 +267,12 @@ const updateEvent = async (req, res) => {
       lokasi,
       flyer_url: flyerUrl,
       sertifikat_template,
-      deskripsi
+      deskripsi,
+      kategori: kategori || event.kategori,
+      tingkat_kesulitan: tingkat_kesulitan || event.tingkat_kesulitan,
+      kapasitas_peserta: kapasitas_peserta ? parseInt(kapasitas_peserta) : event.kapasitas_peserta,
+      biaya: biaya !== undefined ? parseFloat(biaya) : event.biaya,
+      status_event: status_event || event.status_event
     });
 
     const updatedEvent = await Event.findByPk(id, {

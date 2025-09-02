@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Clock, MapPin, Users, ArrowLeft, ArrowRight, Star, CheckCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, ArrowRight, Star, CheckCircle, Sparkles, Play } from 'lucide-react';
 import AnimatedSection from '../common/AnimatedSection';
 
 const Hero = () => {
@@ -70,8 +70,8 @@ const Hero = () => {
         const response = await fetch('/api/events?limit=10');
         const data = await response.json();
 
-        if (data.events && data.events.length > 0) {
-          setAllEvents(data.events);
+        if (data.success && data.data && data.data.events && data.data.events.length > 0) {
+          setAllEvents(data.data.events);
         } else {
           // Use mock events if no API data
           setAllEvents(mockEvents);
@@ -159,200 +159,216 @@ const Hero = () => {
   const currentEvent = displayEvents[currentEventIndex];
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6 pt-4 pb-8">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+    <section className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center overflow-hidden relative">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse animation-delay-2000"></div>
+      </div>
+
+      <div className="container mx-auto px-4 sm:px-6 pt-8 pb-12 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left Content */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             <AnimatedSection animation="fade-up">
               <div className="space-y-8">
-                <div className="inline-flex items-center bg-blue-100/80 text-blue-700 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm border border-blue-200/50">
-                  <Star className="w-4 h-4 mr-2" />
-                  Platform Terpercaya
+                {/* Badge */}
+                <div className="inline-flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-5 py-2.5 rounded-full text-sm font-semibold backdrop-blur-sm border border-blue-200/50 shadow-sm">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Platform Event Terdepan
                 </div>
 
-                <div className="space-y-4">
-                  <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 leading-tight">
-                    Wujudkan Potensi,
+                {/* Main heading */}
+                <div className="space-y-6">
+                  <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 leading-[1.1] tracking-tight">
+                    Temukan Event
                     <br />
-                    <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-500 bg-clip-text text-transparent">
-                      Raih Prestasi
+                    <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                      Impianmu
                     </span>
                   </h1>
 
-                  <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full"></div>
-
-                  <p className="text-sm text-gray-600 font-medium tracking-wider uppercase">
-                    PANGGUNG KREASI & AJANG KOMPETISI SEKOLAHMU
-                  </p>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
+                    <p className="text-sm text-gray-500 font-medium tracking-wider uppercase">
+                      Sekolah • Universitas • Komunitas
+                    </p>
+                  </div>
                 </div>
 
-                <p className="text-lg text-gray-700 leading-relaxed max-w-xl">
-                  Temukan keseruan pensi, semangat classmeet, dan wawasan baru dari seminar di
-                  sekolahmu. Semua informasi event ada di sini!
+                <p className="text-xl text-gray-600 leading-relaxed max-w-lg font-light">
+                  Bergabunglah dengan ribuan peserta dalam event-event menarik. 
+                  Dari workshop, seminar, hingga kompetisi yang akan mengembangkan potensimu.
                 </p>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <Link
+                    to="/events"
+                    className="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group"
+                  >
+                    <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                    Jelajahi Event
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-700 font-semibold px-8 py-4 rounded-2xl border-2 border-gray-200 hover:border-gray-300 transition-all duration-300 shadow-sm hover:shadow-md"
+                  >
+                    Daftar Gratis
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Link>
+                </div>
               </div>
             </AnimatedSection>
 
             <AnimatedSection animation="fade-up" delay={400}>
-              {/* Feature Points */}
-              <div className="space-y-5">
-                <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-2xl border border-blue-100/50 shadow-sm hover:shadow-md transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <CheckCircle className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="text-gray-700 text-base leading-relaxed font-medium">Jelajahi beragam event: mulai dari seni, olahraga, hingga akademik.</span>
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-gray-100">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">500+</div>
+                  <div className="text-sm text-gray-500 font-medium">Event Tersedia</div>
                 </div>
-
-                <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-2xl border border-green-100/50 shadow-sm hover:shadow-md transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-green-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Star className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="text-gray-700 text-base leading-relaxed font-medium">Jangan lewatkan momen berharga dan bangun kenangan tak terlupakan.</span>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">10K+</div>
+                  <div className="text-sm text-gray-500 font-medium">Peserta Aktif</div>
                 </div>
-
-                <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-2xl border border-purple-100/50 shadow-sm hover:shadow-md transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Clock className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="text-gray-700 text-base leading-relaxed font-medium">Pendaftaran cepat, mudah, dan terintegrasi langsung untuk acaramu.</span>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">98%</div>
+                  <div className="text-sm text-gray-500 font-medium">Kepuasan</div>
                 </div>
               </div>
             </AnimatedSection>
           </div>
 
-          {/* Right Content - Event Card */}
+          {/* Right Content - Modern Event Card */}
           <div className="relative">
             <AnimatedSection animation="fade-left" delay={600}>
-              {/* Gradient Background */}
-              <div className="absolute -inset-4 bg-gradient-to-br from-blue-400 via-blue-500 to-teal-500 rounded-3xl transform rotate-2 scale-110 opacity-25 blur-2xl"></div>
-
-              {/* Main Event Card */}
-              <div className="relative bg-gradient-to-br from-blue-500 via-blue-600 to-teal-500 rounded-3xl p-4 shadow-2xl">
-                {/* Decorative Elements */}
-                <div className="absolute top-4 right-4 w-16 h-16 bg-white/10 rounded-full blur-2xl"></div>
-                <div className="absolute bottom-4 left-4 w-12 h-12 bg-white/5 rounded-full blur-xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white/5 rounded-full blur-3xl"></div>
-
-                {isLoading ? (
-                  <div className="text-center py-16">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-                    <p className="text-white/80 mt-2">Memuat event...</p>
+              {/* Floating background elements */}
+              <div className="absolute -inset-6 bg-gradient-to-br from-blue-400/20 via-indigo-400/20 to-purple-400/20 rounded-3xl transform rotate-1 scale-105 blur-3xl"></div>
+              
+              {isLoading ? (
+                <div className="relative bg-white rounded-3xl p-8 shadow-2xl border border-gray-100">
+                  <div className="text-center py-20">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+                    <p className="text-gray-500 mt-4 font-medium">Memuat event terbaru...</p>
                   </div>
-                ) : displayEvents.length > 0 && currentEvent ? (
-                  <div className="relative z-10">
-                    {/* Event Badge */}
-                    <div className="inline-flex items-center bg-white/25 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium mb-4 border border-white/30 shadow-lg">
-                      <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                      {todayEvents.some(event => event.id === currentEvent.id) ? 'Event Berlangsung' : 'Event Mendatang'}
+                </div>
+              ) : displayEvents.length > 0 && currentEvent ? (
+                <div className="relative bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
+                  {/* Event Badge */}
+                  <div className="absolute top-6 left-6 z-20">
+                    <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold border border-green-200/50 shadow-sm">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                      Event Mendatang
                     </div>
+                  </div>
 
-                    {/* Event Content */}
-                    <div className="relative h-[450px] w-full">
-                      <div className={`absolute inset-0 w-full transition-all duration-800 ease-in-out ${isTransitioning
-                        ? 'opacity-0 transform translate-y-2'
-                        : 'opacity-100 transform translate-y-0'
-                        }`}>
-                        <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 h-full flex flex-col">
-                          <div className="flex-1 flex flex-col">
-                            <div className="mb-6">
-                              <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
-                                {currentEvent.judul}
-                              </h3>
+                  {/* Event Content */}
+                  <div className={`transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'}`}>
+                    <div className="p-8 pt-20">
+                      {/* Event Title */}
+                      <div className="mb-8">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
+                          {currentEvent.judul}
+                        </h3>
+                        <p className="text-gray-600 leading-relaxed line-clamp-2">
+                          {currentEvent.deskripsi || 'Workshop intensif untuk mempelajari pengembangan web modern menggunakan React.js'}
+                        </p>
+                      </div>
 
-                              <div className="h-16 overflow-hidden">
-                                <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
-                                  {currentEvent.deskripsi || 'Workshop intensif untuk mempelajari pengembangan web modern menggunakan React.js. Peserta akan belajar komponen, state management, dan best practices dalam pengembangan aplikasi web.'}
-                                </p>
-                              </div>
+                      {/* Event Details */}
+                      <div className="space-y-6 mb-8">
+                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                          <div className="flex items-center text-gray-700">
+                            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                              <Calendar className="w-5 h-5 text-blue-600" />
                             </div>
-
-                            <div className="space-y-4 flex-1">
-                              <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                <div className="flex items-center text-gray-700">
-                                  <Calendar className="w-4 h-4 mr-3 text-gray-500 flex-shrink-0" />
-                                  <span className="text-sm font-medium">Tanggal</span>
-                                </div>
-                                <span className="text-sm text-gray-900 font-medium">
-                                  {new Date(currentEvent.tanggal).toLocaleDateString('id-ID', {
-                                    weekday: 'short',
-                                    day: 'numeric',
-                                    month: 'short',
-                                    year: 'numeric'
-                                  })}
-                                </span>
-                              </div>
-
-                              <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                <div className="flex items-center text-gray-700">
-                                  <Clock className="w-4 h-4 mr-3 text-gray-500 flex-shrink-0" />
-                                  <span className="text-sm font-medium">Waktu</span>
-                                </div>
-                                <span className="text-sm text-gray-900 font-medium">{currentEvent.waktu_mulai || '10:30'}</span>
-                              </div>
-
-                              <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                <div className="flex items-center text-gray-700">
-                                  <MapPin className="w-4 h-4 mr-3 text-gray-500 flex-shrink-0" />
-                                  <span className="text-sm font-medium">Lokasi</span>
-                                </div>
-                                <span className="text-sm text-gray-900 font-medium">{currentEvent.lokasi}</span>
-                              </div>
-
-                              <div className="flex items-center justify-between py-2">
-                                <div className="flex items-center text-gray-700">
-                                  <Users className="w-4 h-4 mr-3 text-gray-500 flex-shrink-0" />
-                                  <span className="text-sm font-medium">Peserta</span>
-                                </div>
-                                <span className="text-sm text-gray-900 font-medium">{currentEvent.participantCount || 2} terdaftar</span>
-                              </div>
-                            </div>
-
-                            {/* Action Button */}
-                            <div className="mt-6">
-                              <Link
-                                to={`/events/${currentEvent.id}`}
-                                className="block w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-300 text-center text-sm group shadow-lg hover:shadow-xl"
-                              >
-                                <span className="group-hover:translate-x-1 transition-transform duration-300 inline-block">
-                                  Daftar Sekarang
-                                </span>
-                              </Link>
-                            </div>
+                            <span className="font-semibold">Tanggal</span>
                           </div>
+                          <span className="text-gray-900 font-bold">
+                            {new Date(currentEvent.tanggal).toLocaleDateString('id-ID', {
+                              weekday: 'short',
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric'
+                            })}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                          <div className="flex items-center text-gray-700">
+                            <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center mr-4">
+                              <Clock className="w-5 h-5 text-indigo-600" />
+                            </div>
+                            <span className="font-semibold">Waktu</span>
+                          </div>
+                          <span className="text-gray-900 font-bold">{currentEvent.waktu_mulai || '10:30'}</span>
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                          <div className="flex items-center text-gray-700">
+                            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                              <MapPin className="w-5 h-5 text-purple-600" />
+                            </div>
+                            <span className="font-semibold">Lokasi</span>
+                          </div>
+                          <span className="text-gray-900 font-bold text-right max-w-[140px] truncate">{currentEvent.lokasi}</span>
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                          <div className="flex items-center text-gray-700">
+                            <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center mr-4">
+                              <Users className="w-5 h-5 text-teal-600" />
+                            </div>
+                            <span className="font-semibold">Peserta</span>
+                          </div>
+                          <span className="text-gray-900 font-bold">{currentEvent.participantCount || 3} terdaftar</span>
                         </div>
                       </div>
+
+                      {/* Action Button */}
+                      <Link
+                        to={`/events/${currentEvent.id}`}
+                        className="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 text-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group"
+                      >
+                        <span className="flex items-center justify-center">
+                          Daftar Sekarang
+                          <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                        </span>
+                      </Link>
                     </div>
-
                   </div>
-                ) : (
-                  <div className="text-center py-16 relative z-10">
-                    <Calendar className="w-16 h-16 text-white/60 mx-auto mb-4" />
-                    <h4 className="text-xl font-semibold text-white mb-2">Event Mendatang</h4>
-                    <p className="text-white/80 text-sm mb-6">Daftar sekarang dan dapatkan early bird discount!</p>
-                    <Link
-                      to="/events"
-                      className="inline-flex items-center bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-medium px-6 py-3 rounded-xl border border-white/20 hover:border-white/40 transition-all duration-300"
-                    >
-                      Jelajahi Event
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                  </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="relative bg-white rounded-3xl p-12 shadow-2xl border border-gray-100 text-center">
+                  <Calendar className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+                  <h4 className="text-2xl font-bold text-gray-900 mb-4">Segera Hadir</h4>
+                  <p className="text-gray-600 mb-8 max-w-sm mx-auto">
+                    Event-event menarik akan segera tersedia. Daftar sekarang untuk mendapat notifikasi!
+                  </p>
+                  <Link
+                    to="/events"
+                    className="inline-flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                  >
+                    Jelajahi Event
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Link>
+                </div>
+              )}
 
-              {/* Navigation Dots - Moved outside the card */}
+              {/* Navigation Dots */}
               {displayEvents.length > 1 && (
-                <div className="flex justify-center space-x-2 mt-6">
+                <div className="flex justify-center space-x-3 mt-8">
                   {displayEvents.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => goToEvent(index)}
                       disabled={isTransitioning}
-                      className={`transition-all duration-300 ${index === currentEventIndex
-                        ? 'w-8 h-2 bg-blue-500 rounded-full shadow-sm'
-                        : 'w-2 h-2 bg-gray-300 hover:bg-gray-400 rounded-full'
-                        } disabled:cursor-not-allowed`}
+                      className={`transition-all duration-300 ${
+                        index === currentEventIndex
+                          ? 'w-10 h-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-md'
+                          : 'w-3 h-3 bg-gray-300 hover:bg-gray-400 rounded-full'
+                      } disabled:cursor-not-allowed`}
                     />
                   ))}
                 </div>

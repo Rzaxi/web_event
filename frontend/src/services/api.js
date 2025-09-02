@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -45,11 +45,7 @@ export const userAPI = {
 export const eventsAPI = {
     getAll: (params) => api.get('/events', { params }),
     getById: (id) => {
-        // Try authenticated route first (with registration status), fallback to public route
-        const token = localStorage.getItem('token');
-        if (token) {
-            return api.get(`/users/events/${id}`);
-        }
+        // Always use public route for event details to avoid 403 errors
         return api.get(`/events/${id}`);
     },
     register: (eventId) => api.post(`/events/${eventId}/register`),

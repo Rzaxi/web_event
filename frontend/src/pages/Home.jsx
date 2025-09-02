@@ -22,14 +22,15 @@ const Home = () => {
     try {
       setLoading(true);
       const response = await eventsAPI.getAll();
-      const eventsData = (response.data && response.data.events) || [];
+      console.log('Home page API response:', response.data);
+      const eventsData = response.data?.data?.events || response.data?.events || [];
       setEvents(eventsData);
     } catch (error) {
       console.error('Error fetching events:', error);
       setEvents([]);
     } finally {
       setLoading(false);
-    }
+    }  
   };
 
   const featuredEvents = (events || []).slice(0, 4);

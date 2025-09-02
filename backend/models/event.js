@@ -43,6 +43,41 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true
     },
+    kategori: {
+      type: DataTypes.ENUM(
+        'akademik',
+        'olahraga', 
+        'seni_budaya',
+        'teknologi',
+        'kewirausahaan',
+        'sosial',
+        'kompetisi',
+        'workshop',
+        'seminar',
+        'lainnya'
+      ),
+      allowNull: false,
+      defaultValue: 'lainnya'
+    },
+    tingkat_kesulitan: {
+      type: DataTypes.ENUM('pemula', 'menengah', 'lanjutan'),
+      allowNull: false,
+      defaultValue: 'pemula'
+    },
+    kapasitas_peserta: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    biaya: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      defaultValue: 0.00
+    },
+    status_event: {
+      type: DataTypes.ENUM('draft', 'published', 'cancelled', 'completed'),
+      allowNull: false,
+      defaultValue: 'published'
+    },
     created_by: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -50,22 +50,10 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            {isHomePage ? (
-              <>
-                <ScrollLink to="home" spy={true} smooth={true} duration={500} offset={-70} className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">Home</ScrollLink>
-                <ScrollLink to="events" spy={true} smooth={true} duration={500} offset={-70} className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">Events</ScrollLink>
-                <ScrollLink to="about" spy={true} smooth={true} duration={500} offset={-70} className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">About</ScrollLink>
-                <ScrollLink to="mobile-app" spy={true} smooth={true} duration={500} offset={-70} className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">Mobile App</ScrollLink>
-               
-              </>
-            ) : (
-              <>
-                <RouterLink to="/#home" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">Home</RouterLink>
-                <RouterLink to="/events" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">Events</RouterLink>
-                <RouterLink to="/#mobile-app" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">Mobile App</RouterLink>
-                <RouterLink to="/#about" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">About</RouterLink>
-              </>
-            )}
+            <RouterLink to="/" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">Home</RouterLink>
+            <RouterLink to="/events" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">Events</RouterLink>
+            <RouterLink to="/about" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">About</RouterLink>
+            <RouterLink to="/contact" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer">Contact</RouterLink>
           </nav>
 
           {/* Auth Buttons */}
@@ -131,21 +119,10 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-100">
             <div className="flex flex-col space-y-4">
-              {isHomePage ? (
-                <>
-                  <ScrollLink to="home" spy={true} smooth={true} duration={500} offset={-70} className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>Home</ScrollLink>
-                  <ScrollLink to="events" spy={true} smooth={true} duration={500} offset={-70} className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>Events</ScrollLink>
-                  <ScrollLink to="mobile-app" spy={true} smooth={true} duration={500} offset={-70} className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>Mobile App</ScrollLink>
-                  <ScrollLink to="about" spy={true} smooth={true} duration={500} offset={-70} className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>About</ScrollLink>
-                </>
-              ) : (
-                <>
-                  <RouterLink to="/#home" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>Home</RouterLink>
-                  <RouterLink to="/events" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>Events</RouterLink>
-                  <RouterLink to="/#mobile-app" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>Mobile App</RouterLink>
-                  <RouterLink to="/#about" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>About</RouterLink>
-                </>
-              )}
+              <RouterLink to="/" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>Home</RouterLink>
+              <RouterLink to="/events" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>Events</RouterLink>
+              <RouterLink to="/about" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>About</RouterLink>
+              <RouterLink to="/contact" className="text-gray-700 hover:text-indigo-500 font-medium transition-colors cursor-pointer" onClick={() => setIsMenuOpen(false)}>Contact</RouterLink>
 
               {user ? (
                 <div className="pt-4 border-t border-gray-100 space-y-3">

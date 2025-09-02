@@ -12,6 +12,8 @@ import PageLoader from './components/ui/PageLoader';
 // Pages
 import Home from './pages/Home';
 import Events from './pages/Events';
+import About from './pages/About';
+import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/auth/Register';
 import VerifyEmail from './pages/auth/VerifyEmail';
@@ -20,6 +22,7 @@ import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/user/Profile';
 import MyEvents from './pages/user/MyEvents';
 import EventDetail from './pages/events/EventDetail';
+import EventConfirmation from './pages/events/EventConfirmation';
 import ProfileCompletion from './pages/ProfileCompletion';
 
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -88,6 +91,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/events/:id/confirm" element={<EventConfirmation />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile-completion" element={<ProfileCompletion />} />
@@ -105,8 +111,6 @@ function App() {
           <Route path="/" element={<DashboardLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
           </Route>
-          <Route path="/about" element={<div className="pt-20 p-8 text-center">About Page - Coming Soon</div>} />
-          <Route path="/contact" element={<div className="pt-20 p-8 text-center">Contact Page - Coming Soon</div>} />
         </Routes>
       </Layout>
 
