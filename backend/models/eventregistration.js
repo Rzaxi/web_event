@@ -34,6 +34,11 @@ module.exports = (sequelize, DataTypes) => {
     sertifikat_url: {
       type: DataTypes.STRING,
       allowNull: true
+    },
+    status: {
+      type: DataTypes.ENUM('pending', 'confirmed', 'cancelled'),
+      defaultValue: 'confirmed',
+      allowNull: false
     }
   }, {
     sequelize,

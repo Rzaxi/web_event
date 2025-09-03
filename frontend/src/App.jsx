@@ -29,14 +29,25 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import Dashboard from './pages/user/Dashboard';
 import AccountSettings from './pages/user/AccountSettings';
 
+// Admin Pages
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminEvents from './pages/admin/AdminEvents';
+import CreateEventPage from './pages/admin/CreateEventPage';
+import EditEventPage from './pages/admin/EditEventPage';
+import EventDetailPage from './pages/admin/EventDetailPage';
+import AdminRoute from './components/auth/AdminRoute';
+import AdminLayout from './components/admin/AdminLayout';
+
 // Layout component to conditionally show header/footer
 function Layout({ children }) {
   const location = useLocation();
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [prevLocation, setPrevLocation] = useState(location);
 
-  const authPages = ['/login', '/register', '/verify-email', '/forgot-password', '/reset-password', '/profile-completion'];
+  const authPages = ['/login', '/register', '/verify-email', '/forgot-password', '/reset-password', '/profile-completion', '/login/admin'];
   const isAuthPage = authPages.some(page => location.pathname.startsWith(page));
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     if (location !== prevLocation) {
@@ -56,7 +67,7 @@ function Layout({ children }) {
     return <PageLoader isVisible={true} />;
   }
 
-  if (isAuthPage) {
+  if (isAuthPage || isAdminPage) {
     return (
       <div className="animate-fade-in">
         {children}
@@ -110,6 +121,16 @@ function App() {
           {/* Dashboard Routes */}
           <Route path="/" element={<DashboardLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
+          </Route>
+
+          {/* Admin Routes */}
+          <Route path="/login/admin" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="events" element={<AdminEvents />} />
+            <Route path="events/create" element={<CreateEventPage />} />
+            <Route path="events/:id" element={<EventDetailPage />} />
+            <Route path="events/:id/edit" element={<EditEventPage />} />
           </Route>
         </Routes>
       </Layout>

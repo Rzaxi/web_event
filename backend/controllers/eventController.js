@@ -65,15 +65,17 @@ const getEvents = async (req, res) => {
       offset: parseInt(offset)
     });
 
-    // Add participant count to each event
+    // Add participant count to each event and ensure flyer_url is complete
     const eventsWithParticipants = await Promise.all(
       events.map(async (event) => {
         const participantCount = await EventRegistration.count({
           where: { event_id: event.id }
         });
+        const eventData = event.toJSON();
         return {
-          ...event.toJSON(),
-          participantCount
+          ...eventData,
+          participantCount,
+          flyer_url: eventData.flyer_url ? `http://localhost:3000${eventData.flyer_url}` : null
         };
       })
     );
@@ -132,10 +134,12 @@ const getEventById = async (req, res) => {
       isRegistered = !!registration;
     }
 
+    const eventData = event.toJSON();
     res.json({
-      ...event.toJSON(),
+      ...eventData,
       participantCount,
-      isRegistered
+      isRegistered,
+      flyer_url: eventData.flyer_url ? `http://localhost:3000${eventData.flyer_url}` : null
     });
   } catch (error) {
     console.error('Get event by ID error:', error);
