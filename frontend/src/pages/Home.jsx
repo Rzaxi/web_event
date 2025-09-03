@@ -30,7 +30,7 @@ const Home = () => {
       setEvents([]);
     } finally {
       setLoading(false);
-    }  
+    }
   };
 
   const featuredEvents = (events || []).slice(0, 4);
@@ -132,7 +132,7 @@ const Home = () => {
           </section>
         </AnimatedSection>
 
-        
+
 
         {/* About Section */}
         <AnimatedSection animation="fade-up" delay={300}>
@@ -258,7 +258,7 @@ const Home = () => {
             </div>
           </section>
         </AnimatedSection>
-        
+
         {/* Mobile App Section */}
         <AnimatedSection animation="fade-up" delay={200}>
           <section id="mobile-app">
@@ -267,7 +267,7 @@ const Home = () => {
         </AnimatedSection>
 
       </div>
-          </PageTransition>
+    </PageTransition>
   );
 };
 
