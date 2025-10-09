@@ -10,7 +10,15 @@ const api = axios.create({
     },
 });
 
-// Add token to requests if available
+// Create public axios instance (no auth headers)
+const publicApi = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+// Add token to requests if available (only for authenticated api)
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -18,6 +26,23 @@ api.interceptors.request.use((config) => {
     }
     return config;
 });
+
+// Configure response interceptor to handle expected validation responses
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        // Don't treat 400 Bad Request as errors for attendance checks - these are expected validation responses
+        if (error.response?.status === 400 && error.config?.url?.includes('/attendance/check')) {
+            // Return the error response as if it was successful, but mark it as validation
+            return Promise.resolve({
+                data: error.response.data,
+                status: error.response.status,
+                isValidation: true
+            });
+        }
+        return Promise.reject(error);
+    }
+);
 
 // Auth API (User/Public)
 export const authAPI = {
@@ -43,13 +68,13 @@ export const userAPI = {
 
 // Events API (User/Public - hanya read dan register)
 export const eventsAPI = {
-    getAll: (params) => api.get('/events', { params }),
+    getAll: (params) => publicApi.get('/events', { params }), // Use public API for listing
     getById: (id) => {
-        // Always use public route for event details to avoid 403 errors
-        return api.get(`/events/${id}`);
+        // Always use public API for event details - no auth required
+        return publicApi.get(`/events/${id}`);
     },
-    register: (eventId) => api.post(`/events/${eventId}/register`),
-    unregister: (eventId) => api.delete(`/events/${eventId}/register`),
+    register: (eventId) => api.post(`/events/${eventId}/register`), // Auth required for registration
+    unregister: (eventId) => api.delete(`/events/${eventId}/register`), // Auth required
 };
 
 export default api;

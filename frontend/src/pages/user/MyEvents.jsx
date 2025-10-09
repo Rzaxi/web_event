@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, Clock, Users } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Award, Eye, CheckCircle } from 'lucide-react';
 import { userAPI } from '../../services/api';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -7,60 +7,73 @@ import Sidebar from '../../components/dashboard/Sidebar';
 
 const MyEvents = () => {
   const [events, setEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [eventStats, setEventStats] = useState({
-    total: 0,
-    upcoming: 0,
-    completed: 0,
-    certificates: 0
-  });
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     fetchMyEvents();
   }, []);
 
+  // Filter events based on status
+  const filteredEvents = events.filter(event => {
+    if (statusFilter === 'all') return true;
+    return event.status === statusFilter;
+  });
+
   const fetchMyEvents = async () => {
     try {
-      console.log('Fetching my events...');
-      
       // Check if user is logged in
       const token = localStorage.getItem('token');
       const user = localStorage.getItem('user');
-      
+
       if (!token || !user) {
-        console.log('No authentication found, redirecting to login');
         toast.error('Silakan login terlebih dahulu');
         window.location.href = '/login';
         return;
       }
-      
+
       const response = await userAPI.getMyEvents();
-      console.log('My Events Response:', response);
-      console.log('Response data:', response.data);
-      
+
       if (response.data && Array.isArray(response.data)) {
-        setEvents(response.data);
-        console.log('Events set:', response.data);
-        
-        // Calculate statistics
-        const now = new Date();
-        const stats = {
-          total: response.data.length,
-          upcoming: response.data.filter(event => new Date(event.tanggal) > now).length,
-          completed: response.data.filter(event => new Date(event.tanggal) <= now).length,
-          certificates: response.data.filter(event => event.certificate_issued).length || 0
-        };
-        setEventStats(stats);
+        const eventsWithStatus = response.data.map(event => {
+          const now = new Date();
+          const eventDate = new Date(event.tanggal);
+          
+          // Calculate end date: use tanggal_selesai if available, otherwise calculate from durasi_hari
+          let eventEndDate = new Date(eventDate);
+          if (event.tanggal_selesai) {
+            eventEndDate = new Date(event.tanggal_selesai);
+          } else if (event.durasi_hari && event.durasi_hari > 1) {
+            eventEndDate.setDate(eventEndDate.getDate() + event.durasi_hari - 1);
+          } else {
+            // Default to 3 days for events without explicit end date or duration
+            eventEndDate.setDate(eventEndDate.getDate() + 2); // +2 means 3 days total (start + 2)
+          }
+
+          let status = 'upcoming';
+          // Set time to start of day for proper comparison
+          const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          const eventStart = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+          const eventEnd = new Date(eventEndDate.getFullYear(), eventEndDate.getMonth(), eventEndDate.getDate());
+
+          if (todayStart > eventEnd) {
+            status = 'completed';
+          } else if (todayStart >= eventStart && todayStart < eventEnd) {
+            status = 'ongoing';
+          } else if (todayStart.getTime() === eventEnd.getTime()) {
+            status = 'completed';
+          }
+          return { ...event, status };
+        });
+
+        setEvents(eventsWithStatus);
+
       } else {
-        console.log('No events data or not array');
         setEvents([]);
       }
     } catch (error) {
-      console.error('My Events Error:', error);
-      console.error('Error response:', error.response);
-      
+
       if (error.response?.status === 401) {
-        console.log('Authentication failed, clearing storage and redirecting');
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         toast.error('Sesi telah berakhir. Silakan login kembali');
@@ -70,7 +83,7 @@ const MyEvents = () => {
       }
       setEvents([]);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -90,7 +103,7 @@ const MyEvents = () => {
     });
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -115,45 +128,27 @@ const MyEvents = () => {
               <p className="text-gray-600">Event yang telah Anda daftarkan</p>
             </div>
 
-            {/* Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-xl shadow-lg border border-indigo-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Total Events</p>
-                    <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{eventStats.total}</p>
-                  </div>
-                  <div className="p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg">
-                    <Calendar className="w-6 h-6 text-indigo-600" />
-                  </div>
-                </div>
+
+            {/* Header with Filter */}
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-800">Riwayat Pelatihan</h2>
+                <p className="text-sm text-gray-600">Ditemukan {filteredEvents.length} Pelatihan</p>
               </div>
-              <div className="bg-white p-6 rounded-xl shadow-lg border border-indigo-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Upcoming</p>
-                    <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{eventStats.upcoming}</p>
-                  </div>
-                  <div className="p-3 bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg">
-                    <Clock className="w-6 h-6 text-green-600" />
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-lg border border-indigo-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Completed</p>
-                    <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{eventStats.completed}</p>
-                  </div>
-                  <div className="p-3 bg-gradient-to-r from-gray-100 to-slate-100 rounded-lg">
-                    <Users className="w-6 h-6 text-gray-600" />
-                  </div>
-                </div>
-              </div>
+              <select
+                className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="all">Semua Status</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="completed">Completed</option>
+              </select>
             </div>
 
             {/* Events List */}
-            {events.length === 0 ? (
+            {filteredEvents.length === 0 ? (
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
                 <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-600 mb-2">Belum ada event</h3>
@@ -166,35 +161,99 @@ const MyEvents = () => {
                 </Link>
               </div>
             ) : (
-              <div className="space-y-4">
-                {events.map((event) => (
-                  <div key={event.id} className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl border border-indigo-200 hover:shadow-lg transition-all duration-300 hover:scale-102">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-bold text-gray-900 mb-3 text-lg">{event.nama_event}</h3>
-                        <div className="space-y-2 text-sm text-gray-600">
-                          <div className="flex items-center">
-                            <Calendar className="w-4 h-4 mr-3 text-indigo-500" />
-                            <span>{formatDate(event.tanggal)}</span>
+              <div className="space-y-6">
+                {filteredEvents.map((event) => (
+                  <div key={event.id} className="bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300">
+                    <div className="p-6">
+                      <div className="flex items-start gap-4">
+                        {/* Event Logo/Icon */}
+                        <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Calendar className="w-8 h-8 text-blue-600" />
+                        </div>
+
+                        {/* Event Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2">
+                                {event.nama_event}
+                              </h3>
+                              <p className="text-sm text-blue-600 mb-2">
+                                Belajar Mandiri (Micro Skill)
+                              </p>
+                            </div>
+
+                            {/* Status Badge */}
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${event.status === 'upcoming'
+                                ? 'bg-blue-100 text-blue-800'
+                                : event.status === 'ongoing'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}>
+                              {event.status === 'upcoming' ? 'Upcoming' :
+                                event.status === 'ongoing' ? 'Ongoing' : 'Completed'}
+                            </span>
                           </div>
-                          <div className="flex items-center">
-                            <Clock className="w-4 h-4 mr-3 text-indigo-500" />
-                            <span>{formatTime(event.jam_mulai)} - {formatTime(event.jam_selesai)}</span>
+
+                          {/* Event Details */}
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              <span>{formatDate(event.tanggal)}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-4 h-4" />
+                              <span>{formatTime(event.jam_mulai)}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-4 h-4" />
+                              <span>{event.lokasi}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center">
-                            <MapPin className="w-4 h-4 mr-3 text-indigo-500" />
-                            <span>{event.lokasi}</span>
+
+                          {/* Tags */}
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">
+                              {event.kategori || 'Pemrograman'}
+                            </span>
+                            <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">
+                              Self-Paced (Mandiri)
+                            </span>
+                            {event.memberikan_sertifikat && (
+                              <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs">
+                                Bersertifikat
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-3">
+                            <Link
+                              to={`/events/${event.id}`}
+                              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                            >
+                              <Eye className="w-4 h-4" />
+                              Lihat Detail
+                            </Link>
+
+                            {event.memberikan_sertifikat && (
+                              <Link
+                                to={`/events/${event.id}/attendance`}
+                                className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                                Kehadiran
+                              </Link>
+                            )}
+
+                            {event.status === 'completed' && event.sertifikat_url && (
+                              <button className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors">
+                                <Award className="w-4 h-4" />
+                                Download Sertifikat
+                              </button>
+                            )}
                           </div>
                         </div>
-                      </div>
-                      <div className="ml-4">
-                        <span className={`px-4 py-2 rounded-full text-xs font-semibold shadow-sm ${
-                          new Date(event.tanggal) > new Date()
-                            ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
-                            : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white'
-                        }`}>
-                          {new Date(event.tanggal) > new Date() ? 'Upcoming' : 'Completed'}
-                        </span>
                       </div>
                     </div>
                   </div>

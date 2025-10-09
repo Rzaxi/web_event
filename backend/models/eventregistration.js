@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       EventRegistration.belongsTo(models.User, { foreignKey: 'user_id' });
-      EventRegistration.belongsTo(models.Event, { foreignKey: 'event_id', as: 'event' });
+      EventRegistration.belongsTo(models.Event, { foreignKey: 'event_id' });
     }
   }
   EventRegistration.init({
@@ -39,6 +39,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('pending', 'confirmed', 'cancelled'),
       defaultValue: 'confirmed',
       allowNull: false
+    },
+    attendance_token: {
+      type: DataTypes.STRING(10),
+      allowNull: true,
+      comment: '10-digit attendance token sent via email during registration'
     }
   }, {
     sequelize,

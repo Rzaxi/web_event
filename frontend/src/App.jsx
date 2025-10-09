@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -21,6 +21,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/user/Profile';
 import MyEvents from './pages/user/MyEvents';
+import AttendanceCertificatePage from './pages/user/AttendanceCertificatePage';
 import EventDetail from './pages/events/EventDetail';
 import EventConfirmation from './pages/events/EventConfirmation';
 import ProfileCompletion from './pages/ProfileCompletion';
@@ -32,6 +33,10 @@ import AccountSettings from './pages/user/AccountSettings';
 // Admin Pages
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import UserManagement from './pages/admin/UserManagement';
+import AttendanceManagement from './pages/admin/AttendanceManagement';
+import DailyAttendanceManagement from './pages/admin/DailyAttendanceManagement';
+import ParticipantsManagement from './pages/admin/ParticipantsManagement';
 import AdminEvents from './pages/admin/AdminEvents';
 import CreateEventPage from './pages/admin/CreateEventPage';
 import EditEventPage from './pages/admin/EditEventPage';
@@ -116,6 +121,7 @@ function App() {
           {/* User Routes */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/my-events" element={<MyEvents />} />
+          <Route path="/events/:eventId/attendance" element={<AttendanceCertificatePage />} />
           <Route path="/account-settings" element={<AccountSettings />} />
 
           {/* Dashboard Routes */}
@@ -124,14 +130,21 @@ function App() {
           </Route>
 
           {/* Admin Routes */}
-          <Route path="/login/admin" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="events" element={<AdminEvents />} />
-            <Route path="events/create" element={<CreateEventPage />} />
-            <Route path="events/:id" element={<EventDetailPage />} />
-            <Route path="events/:id/edit" element={<EditEventPage />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="users" element={<AdminRoute><UserManagement /></AdminRoute>} />
+            <Route path="attendances" element={<AdminRoute><AttendanceManagement /></AdminRoute>} />
+            <Route path="daily-attendance" element={<AdminRoute><DailyAttendanceManagement /></AdminRoute>} />
+            <Route path="participants" element={<AdminRoute><ParticipantsManagement /></AdminRoute>} />
+            <Route path="events" element={<AdminRoute><AdminEvents /></AdminRoute>} />
+            <Route path="events/create" element={<AdminRoute><CreateEventPage /></AdminRoute>} />
+            <Route path="events/:id" element={<AdminRoute><EventDetailPage /></AdminRoute>} />
+            <Route path="events/:id/edit" element={<AdminRoute><EditEventPage /></AdminRoute>} />
           </Route>
+
+          {/* Admin Login Route */}
+          <Route path="/login/admin" element={<AdminLogin />} />
         </Routes>
       </Layout>
 

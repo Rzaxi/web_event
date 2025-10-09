@@ -1,4 +1,4 @@
-const { Event, EventRegistration, User } = require('../models');
+const { Event, EventRegistration, User, Attendance } = require('../models');
 const { Op } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
@@ -49,7 +49,8 @@ const getAllEvents = async (req, res) => {
       title: event.judul,
       description: event.deskripsi,
       date: event.tanggal,
-      time: event.waktu,
+      time: event.waktu_mulai,
+      endTime: event.waktu_selesai,
       location: event.lokasi,
       maxParticipants: event.kapasitas_peserta,
       registeredCount: event.EventRegistrations ? event.EventRegistrations.length : 0,
@@ -84,7 +85,20 @@ const getAllEvents = async (req, res) => {
 // Create New Event
 const createEvent = async (req, res) => {
   try {
-    const { title, description, date, time, location, maxParticipants } = req.body;
+    const { 
+      title, 
+      description, 
+      date, 
+      time, 
+      location, 
+      maxParticipants,
+      kategori,
+      tingkat_kesulitan,
+      durasi_hari,
+      minimum_kehadiran,
+      memberikan_sertifikat,
+      tanggal_selesai
+    } = req.body;
 
     // Validate H-3 rule
     const eventDate = new Date(date);
@@ -107,15 +121,22 @@ const createEvent = async (req, res) => {
 
     const event = await Event.create({
       judul: title,
-      deskripsi: description,
       tanggal: date,
-      waktu: time,
+      waktu_mulai: time,
       lokasi: location,
-      kapasitas_peserta: parseInt(maxParticipants),
       flyer_url: flyerPath,
-      kategori: req.body.kategori || 'lainnya',
-      tingkat_kesulitan: req.body.tingkat_kesulitan || 'pemula',
-      created_by: 1 // Admin user ID
+      sertifikat_template: req.body.sertifikat_template,
+      deskripsi: description,
+      kategori: kategori || 'lainnya',
+      tingkat_kesulitan: tingkat_kesulitan || 'pemula',
+      kapasitas_peserta: parseInt(maxParticipants),
+      biaya: 0,
+      status_event: 'published',
+      created_by: req.user.id,
+      durasi_hari: parseInt(durasi_hari) || 1,
+      minimum_kehadiran: parseInt(minimum_kehadiran) || 1,
+      memberikan_sertifikat: memberikan_sertifikat === 'true' || memberikan_sertifikat === true,
+      tanggal_selesai: tanggal_selesai || null
     });
 
     res.status(201).json({
@@ -148,7 +169,7 @@ const updateEvent = async (req, res) => {
     }
 
     // Check if event has already started
-    const eventDateTime = new Date(`${event.tanggal} ${event.waktu}`);
+    const eventDateTime = new Date(`${event.tanggal} ${event.waktu_mulai || '00:00'}`);
     const now = new Date();
     
     if (now >= eventDateTime) {
@@ -190,7 +211,7 @@ const updateEvent = async (req, res) => {
       judul: title || event.judul,
       deskripsi: description || event.deskripsi,
       tanggal: date || event.tanggal,
-      waktu: time || event.waktu,
+      waktu_mulai: time || event.waktu_mulai,
       lokasi: location || event.lokasi,
       kapasitas_peserta: maxParticipants ? parseInt(maxParticipants) : event.kapasitas_peserta,
       flyer_url: flyerPath
@@ -225,7 +246,7 @@ const deleteEvent = async (req, res) => {
     }
 
     // Check if event has already started
-    const eventDateTime = new Date(`${event.tanggal} ${event.waktu}`);
+    const eventDateTime = new Date(`${event.tanggal} ${event.waktu_mulai || '00:00'}`);
     const now = new Date();
     
     if (now >= eventDateTime) {
@@ -312,7 +333,8 @@ const getEventParticipants = async (req, res) => {
         id: event.id,
         title: event.judul,
         date: event.tanggal,
-        time: event.waktu,
+        time: event.waktu_mulai,
+        endTime: event.waktu_selesai,
         location: event.lokasi
       },
       participants: formattedParticipants,
@@ -331,47 +353,54 @@ const getEventParticipants = async (req, res) => {
 // Get All Participants for Export
 const getAllParticipants = async (req, res) => {
   try {
-    const participants = await EventRegistration.findAll({
+    const registrations = await EventRegistration.findAll({
       where: { status: 'confirmed' },
       include: [
         {
           model: User,
-          as: 'user',
-          attributes: ['id', 'name', 'email', 'phone', 'school', 'class']
+          attributes: ['nama_lengkap', 'email', 'no_handphone', 'alamat', 'pendidikan_terakhir'],
+          required: false
         },
         {
           model: Event,
-          as: 'event',
-          attributes: ['id', 'title', 'date', 'time', 'location']
+          attributes: ['judul', 'tanggal', 'waktu_mulai', 'waktu_selesai', 'lokasi'],
+          required: false
+        },
+        {
+          model: Attendance,
+          attributes: ['status'],
+          required: false, // LEFT JOIN
         }
       ],
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
     });
 
-    const formattedParticipants = participants.map(registration => ({
-      'Nama Peserta': registration.user.name,
-      'Email': registration.user.email,
-      'No. Telepon': registration.user.phone,
-      'Sekolah': registration.user.school,
-      'Kelas': registration.user.class,
-      'Nama Event': registration.event.title,
-      'Tanggal Event': registration.event.date,
-      'Waktu Event': registration.event.time,
-      'Lokasi Event': registration.event.location,
+    const formattedParticipants = registrations.map(registration => ({
+      'Nama Peserta': registration.User ? registration.User.nama_lengkap : 'N/A',
+      'Email': registration.User ? registration.User.email : 'N/A',
+      'No. Telepon': registration.User ? registration.User.no_handphone : 'N/A',
+      'Alamat': registration.User ? registration.User.alamat : 'N/A',
+      'Pendidikan': registration.User ? registration.User.pendidikan_terakhir : 'N/A',
+      'Nama Event': registration.Event ? registration.Event.judul : 'N/A',
+      'Tanggal Event': registration.Event ? registration.Event.tanggal : 'N/A',
+      'Waktu Mulai': registration.Event ? registration.Event.waktu_mulai : 'N/A',
+      'Waktu Selesai': registration.Event ? registration.Event.waktu_selesai : 'N/A',
+      'Lokasi Event': registration.Event ? registration.Event.lokasi : 'N/A',
       'Tanggal Daftar': registration.createdAt,
-      'Status Kehadiran': registration.attendanceStatus || 'belum_hadir'
+      'Status Registrasi': registration.status || 'confirmed',
     }));
 
     res.json({
       success: true,
-      participants: formattedParticipants
+      participants: formattedParticipants,
     });
 
   } catch (error) {
     console.error('Get all participants error:', error);
     res.status(500).json({
       success: false,
-      message: 'Gagal mengambil data semua peserta'
+      message: 'Gagal mengambil data semua peserta',
+      error: error.message,
     });
   }
 };
@@ -404,7 +433,8 @@ const getEventById = async (req, res) => {
       title: event.judul,
       description: event.deskripsi,
       date: event.tanggal,
-      time: event.waktu,
+      time: event.waktu_mulai,
+      endTime: event.waktu_selesai,
       location: event.lokasi,
       maxParticipants: event.kapasitas_peserta,
       registeredCount: event.EventRegistrations ? event.EventRegistrations.length : 0,
@@ -430,6 +460,68 @@ const getEventById = async (req, res) => {
   }
 };
 
+// Get Event Options (kategori and tingkat_kesulitan)
+const getEventOptions = async (req, res) => {
+  try {
+    const { Event } = require('../models');
+    
+    // Get unique categories from database
+    const categories = await Event.findAll({
+      attributes: ['kategori'],
+      group: ['kategori'],
+      raw: true
+    });
+    
+    // Get unique difficulty levels from database
+    const difficulties = await Event.findAll({
+      attributes: ['tingkat_kesulitan'],
+      group: ['tingkat_kesulitan'],
+      raw: true
+    });
+
+    // Default options if database is empty
+    const defaultCategories = [
+      { value: 'akademik', label: 'Akademik' },
+      { value: 'olahraga', label: 'Olahraga' },
+      { value: 'seni_budaya', label: 'Seni & Budaya' },
+      { value: 'teknologi', label: 'Teknologi' },
+      { value: 'kewirausahaan', label: 'Kewirausahaan' },
+      { value: 'sosial', label: 'Sosial' },
+      { value: 'kompetisi', label: 'Kompetisi' },
+      { value: 'workshop', label: 'Workshop' },
+      { value: 'seminar', label: 'Seminar' },
+      { value: 'lainnya', label: 'Lainnya' }
+    ];
+
+    const defaultDifficulties = [
+      { value: 'pemula', label: 'Pemula' },
+      { value: 'menengah', label: 'Menengah' },
+      { value: 'lanjutan', label: 'Lanjutan' }
+    ];
+
+    // Always use default categories to ensure all options are available
+    const formattedCategories = defaultCategories;
+
+    // Always use default difficulties to ensure all options are available
+    const formattedDifficulties = defaultDifficulties;
+
+    res.json({
+      success: true,
+      data: {
+        categories: formattedCategories,
+        difficulties: formattedDifficulties
+      }
+    });
+
+  } catch (error) {
+    console.error('Get event options error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Gagal mengambil opsi event'
+    });
+  }
+};
+
 module.exports = {
   getAllEvents,
   getEventById,
@@ -437,5 +529,6 @@ module.exports = {
   updateEvent,
   deleteEvent,
   getEventParticipants,
-  getAllParticipants
+  getAllParticipants,
+  getEventOptions
 };

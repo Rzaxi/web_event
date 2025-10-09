@@ -103,16 +103,11 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="pt-20 pb-16 bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
-        </div>
-
-        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+      <section className="pt-20 pb-16 bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative">
+        <div className="container mx-auto px-4 sm:px-6">
           <AnimatedSection animation="fade-up">
             <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-6 py-3 rounded-full text-sm font-semibold mb-8 border border-blue-200/50 shadow-sm">
+              <div className="inline-flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-6 py-3 rounded-full text-sm font-medium mb-8 border border-blue-200">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Hubungi Kami
               </div>
@@ -120,7 +115,7 @@ const Contact = () => {
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-8 leading-tight">
                 Mari Berkolaborasi
                 <br />
-                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   Bersama Kami
                 </span>
               </h1>
@@ -137,7 +132,7 @@ const Contact = () => {
       {/* Contact Info Cards */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {contactInfo.map((info, index) => {
               const Icon = info.icon;
               const colorClasses = {
@@ -149,13 +144,13 @@ const Contact = () => {
               
               return (
                 <AnimatedSection key={index} animation="fade-up" delay={index * 200}>
-                  <div className="text-center group hover:transform hover:-translate-y-2 transition-all duration-300">
-                    <div className={`w-16 h-16 bg-gradient-to-br ${colorClasses[info.color]} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="w-8 h-8" />
+                  <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 group">
+                    <div className={`w-12 h-12 bg-gradient-to-br ${colorClasses[info.color]} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="w-6 h-6" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{info.title}</h3>
-                    <p className="text-gray-900 font-semibold mb-1">{info.details}</p>
-                    <p className="text-gray-600 text-sm">{info.subtitle}</p>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{info.title}</h3>
+                    <p className="text-gray-900 font-medium mb-1 text-sm">{info.details}</p>
+                    <p className="text-gray-600 text-xs">{info.subtitle}</p>
                   </div>
                 </AnimatedSection>
               );
@@ -170,7 +165,7 @@ const Contact = () => {
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             {/* Form */}
             <AnimatedSection animation="fade-right">
-              <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+              <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
                 <div className="mb-8">
                   <h2 className="text-3xl font-bold text-gray-900 mb-4">Kirim Pesan</h2>
                   <p className="text-gray-600">
@@ -278,7 +273,7 @@ const Contact = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none disabled:hover:shadow-lg flex items-center justify-center"
+                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none flex items-center justify-center"
                     >
                       {isSubmitting ? (
                         <>
@@ -301,7 +296,7 @@ const Contact = () => {
             <AnimatedSection animation="fade-left">
               <div className="space-y-8">
                 {/* FAQ */}
-                <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+                <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
                   <h3 className="text-2xl font-bold text-gray-900 mb-6">Pertanyaan Umum</h3>
                   <div className="space-y-6">
                     <div>
@@ -326,7 +321,7 @@ const Contact = () => {
                 </div>
 
                 {/* Social Media */}
-                <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+                <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
                   <h3 className="text-2xl font-bold text-gray-900 mb-6">Ikuti Kami</h3>
                   <p className="text-gray-600 mb-6">
                     Dapatkan update terbaru dan tips mengelola event sekolah di media sosial kami.
@@ -334,21 +329,15 @@ const Contact = () => {
                   <div className="grid grid-cols-2 gap-4">
                     {socialLinks.map((social, index) => {
                       const Icon = social.icon;
-                      const colorClasses = {
-                        blue: 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700',
-                        pink: 'from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700',
-                        sky: 'from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700',
-                        indigo: 'from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700'
-                      };
                       
                       return (
                         <a
                           key={index}
                           href={social.url}
-                          className={`flex items-center justify-center bg-gradient-to-r ${colorClasses[social.color]} text-white p-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg group`}
+                          className="flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-700 hover:text-gray-900 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-md group"
                         >
-                          <Icon className="w-6 h-6 mr-2 group-hover:scale-110 transition-transform" />
-                          <span className="font-semibold">{social.name}</span>
+                          <Icon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                          <span className="font-medium">{social.name}</span>
                         </a>
                       );
                     })}

@@ -4,15 +4,16 @@ const fs = require('fs');
 const path = require('path');
 const { Op } = require('sequelize');
 const XLSX = require('xlsx');
+const { generateAttendanceToken } = require('../utils/attendanceTokenGenerator');
 
 // Get all events (public)
 const getEvents = async (req, res) => {
   try {
-    const { 
-      page = 1, 
-      limit = 10, 
-      search, 
-      sortBy = 'tanggal', 
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = 'tanggal',
       sortOrder = 'DESC',
       kategori,
       tingkat_kesulitan,
@@ -21,7 +22,7 @@ const getEvents = async (req, res) => {
     const offset = (page - 1) * limit;
 
     let whereClause = {};
-    
+
     // Search filter
     if (search && search.trim()) {
       whereClause[Op.or] = [
@@ -92,10 +93,10 @@ const getEvents = async (req, res) => {
     });
   } catch (error) {
     console.error('Get events error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Terjadi kesalahan server',
-      error: error.message 
+      error: error.message
     });
   }
 };
@@ -126,9 +127,9 @@ const getEventById = async (req, res) => {
     let isRegistered = false;
     if (req.user) {
       const registration = await EventRegistration.findOne({
-        where: { 
+        where: {
           event_id: id,
-          user_id: req.user.id 
+          user_id: req.user.id
         }
       });
       isRegistered = !!registration;
@@ -152,19 +153,16 @@ const createEvent = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // Jika ada error validasi dan file terupload, hapus file tersebut
-      if (req.file) {
-        fs.unlinkSync(req.file.path);
-      }
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { 
-      judul, 
-      tanggal, 
-      waktu, 
-      lokasi, 
-      sertifikat_template, 
+    const {
+      judul,
+      tanggal,
+      waktu_mulai,
+      waktu_selesai,
+      lokasi,
+      sertifikat_template,
       deskripsi,
       kategori = 'lainnya',
       tingkat_kesulitan = 'pemula',
@@ -182,7 +180,8 @@ const createEvent = async (req, res) => {
     const event = await Event.create({
       judul,
       tanggal,
-      waktu,
+      waktu_mulai,
+      waktu_selesai,
       lokasi,
       flyer_url: flyerUrl,
       sertifikat_template,
@@ -229,12 +228,13 @@ const updateEvent = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { 
-      judul, 
-      tanggal, 
-      waktu, 
-      lokasi, 
-      sertifikat_template, 
+    const {
+      judul,
+      tanggal,
+      waktu_mulai,
+      waktu_selesai,
+      lokasi,
+      sertifikat_template,
       deskripsi,
       kategori,
       tingkat_kesulitan,
@@ -267,7 +267,8 @@ const updateEvent = async (req, res) => {
     await event.update({
       judul,
       tanggal,
-      waktu,
+      waktu_mulai,
+      waktu_selesai,
       lokasi,
       flyer_url: flyerUrl,
       sertifikat_template,
@@ -362,13 +363,30 @@ const registerForEvent = async (req, res) => {
       return res.status(400).json({ message: 'Anda sudah terdaftar untuk event ini' });
     }
 
-    // Create registration
+    // Generate attendance token
+    const attendanceToken = generateAttendanceToken();
+
+    // Create registration with token
     await EventRegistration.create({
       event_id: id,
-      user_id: userId
+      user_id: userId,
+      attendance_token: attendanceToken
     });
 
-    res.status(201).json({ message: 'Berhasil mendaftar event' });
+    // Send attendance token to user's email
+    try {
+      const { sendAttendanceTokenEmail } = require('../utils/emailService');
+      await sendAttendanceTokenEmail(req.user.email, req.user.nama_lengkap, event.judul, attendanceToken);
+      console.log('Attendance token email sent to:', req.user.email);
+    } catch (emailError) {
+      console.error('Failed to send attendance token email:', emailError);
+      // Don't fail the registration if email fails, just log it
+    }
+
+    res.status(201).json({ 
+      message: 'Berhasil mendaftar event. Token kehadiran telah dikirim ke email Anda.',
+      attendanceToken: attendanceToken // Include token in response as fallback
+    });
   } catch (error) {
     console.error('Register event error:', error);
     res.status(500).json({ message: 'Terjadi kesalahan server' });
@@ -418,7 +436,8 @@ const exportEvents = async (req, res) => {
       'ID': event.id,
       'Judul': event.judul,
       'Tanggal': event.tanggal,
-      'Waktu': event.waktu,
+      'Waktu Mulai': event.waktu_mulai,
+      'Waktu Selesai': event.waktu_selesai,
       'Lokasi': event.lokasi,
       'Deskripsi': event.deskripsi,
       'Dibuat Oleh': event.creator.nama_lengkap,
@@ -528,7 +547,8 @@ const issueCertificates = async (req, res) => {
 const eventValidation = [
   body('judul').notEmpty().withMessage('Judul event diperlukan'),
   body('tanggal').isISO8601().withMessage('Format tanggal tidak valid'),
-  body('waktu').matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/).withMessage('Format waktu tidak valid (HH:MM)'),
+  body('waktu_mulai').optional().matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/).withMessage('Format waktu mulai tidak valid (HH:MM)'),
+  body('waktu_selesai').optional().matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/).withMessage('Format waktu selesai tidak valid (HH:MM)'),
   body('lokasi').notEmpty().withMessage('Lokasi event diperlukan')
 ];
 

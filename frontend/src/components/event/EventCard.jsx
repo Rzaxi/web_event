@@ -19,7 +19,7 @@ import {
   UserCheck
 } from 'lucide-react';
 
-const EventCard = ({ event, featured = false }) => {
+const EventCard = ({ event, featured = false, variant = 'light' }) => {
   if (!event) {
     return null;
   }
@@ -90,128 +90,112 @@ const EventCard = ({ event, featured = false }) => {
   const categoryInfo = getCategoryInfo(kategori);
   const CategoryIcon = categoryInfo.icon;
 
+  // Determine card styling based on variant
+  const isDark = variant === 'dark';
+  const cardBg = isDark ? 'bg-gray-900' : 'bg-white';
+  const borderColor = isDark ? 'border-gray-700/50' : 'border-gray-200/50';
+  const textColor = isDark ? 'text-white' : 'text-gray-900';
+  const subtextColor = isDark ? 'text-gray-300' : 'text-gray-500';
+  const detailsColor = isDark ? 'text-gray-400' : 'text-gray-600';
+
   return (
-    <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border border-gray-100 hover:border-gray-200">
-      {/* Header dengan gradient dan image */}
-      <div className="relative h-48 bg-gradient-to-br from-blue-400 via-purple-500 to-teal-400 overflow-hidden">
-        {flyer_url ? (
-          <img 
-            src={flyer_url} 
-            alt={judul}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-teal-400 flex items-center justify-center">
-            <CategoryIcon className="w-16 h-16 text-white/80" />
-          </div>
-        )}
+    <div className={`${cardBg} rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group border ${borderColor} h-full flex flex-col`}>
+      {/* Header dengan gradient sphere */}
+      <div className="p-5 pb-0">
+        <div className={`relative h-40 overflow-hidden ${isDark ? 'bg-gradient-to-br from-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'} flex items-center justify-center rounded-xl`}>
+          {flyer_url ? (
+            <img 
+              src={flyer_url} 
+              alt={judul}
+              className="w-full h-full object-cover rounded-xl"
+            />
+          ) : (
+            <div className="relative w-full h-full flex items-center justify-center">
+              {/* Gradient Sphere/Blob - Different colors for dark/light */}
+              <div className="relative">
+                {isDark ? (
+                  <>
+                    {/* Dark variant - More vibrant colors */}
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-600 opacity-90 blur-sm"></div>
+                    <div className="absolute inset-0 w-24 h-24 rounded-full bg-gradient-to-br from-blue-300 via-purple-400 to-pink-500 opacity-80"></div>
+                    <div className="absolute top-2 left-2 w-6 h-6 rounded-full bg-gradient-to-br from-white/50 to-white/20 blur-sm"></div>
+                    <div className="absolute bottom-3 right-3 w-5 h-5 rounded-full bg-gradient-to-br from-blue-300 to-purple-400 opacity-70"></div>
+                  </>
+                ) : (
+                  <>
+                    {/* Light variant - Softer colors */}
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-400 via-purple-500 to-indigo-600 opacity-90 blur-sm"></div>
+                    <div className="absolute inset-0 w-24 h-24 rounded-full bg-gradient-to-br from-purple-300 via-purple-400 to-indigo-500 opacity-70"></div>
+                    <div className="absolute top-2 left-2 w-6 h-6 rounded-full bg-gradient-to-br from-white/40 to-white/10 blur-sm"></div>
+                    <div className="absolute bottom-3 right-3 w-5 h-5 rounded-full bg-gradient-to-br from-indigo-300 to-indigo-500 opacity-60"></div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-        
-        {/* Category Badge */}
-        <div className="absolute top-4 left-4">
-          <div className={`inline-flex items-center ${categoryInfo.bgColor} ${categoryInfo.textColor} px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm backdrop-blur-sm border border-white/20`}>
-            <CategoryIcon className="w-3 h-3 mr-1.5" />
-            {categoryInfo.label}
-          </div>
-        </div>
-
-        {/* Price Badge */}
-        <div className="absolute top-4 right-4">
-          <div className="bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm">
-            {formatPrice(biaya)}
-          </div>
-        </div>
-
-        {/* Difficulty Badge */}
-        {tingkat_kesulitan && (
-          <div className="absolute bottom-4 left-4">
-            <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(tingkat_kesulitan)} backdrop-blur-sm`}>
-              {tingkat_kesulitan.charAt(0).toUpperCase() + tingkat_kesulitan.slice(1)}
+          {/* Category Badge - Top Left */}
+          <div className="absolute top-3 left-3">
+            <div className={`${isDark ? 'bg-gray-800/90 text-gray-300 border-gray-600/50' : 'bg-white/90 text-gray-600 border-gray-200/50'} backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium border`}>
+              {categoryInfo.label}
             </div>
           </div>
-        )}
+
+          {/* Price Badge - Top Right */}
+          <div className="absolute top-3 right-3">
+            <div className={`${isDark ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'} px-3 py-1 rounded-full text-xs font-medium`}>
+              {formatPrice(biaya)}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="px-5 pb-5 pt-6 flex-1 flex flex-col">
         {/* Title */}
-        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+        <h3 className={`text-lg font-semibold ${textColor} mb-3 line-clamp-2 leading-snug`}>
           {judul}
         </h3>
 
         {/* Description */}
-        <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-          {deskripsi || 'Deskripsi event akan segera tersedia.'}
+        <p className={`text-sm ${subtextColor} mb-4 line-clamp-2 leading-relaxed`}>
+          {deskripsi || 'Bergabunglah dengan event menarik ini dan dapatkan pengalaman berharga bersama komunitas yang luar biasa.'}
         </p>
 
-        {/* Event Details */}
-        <div className="space-y-3 mb-6">
+        {/* Event Details - Ultra Clean - Always at bottom */}
+        <div className="mt-auto space-y-2 mb-5">
           {/* Date & Time */}
-          <div className="flex items-center text-sm text-gray-600">
-            <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
-              <Calendar className="w-4 h-4 text-blue-600" />
-            </div>
-            <div className="flex-1">
-              <div className="font-medium text-gray-900">{formatDate(tanggal)}</div>
-              {waktu_mulai && (
-                <div className="text-xs text-gray-500">{formatTime(waktu_mulai)} WIB</div>
-              )}
-            </div>
+          <div className={`flex items-center text-sm ${detailsColor}`}>
+            <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+            <span>{formatDate(tanggal)}</span>
+            {waktu_mulai && <span className="ml-2 text-xs">• {formatTime(waktu_mulai)} WIB</span>}
           </div>
 
           {/* Location */}
-          <div className="flex items-center text-sm text-gray-600">
-            <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center mr-3">
-              <MapPin className="w-4 h-4 text-red-600" />
-            </div>
-            <div className="flex-1">
-              <div className="font-medium text-gray-900 truncate">{lokasi}</div>
-            </div>
+          <div className={`flex items-center text-sm ${detailsColor}`}>
+            <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+            <span className="truncate">{lokasi}</span>
           </div>
 
-          {/* Participants & Capacity */}
-          <div className="flex items-center text-sm text-gray-600">
-            <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center mr-3">
-              <UserCheck className="w-4 h-4 text-purple-600" />
-            </div>
-            <div className="flex-1">
-              <div className="font-medium text-gray-900">
-                {participantCount || 0}
-                {kapasitas_peserta && ` / ${kapasitas_peserta}`} peserta
-              </div>
-              {kapasitas_peserta && (
-                <div className="text-xs text-gray-500">
-                  {Math.round(((participantCount || 0) / kapasitas_peserta) * 100)}% terisi
-                </div>
-              )}
-            </div>
+          {/* Participants */}
+          <div className={`flex items-center text-sm ${detailsColor}`}>
+            <Users className="w-4 h-4 mr-2 flex-shrink-0" />
+            <span>{participantCount || 0} / {kapasitas_peserta || 0} peserta</span>
           </div>
         </div>
 
-        {/* Progress Bar (if capacity exists) */}
-        {kapasitas_peserta && (
-          <div className="mb-6">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(((participantCount || 0) / kapasitas_peserta) * 100, 100)}%` }}
-              ></div>
-            </div>
-          </div>
-        )}
-
-        {/* Button */}
-        <Link
-          to={`/events/${id}`}
-          className="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-center font-semibold py-3.5 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group"
-        >
-          <span className="flex items-center justify-center">
-            Lihat Detail
-            <Star className="w-4 h-4 ml-2 group-hover:scale-110 transition-transform" />
-          </span>
-        </Link>
+        {/* Button - Minimal */}
+        <div>
+          <Link
+            to={`/events/${id}`}
+            className={`inline-flex items-center text-sm font-medium ${textColor} ${isDark ? 'hover:text-gray-300' : 'hover:text-gray-700'} transition-colors group`}
+          >
+            Learn more
+            <svg className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
       </div>
     </div>
   );

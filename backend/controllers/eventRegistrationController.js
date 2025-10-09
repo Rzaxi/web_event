@@ -1,4 +1,6 @@
 const { EventRegistration, Event, User } = require('../models');
+const { generateSecureAttendanceToken } = require('../utils/attendanceTokenGenerator');
+const { sendAttendanceTokenEmail } = require('../utils/emailService');
 
 // Register for event
 const registerForEvent = async (req, res) => {
@@ -21,18 +23,37 @@ const registerForEvent = async (req, res) => {
       return res.status(400).json({ message: 'Anda sudah terdaftar untuk event ini' });
     }
 
+    // Generate attendance token only for events that provide certificates
+    let attendanceToken = null;
+    if (event.memberikan_sertifikat) {
+      attendanceToken = generateSecureAttendanceToken();
+    }
+
     // Create registration
     const registration = await EventRegistration.create({
       user_id: userId,
-      event_id: id
+      event_id: id,
+      attendance_token: attendanceToken
     });
+
+    // Send attendance token via email if event provides certificate
+    if (event.memberikan_sertifikat && attendanceToken) {
+      try {
+        const user = await User.findByPk(userId);
+        await sendAttendanceTokenEmail(user.email, user.nama_lengkap, event.judul, attendanceToken);
+      } catch (emailError) {
+        console.error('Failed to send attendance token email:', emailError);
+        // Don't fail the registration if email fails
+      }
+    }
 
     res.status(201).json({
       message: 'Berhasil mendaftar event!',
       registration: {
         id: registration.id,
         event_id: id,
-        registered_at: registration.createdAt
+        registered_at: registration.createdAt,
+        has_attendance_token: !!attendanceToken
       }
     });
   } catch (error) {

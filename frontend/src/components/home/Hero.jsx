@@ -1,379 +1,571 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Clock, MapPin, Users, ArrowRight, Star, CheckCircle, Sparkles, Play } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, ArrowRight, Star, CheckCircle, Sparkles, Play, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedSection from '../common/AnimatedSection';
 
 const Hero = () => {
-  const [allEvents, setAllEvents] = useState([]);
-  const [currentEventIndex, setCurrentEventIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0); // Start from 0 (card 1)
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [cardOffset, setCardOffset] = useState(0);
+  const [slidingOut, setSlidingOut] = useState(null);
+  const [displayOrder, setDisplayOrder] = useState([1, 2, 3, 4, 0]); // Card display order: show 2,3,4,5 first (hide card 1 as it's background)
+  
+  // Use ref to always have latest currentCardIndex
+  const currentCardIndexRef = useRef(currentCardIndex);
+  useEffect(() => {
+    currentCardIndexRef.current = currentCardIndex;
+  }, [currentCardIndex]);
 
-  // Mock events for demonstration (will be replaced by API data)
-  const mockEvents = [
+  // Featured event destinations/categories - matching reference image
+  const eventDestinations = [
     {
       id: 1,
-      judul: "Pentas Seni & Budaya 2025",
-      tanggal: "2025-08-26",
-      waktu_mulai: "19:00",
-      lokasi: "Aula Sekolah",
-      deskripsi: "Pertunjukan seni dan budaya tahunan sekolah",
-      participantCount: 250,
-      status: "upcoming",
-      image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=250&fit=crop"
+      title: "NAGANO PREFECTURE",
+      region: "ASIA",
+      image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=400&fit=crop",
+      backgroundImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop",
+      description: "Experience traditional Japanese festivals and cultural celebrations in the heart of the Japanese Alps. From cherry blossom festivals to winter illuminations.",
+      shortDescription: "Music Festivals & Concerts"
     },
     {
       id: 2,
-      judul: "Webinar Karir & Masa Depan",
-      tanggal: "2025-08-27",
-      waktu_mulai: "14:00",
-      lokasi: "Online Platform",
-      deskripsi: "Panduan memilih jurusan dan karir untuk siswa",
-      participantCount: 180,
-      status: "upcoming",
-      image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=250&fit=crop"
+      title: "MARRAKECH MOROCCO",
+      region: "AFRICA",
+      image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=300&h=400&fit=crop",
+      backgroundImage: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=1920&h=1080&fit=crop",
+      description: "Immerse yourself in the vibrant culture of Morocco with traditional music, dance, and art festivals in the enchanting red city.",
+      shortDescription: "Cultural Events & Arts"
     },
     {
       id: 3,
-      judul: "Seminar Kesehatan Mental",
-      tanggal: "2025-08-28",
-      waktu_mulai: "10:00",
-      lokasi: "Auditorium",
-      deskripsi: "Pentingnya menjaga kesehatan mental remaja",
-      participantCount: 120,
-      status: "upcoming",
-      image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop"
+      title: "YOSEMITE NATIONAL",
+      region: "USA",
+      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=400&fit=crop",
+      backgroundImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop",
+      description: "Join outdoor adventures and nature-focused events in one of America's most iconic national parks. Rock climbing, hiking, and stargazing events.",
+      shortDescription: "Adventure & Outdoor"
     },
     {
       id: 4,
-      judul: "Pelatihan Leadership Siswa",
-      tanggal: "2025-08-29",
-      waktu_mulai: "08:00",
-      lokasi: "Ruang OSIS",
-      deskripsi: "Mengembangkan jiwa kepemimpinan siswa",
-      participantCount: 45,
-      status: "upcoming",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=250&fit=crop"
+      title: "LOS CABOS BEACH",
+      region: "MEXICO",
+      image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=300&h=400&fit=crop",
+      backgroundImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=1080&fit=crop",
+      description: "Enjoy beach parties, water sports, and sunset celebrations on the beautiful shores of Baja California Sur.",
+      shortDescription: "Beach Parties & Sports"
+    },
+    {
+      id: 5,
+      title: "SANTORINI GREECE",
+      region: "EUROPE",
+      image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=300&h=400&fit=crop",
+      backgroundImage: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1920&h=1080&fit=crop",
+      description: "Experience magical sunsets and traditional Greek celebrations on the stunning cliffs of Santorini. Wine festivals, cultural events, and breathtaking views.",
+      shortDescription: "Wine & Cultural Events"
     }
   ];
 
-  // Get today's date in YYYY-MM-DD format
-  const getTodayDate = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+  // Get current destination for background and content
+  const getCurrentDestination = () => {
+    const destination = eventDestinations[currentCardIndex % eventDestinations.length];
+    return destination;
   };
 
-  // Fetch events from API
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await fetch('/api/events?limit=10');
-        const data = await response.json();
-
-        if (data.success && data.data && data.data.events && data.data.events.length > 0) {
-          setAllEvents(data.data.events);
-        } else {
-          // Use mock events if no API data
-          setAllEvents(mockEvents);
-        }
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        // Use mock events as fallback
-        setAllEvents(mockEvents);
-      } finally {
-        setIsLoading(false);
-      }
+  // Original content for initial load
+  const getOriginalContent = () => {
+    return {
+      title: "DISCOVER\nEVENTS",
+      region: "JOIN AMAZING EVENTS",
+      description: "Ready to experience something extraordinary? Join thousands of participants in amazing events worldwide. From concerts and festivals to cultural celebrations - your next adventure awaits!"
     };
+  };
 
-    fetchEvents();
+  // Get leftmost visible card index - this will be the next background
+  const getLeftmostCardIndex = () => {
+    // Simple sequence: next card after current background
+    // Card 0 → Card 1 → Card 2 → Card 3 → Card 0 (loop)
+    return (currentCardIndex + 1) % eventDestinations.length;
+  };
+
+  // Navigation functions - next card in sequence becomes background
+  const nextCards = () => {
+    if (isTransitioning) return; // Prevent multiple calls
+    
+    setIsTransitioning(true);
+    
+    // Get the next card using ref to get latest value
+    const nextBackgroundCard = (currentCardIndexRef.current + 1) % eventDestinations.length;
+    
+    // STEP 1: Start card expansion animation
+    setSlidingOut(nextBackgroundCard);
+    
+    // STEP 2: Background changes AFTER animation completes (1.5s)
+    setTimeout(() => {
+      setCurrentCardIndex(nextBackgroundCard);
+    }, 1500); // Background changes AFTER full animation
+    
+    // STEP 3: Cards slide AFTER background changes (1.7s)
+    setTimeout(() => {
+      setDisplayOrder(prev => {
+        const newOrder = [...prev];
+        newOrder.shift(); // Remove first card
+        newOrder.push(nextBackgroundCard); // Add it to the end
+        return newOrder;
+      });
+      setSlidingOut(null);
+      
+      setTimeout(() => {
+        // STEP 4: Animation complete
+        setIsTransitioning(false);
+      }, 800);
+    }, 1700); // Cards slide after background change
+  };
+
+  // Auto-rotate cards with infinite loop and initial delay
+  useEffect(() => {
+    // Initial delay of 2 seconds before starting animation
+    const initialTimeout = setTimeout(() => {
+      const interval = setInterval(() => {
+        nextCards();
+      }, 6000); // 6 seconds for complete card overlay sequence
+
+      // Store interval ID for cleanup
+      return () => clearInterval(interval);
+    }, 2000);
+
+    return () => clearTimeout(initialTimeout);
   }, []);
 
-  // Get events within next 7 days
-  const today = new Date();
-  const sevenDaysFromNow = new Date();
-  sevenDaysFromNow.setDate(today.getDate() + 7);
-
-  // Filter today's events
-  const todayDate = getTodayDate();
-  const todayEvents = allEvents.filter(event => {
-    const eventDate = new Date(event.tanggal).toISOString().split('T')[0];
-    return eventDate === todayDate;
-  });
-
-  // Filter events within next 7 days
-  const upcomingEvents = allEvents.filter(event => {
-    const eventDate = new Date(event.tanggal);
-    return eventDate >= today && eventDate <= sevenDaysFromNow;
-  });
-
-  // Use today's events first, then upcoming events within 7 days
-  const displayEvents = todayEvents.length > 0 ? todayEvents : upcomingEvents;
-
-  // Auto-rotate events (only today's events)
-  useEffect(() => {
-    if (displayEvents.length > 1) {
-      const interval = setInterval(() => {
-        setIsTransitioning(true);
-        setTimeout(() => {
-          setCurrentEventIndex((prev) => (prev + 1) % displayEvents.length);
-        }, 400);
+  const prevCards = () => {
+    if (!isTransitioning) {
+      setIsTransitioning(true);
+      
+      if (showOriginalBackground) {
+        setShowOriginalBackground(false);
+        setCurrentCardIndex(4); // Last card becomes background
+        setSlidingOut(4);
+      } else {
+        // Get rightmost card and make it background
+        const rightmostCard = (getLeftmostCardIndex() + 4) % eventDestinations.length;
+        setCurrentCardIndex(rightmostCard);
+        setSlidingOut(rightmostCard);
+      }
+      
+      setTimeout(() => {
+        // Slide cards right
+        setCardOffset(prev => prev + 208);
+        setSlidingOut(null);
+        
         setTimeout(() => {
           setIsTransitioning(false);
         }, 800);
-      }, 6000);
-
-      return () => clearInterval(interval);
-    }
-  }, [displayEvents.length]);
-
-  // Reset index when events change
-  useEffect(() => {
-    setCurrentEventIndex(0);
-  }, [displayEvents.length]);
-
-  // Manual navigation with smooth slow transitions
-  const goToEvent = (index) => {
-    if (index !== currentEventIndex && !isTransitioning) {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentEventIndex(index);
-      }, 400);
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 800);
+      }, 600);
     }
   };
 
-  const nextEvent = () => {
-    if (!isTransitioning) {
-      goToEvent((currentEventIndex + 1) % displayEvents.length);
-    }
+  // Get all 5 cards for display
+  const getCurrentCards = () => {
+    return eventDestinations; // Show all 5 cards
   };
-
-  const prevEvent = () => {
-    if (!isTransitioning) {
-      goToEvent(currentEventIndex === 0 ? displayEvents.length - 1 : currentEventIndex - 1);
-    }
-  };
-
-  const currentEvent = displayEvents[currentEventIndex];
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center overflow-hidden relative">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse animation-delay-2000"></div>
+    <section className="relative min-h-screen w-full overflow-hidden" style={{ boxShadow: 'none !important' }}>
+      {/* Animated Background with Framer Motion */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`bg-${currentCardIndex}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ 
+            duration: 0.8, 
+            ease: "easeOut"
+          }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('${getCurrentDestination()?.backgroundImage || eventDestinations[0].backgroundImage}')`,
+            willChange: 'opacity'
+          }}
+        />
+      </AnimatePresence>
+      
+      {/* Dynamic overlay that changes with background */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`overlay-${currentCardIndex}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className={`absolute inset-0 z-10 ${
+            currentCardIndex === 0 
+              ? 'bg-gradient-to-r from-blue-900/30 via-black/40 to-purple-900/30'
+              : currentCardIndex === 1
+                ? 'bg-gradient-to-r from-orange-900/30 via-black/40 to-red-900/30'
+                : currentCardIndex === 2
+                  ? 'bg-gradient-to-r from-green-900/30 via-black/40 to-teal-900/30'
+                  : currentCardIndex === 3
+                    ? 'bg-gradient-to-r from-purple-900/30 via-black/40 to-pink-900/30'
+                    : 'bg-gradient-to-r from-indigo-900/30 via-black/40 to-blue-900/30'
+          }`}
+        />
+      </AnimatePresence>
+
+      {/* Floating decorative elements */}
+      <div className="absolute inset-0 z-5 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={{ 
+            y: [0, -20, 0],
+            rotate: [0, 5, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 6, 
+            repeat: Infinity, 
+            ease: "easeInOut" 
+          }}
+          className="absolute top-20 left-10 w-32 h-32 bg-white/5 rounded-full blur-xl"
+        />
+        <motion.div
+          animate={{ 
+            y: [0, 30, 0],
+            rotate: [0, -10, 0],
+            scale: [1, 0.8, 1]
+          }}
+          transition={{ 
+            duration: 8, 
+            repeat: Infinity, 
+            ease: "easeInOut",
+            delay: 2
+          }}
+          className="absolute bottom-32 right-20 w-24 h-24 bg-white/3 rounded-full blur-2xl"
+        />
+        <motion.div
+          animate={{ 
+            x: [0, 20, 0],
+            y: [0, -15, 0],
+            opacity: [0.3, 0.6, 0.3]
+          }}
+          transition={{ 
+            duration: 10, 
+            repeat: Infinity, 
+            ease: "easeInOut",
+            delay: 4
+          }}
+          className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/4 rounded-full blur-lg"
+        />
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 pt-8 pb-12 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left Content */}
-          <div className="space-y-8">
-            <AnimatedSection animation="fade-up">
-              <div className="space-y-8">
-                {/* Badge */}
-                <div className="inline-flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-5 py-2.5 rounded-full text-sm font-semibold backdrop-blur-sm border border-blue-200/50 shadow-sm">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Platform Event Terdepan
-                </div>
+      {/* Content Container */}
+      <div className="relative z-20 min-h-screen flex items-center">
+        <div className="w-full">
+          <div className="grid lg:grid-cols-12 items-center min-h-screen">
+            
+            {/* Left Hero Content */}
+            <div className="lg:col-span-6 relative px-6 lg:px-8">
+              {/* Animated content with Framer Motion */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`card-${currentCardIndex}`}
+                  initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -15, filter: "blur(4px)" }}
+                  transition={{ 
+                    duration: 1.0, 
+                    ease: [0.16, 1, 0.3, 1],
+                    opacity: { duration: 0.8 },
+                    y: { duration: 1.0 },
+                    filter: { duration: 0.6 }
+                  }}
+                >
+                  <div className="mb-6">
+                    <h1 className="text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[0.9] tracking-tight">
+                      {getCurrentDestination()?.title || "LOADING..."}
+                    </h1>
+                  </div>
 
-                {/* Main heading */}
-                <div className="space-y-6">
-                  <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 leading-[1.1] tracking-tight">
-                    Temukan Event
-                    <br />
-                    <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      Impianmu
+                  {/* Small region label */}
+                  <div className="mb-8">
+                    <span className="text-white/80 text-lg font-medium tracking-wider uppercase">
+                      {getCurrentDestination()?.region || "LOADING..."}
                     </span>
-                  </h1>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
-                    <p className="text-sm text-gray-500 font-medium tracking-wider uppercase">
-                      Sekolah • Universitas • Komunitas
+                  </div>
+                  
+                  {/* Dynamic description */}
+                  <div className="mb-8">
+                    <p className="text-white/90 text-lg leading-relaxed max-w-md">
+                      {getCurrentDestination()?.description || "Loading event description..."}
                     </p>
                   </div>
-                </div>
+                </motion.div>
+              </AnimatePresence>
 
-                <p className="text-xl text-gray-600 leading-relaxed max-w-lg font-light">
-                  Bergabunglah dengan ribuan peserta dalam event-event menarik. 
-                  Dari workshop, seminar, hingga kompetisi yang akan mengembangkan potensimu.
-                </p>
+              {/* Rounded button with play icon */}
+              <Link
+                to="/events"
+                className="inline-flex items-center justify-center bg-white/20 backdrop-blur-sm text-white font-semibold px-8 py-4 rounded-full border border-white/30 hover:bg-white/30 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group"
+              >
+                <Play className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" />
+                JOIN NOW
+              </Link>
+            </div>
 
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <Link
-                    to="/events"
-                    className="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group"
-                  >
-                    <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                    Jelajahi Event
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-700 font-semibold px-8 py-4 rounded-2xl border-2 border-gray-200 hover:border-gray-300 transition-all duration-300 shadow-sm hover:shadow-md"
-                  >
-                    Daftar Gratis
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Link>
-                </div>
-              </div>
-            </AnimatedSection>
-
-            <AnimatedSection animation="fade-up" delay={400}>
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-gray-100">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">500+</div>
-                  <div className="text-sm text-gray-500 font-medium">Event Tersedia</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">10K+</div>
-                  <div className="text-sm text-gray-500 font-medium">Peserta Aktif</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">98%</div>
-                  <div className="text-sm text-gray-500 font-medium">Kepuasan</div>
-                </div>
-              </div>
-            </AnimatedSection>
-          </div>
-
-          {/* Right Content - Modern Event Card */}
-          <div className="relative">
-            <AnimatedSection animation="fade-left" delay={600}>
-              {/* Floating background elements */}
-              <div className="absolute -inset-6 bg-gradient-to-br from-blue-400/20 via-indigo-400/20 to-purple-400/20 rounded-3xl transform rotate-1 scale-105 blur-3xl"></div>
-              
-              {isLoading ? (
-                <div className="relative bg-white rounded-3xl p-8 shadow-2xl border border-gray-100">
-                  <div className="text-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-                    <p className="text-gray-500 mt-4 font-medium">Memuat event terbaru...</p>
-                  </div>
-                </div>
-              ) : displayEvents.length > 0 && currentEvent ? (
-                <div className="relative bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
-                  {/* Event Badge */}
-                  <div className="absolute top-6 left-6 z-20">
-                    <div className="inline-flex items-center bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold border border-green-200/50 shadow-sm">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                      Event Mendatang
-                    </div>
-                  </div>
-
-                  {/* Event Content */}
-                  <div className={`transition-all duration-700 ease-in-out ${isTransitioning ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'}`}>
-                    <div className="p-8 pt-20">
-                      {/* Event Title */}
-                      <div className="mb-8">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
-                          {currentEvent.judul}
-                        </h3>
-                        <p className="text-gray-600 leading-relaxed line-clamp-2">
-                          {currentEvent.deskripsi || 'Workshop intensif untuk mempelajari pengembangan web modern menggunakan React.js'}
-                        </p>
-                      </div>
-
-                      {/* Event Details */}
-                      <div className="space-y-6 mb-8">
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                          <div className="flex items-center text-gray-700">
-                            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
-                              <Calendar className="w-5 h-5 text-blue-600" />
-                            </div>
-                            <span className="font-semibold">Tanggal</span>
+            {/* Right Hero Content - Interactive Cards */}
+            <div className="lg:col-span-6 relative">
+              <div className="overflow-visible w-full h-full" style={{ boxShadow: 'none !important' }}>
+                <motion.div 
+                  className="flex gap-4 overflow-visible"
+                  style={{ 
+                    willChange: 'transform',
+                    boxShadow: 'none !important',
+                    filter: 'drop-shadow(none)'
+                  }}
+                  layout
+                  transition={{ 
+                    layout: {
+                      duration: 0.8,
+                      ease: "easeOut"
+                    }
+                  }}
+                >
+                  <AnimatePresence mode="popLayout">
+                  {/* Display cards in queue order - leftmost visible becomes background */}
+                  {displayOrder.map((cardIndex, position) => {
+                    const destination = eventDestinations[cardIndex];
+                    const originalIndex = cardIndex;
+                    
+                    // Show transformation animation for card that will become background
+                    if (originalIndex === slidingOut && slidingOut !== null) {
+                      return (
+                        <motion.div
+                          key={`transforming-${originalIndex}-${position}`}
+                          className="relative w-48 h-72 lg:w-52 lg:h-80 rounded-2xl overflow-hidden flex-shrink-0"
+                          style={{ boxShadow: 'none !important', filter: 'drop-shadow(none)' }}
+                          layout
+                          initial={{ 
+                            scale: 1, 
+                            opacity: 1, 
+                            zIndex: 100,
+                            borderRadius: "16px"
+                          }}
+                          animate={{
+                            scale: 1.05,
+                            opacity: 1,
+                            zIndex: 100
+                          }}
+                          exit={{ 
+                            opacity: [1, 1, 0.8, 0],
+                            scale: 1,
+                            filter: [
+                              "brightness(1) blur(0px)",
+                              "brightness(1.05) blur(5px)",
+                              "brightness(1.1) blur(15px)",
+                              "brightness(1.15) blur(25px)"
+                            ],
+                            zIndex: 200,
+                            transition: {
+                              duration: 1.5,
+                              ease: [0.25, 0.46, 0.45, 0.94],
+                              times: [0, 0.4, 0.75, 1],
+                              zIndex: { duration: 0 }
+                            }
+                          }}
+                          transition={{ 
+                            animate: {
+                              duration: 0.8,
+                              ease: "easeOut"
+                            },
+                            layout: {
+                              duration: 1.2,
+                              ease: [0.19, 1, 0.22, 1]
+                            }
+                          }}
+                        >
+                          <div 
+                            className="absolute inset-0"
+                            style={{ 
+                              backgroundImage: `url('${destination.image}')`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              backgroundRepeat: 'no-repeat'
+                            }}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                           </div>
-                          <span className="text-gray-900 font-bold">
-                            {new Date(currentEvent.tanggal).toLocaleDateString('id-ID', {
-                              weekday: 'short',
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric'
-                            })}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                          <div className="flex items-center text-gray-700">
-                            <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center mr-4">
-                              <Clock className="w-5 h-5 text-indigo-600" />
+                          <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                            <div className="space-y-2">
+                              <p className="text-xs font-medium text-white/90 uppercase tracking-widest">
+                                {destination.region}
+                              </p>
+                              <h3 className="text-sm font-bold leading-tight uppercase tracking-wide">
+                                {destination.shortDescription}
+                              </h3>
                             </div>
-                            <span className="font-semibold">Waktu</span>
                           </div>
-                          <span className="text-gray-900 font-bold">{currentEvent.waktu_mulai || '10:30'}</span>
-                        </div>
-
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                          <div className="flex items-center text-gray-700">
-                            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
-                              <MapPin className="w-5 h-5 text-purple-600" />
-                            </div>
-                            <span className="font-semibold">Lokasi</span>
-                          </div>
-                          <span className="text-gray-900 font-bold text-right max-w-[140px] truncate">{currentEvent.lokasi}</span>
-                        </div>
-
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                          <div className="flex items-center text-gray-700">
-                            <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center mr-4">
-                              <Users className="w-5 h-5 text-teal-600" />
-                            </div>
-                            <span className="font-semibold">Peserta</span>
-                          </div>
-                          <span className="text-gray-900 font-bold">{currentEvent.participantCount || 3} terdaftar</span>
-                        </div>
-                      </div>
-
-                      {/* Action Button */}
-                      <Link
-                        to={`/events/${currentEvent.id}`}
-                        className="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 text-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 group"
+                        </motion.div>
+                      );
+                    }
+                    
+                    // Hide card that is currently the background
+                    if (originalIndex === currentCardIndex) {
+                      return null; // Don't render this card in carousel
+                    }
+                    
+                    return (
+                      <motion.div
+                        key={`${destination.id}-${originalIndex}-${position}`}
+                        layout
+                        initial={{ x: 208, opacity: 0, scale: 0.9 }}
+                        animate={{ 
+                          x: 0,
+                          opacity: 0.85,
+                          scale: 1
+                        }}
+                        exit={{
+                          opacity: 0,
+                          scale: 0.8,
+                          transition: { duration: 0.4, ease: "easeOut" }
+                        }}
+                        className="relative w-48 h-72 lg:w-52 lg:h-80 rounded-2xl overflow-hidden cursor-pointer flex-shrink-0 bg-black/60 opacity-80"
+                        style={{ 
+                          boxShadow: 'none !important', 
+                          filter: 'none !important',
+                          backdropFilter: 'blur(12px)',
+                          WebkitBackdropFilter: 'blur(12px)'
+                        }}
+                        onClick={() => {
+                          if (!isTransitioning) {
+                            if (showOriginalBackground) {
+                              setShowOriginalBackground(false);
+                            }
+                            setIsTransitioning(true);
+                            setCurrentCardIndex(originalIndex);
+                            setSlidingOut(originalIndex);
+                            setTimeout(() => {
+                              setSlidingOut(null);
+                              setIsTransitioning(false);
+                            }, 1000);
+                          }
+                        }}
+                        whileHover={{ 
+                          scale: 1.02, 
+                          y: -2,
+                          transition: { 
+                            duration: 0.3, 
+                            ease: "easeOut"
+                          }
+                        }}
+                        whileTap={{ 
+                          scale: 0.96,
+                          transition: { duration: 0.15 }
+                        }}
+                        transition={{
+                          layout: {
+                            duration: 1.0,
+                            delay: position * 0.15,
+                            ease: "easeOut"
+                          },
+                          opacity: {
+                            duration: 0.8,
+                            delay: position * 0.2,
+                            ease: "easeOut"
+                          },
+                          scale: {
+                            duration: 0.8,
+                            delay: position * 0.2,
+                            ease: "easeOut"
+                          },
+                          x: {
+                            duration: 1.0,
+                            delay: position * 0.15,
+                            ease: "easeOut"
+                          }
+                        }}
                       >
-                        <span className="flex items-center justify-center">
-                          Daftar Sekarang
-                          <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                        </span>
-                      </Link>
-                    </div>
+                      {/* Background Image */}
+                      <div 
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url('${destination.image}')` }}
+                      >
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                      </div>
+
+                      {/* Overlay text at bottom */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <div className="space-y-2">
+                          {/* Region/continent in small caps */}
+                          <p className="text-xs font-medium text-white/90 uppercase tracking-widest">
+                            {destination.region}
+                          </p>
+                          {/* Destination name in bold uppercase */}
+                          <h3 className="text-sm font-bold leading-tight uppercase tracking-wide">
+                            {destination.shortDescription}
+                          </h3>
+                        </div>
+                      </div>
+                      </motion.div>
+                    );
+                  })}
+                  </AnimatePresence>
+                </motion.div>
+              </div>
+
+              {/* Navigation Bar - Below cards */}
+              <div className="mt-8 w-full px-4">
+                {/* Navigation controls - buttons left, progress center, number right */}
+                <div className="flex justify-between items-center w-full">
+                  {/* Left side - Navigation buttons */}
+                  <div className="flex items-center space-x-4 flex-shrink-0">
+                    <motion.button
+                      onClick={prevCards}
+                      disabled={isTransitioning}
+                      className="w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </motion.button>
+
+                    <motion.button
+                      onClick={nextCards}
+                      disabled={isTransitioning}
+                      className="w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </motion.button>
+                  </div>
+
+                  {/* Center - Progress Line */}
+                  <div className="relative flex-1 max-w-sm h-px bg-white/20 mx-8">
+                    <motion.div 
+                      className="absolute top-0 left-0 h-px bg-white"
+                      initial={{ width: "0%" }}
+                      animate={{ 
+                        width: `${((currentCardIndex + 1) / eventDestinations.length) * 100}%` 
+                      }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
+                  </div>
+
+                  {/* Right side - Number indicator */}
+                  <div className="flex-shrink-0">
+                    <motion.span 
+                      key={currentCardIndex}
+                      className="text-white font-bold text-xl tracking-wider"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {String(currentCardIndex + 1).padStart(2, '0')}
+                    </motion.span>
                   </div>
                 </div>
-              ) : (
-                <div className="relative bg-white rounded-3xl p-12 shadow-2xl border border-gray-100 text-center">
-                  <Calendar className="w-20 h-20 text-gray-300 mx-auto mb-6" />
-                  <h4 className="text-2xl font-bold text-gray-900 mb-4">Segera Hadir</h4>
-                  <p className="text-gray-600 mb-8 max-w-sm mx-auto">
-                    Event-event menarik akan segera tersedia. Daftar sekarang untuk mendapat notifikasi!
-                  </p>
-                  <Link
-                    to="/events"
-                    className="inline-flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl"
-                  >
-                    Jelajahi Event
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Link>
-                </div>
-              )}
-
-              {/* Navigation Dots */}
-              {displayEvents.length > 1 && (
-                <div className="flex justify-center space-x-3 mt-8">
-                  {displayEvents.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToEvent(index)}
-                      disabled={isTransitioning}
-                      className={`transition-all duration-300 ${
-                        index === currentEventIndex
-                          ? 'w-10 h-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-md'
-                          : 'w-3 h-3 bg-gray-300 hover:bg-gray-400 rounded-full'
-                      } disabled:cursor-not-allowed`}
-                    />
-                  ))}
-                </div>
-              )}
-            </AnimatedSection>
+              </div>
+            </div>
           </div>
         </div>
       </div>

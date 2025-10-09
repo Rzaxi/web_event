@@ -1,13 +1,16 @@
 import React from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { 
-  LayoutDashboard, 
+  Menu, 
+  X, 
+  BarChart3, 
   Calendar, 
   Users, 
   Settings, 
   LogOut,
-  Menu,
-  X
+  FileText,
+  UserCheck,
+  LayoutDashboard 
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -70,29 +73,78 @@ const AdminLayout = () => {
         </div>
 
         <nav className="mt-8">
-          <div className="px-4 space-y-2">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => {
-                    navigate(item.path);
-                    setSidebarOpen(false);
-                  }}
-                  className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <Icon className="h-5 w-5 mr-3" />
-                  {item.name}
-                </button>
-              );
-            })}
+          <div className="space-y-2">
+            <Link
+              to="/admin/dashboard"
+              className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                location.pathname === '/admin/dashboard'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <BarChart3 className="mr-3 h-5 w-5" />
+              Dashboard
+            </Link>
+            
+            <Link
+              to="/admin/events"
+              className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                location.pathname.startsWith('/admin/events')
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Calendar className="mr-3 h-5 w-5" />
+              Kelola Event
+            </Link>
+            
+            <Link
+              to="/admin/users"
+              className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                location.pathname === '/admin/users'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Users className="mr-3 h-5 w-5" />
+              Manajemen Pengguna
+            </Link>
+            
+            <Link
+              to="/admin/daily-attendance"
+              className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                location.pathname === '/admin/daily-attendance'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <UserCheck className="mr-3 h-5 w-5" />
+              Kehadiran Harian
+            </Link>
+            
+            <Link
+              to="/admin/participants"
+              className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                location.pathname === '/admin/participants'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Users className="mr-3 h-5 w-5" />
+              Data Peserta
+            </Link>
+            
+            <Link
+              to="/admin/settings"
+              className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                location.pathname === '/admin/settings'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Settings className="mr-3 h-5 w-5" />
+              Pengaturan
+            </Link>
           </div>
 
           <div className="mt-8 pt-8 border-t border-gray-200 px-4">

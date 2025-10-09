@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, MapPin, Users, FileImage, Tag, TrendingUp } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { Calendar, Clock, MapPin, Users, FileText, Image, Tag, TrendingUp, ArrowLeft, FileImage, ChevronDown, Award, Hash } from 'lucide-react';
 
 const CreateEventPage = () => {
   const navigate = useNavigate();
@@ -12,30 +13,49 @@ const CreateEventPage = () => {
     location: '',
     maxParticipants: '',
     kategori: 'lainnya',
-    tingkat_kesulitan: 'pemula'
+    tingkat_kesulitan: 'pemula',
+    durasi_hari: 1,
+    minimum_kehadiran: 1,
+    memberikan_sertifikat: false,
+    tanggal_selesai: ''
   });
   const [flyer, setFlyer] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const kategoriOptions = [
-    { value: 'akademik', label: 'Akademik' },
-    { value: 'olahraga', label: 'Olahraga' },
-    { value: 'seni_budaya', label: 'Seni & Budaya' },
-    { value: 'teknologi', label: 'Teknologi' },
-    { value: 'kewirausahaan', label: 'Kewirausahaan' },
-    { value: 'sosial', label: 'Sosial' },
-    { value: 'kompetisi', label: 'Kompetisi' },
-    { value: 'workshop', label: 'Workshop' },
-    { value: 'seminar', label: 'Seminar' },
-    { value: 'lainnya', label: 'Lainnya' }
-  ];
+  const [kategoriOptions, setKategoriOptions] = useState([]);
+  const [tingkatKesulitanOptions, setTingkatKesulitanOptions] = useState([]);
+  const [optionsLoading, setOptionsLoading] = useState(true);
+  const [kategoriDropdownOpen, setKategoriDropdownOpen] = useState(false);
+  const [tingkatDropdownOpen, setTingkatDropdownOpen] = useState(false);
 
-  const tingkatKesulitanOptions = [
-    { value: 'pemula', label: 'Pemula' },
-    { value: 'menengah', label: 'Menengah' },
-    { value: 'lanjutan', label: 'Lanjutan' }
-  ];
+  // Fetch event options from API
+  useEffect(() => {
+    const fetchEventOptions = async () => {
+      try {
+        const token = localStorage.getItem('adminToken');
+        const response = await fetch('/admin/events/options', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setKategoriOptions(result.data.categories);
+          setTingkatKesulitanOptions(result.data.difficulties);
+        } else {
+          console.error('Failed to fetch event options');
+        }
+      } catch (error) {
+        console.error('Error fetching event options:', error);
+      } finally {
+        setOptionsLoading(false);
+      }
+    };
+
+    fetchEventOptions();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -140,6 +160,10 @@ const CreateEventPage = () => {
       formDataToSend.append('maxParticipants', formData.maxParticipants);
       formDataToSend.append('kategori', formData.kategori);
       formDataToSend.append('tingkat_kesulitan', formData.tingkat_kesulitan);
+      formDataToSend.append('durasi_hari', formData.durasi_hari);
+      formDataToSend.append('minimum_kehadiran', formData.minimum_kehadiran);
+      formDataToSend.append('memberikan_sertifikat', formData.memberikan_sertifikat);
+      formDataToSend.append('tanggal_selesai', formData.tanggal_selesai);
       
       if (flyer) {
         formDataToSend.append('flyer', flyer);
@@ -339,44 +363,169 @@ const CreateEventPage = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Category */}
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Tag className="inline h-4 w-4 mr-1" />
                     Kategori Event *
                   </label>
-                  <select
-                    name="kategori"
-                    value={formData.kategori}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {kategoriOptions.map(option => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setKategoriDropdownOpen(!kategoriDropdownOpen)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-left flex items-center justify-between"
+                    >
+                      <span>{kategoriOptions.find(opt => opt.value === formData.kategori)?.label || 'Pilih Kategori'}</span>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${kategoriDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {kategoriDropdownOpen && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                        {kategoriOptions.map(option => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({ ...prev, kategori: option.value }));
+                              setKategoriDropdownOpen(false);
+                            }}
+                            className={`w-full px-4 py-2 text-left hover:bg-blue-50 ${
+                              formData.kategori === option.value ? 'bg-blue-100 text-blue-700' : 'text-gray-700'
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Difficulty */}
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <TrendingUp className="inline h-4 w-4 mr-1" />
                     Tingkat Kesulitan *
                   </label>
-                  <select
-                    name="tingkat_kesulitan"
-                    value={formData.tingkat_kesulitan}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {tingkatKesulitanOptions.map(option => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setTingkatDropdownOpen(!tingkatDropdownOpen)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-left flex items-center justify-between"
+                    >
+                      <span>{tingkatKesulitanOptions.find(opt => opt.value === formData.tingkat_kesulitan)?.label || 'Pilih Tingkat'}</span>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${tingkatDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {tingkatDropdownOpen && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                        {tingkatKesulitanOptions.map(option => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({ ...prev, tingkat_kesulitan: option.value }));
+                              setTingkatDropdownOpen(false);
+                            }}
+                            className={`w-full px-4 py-2 text-left hover:bg-blue-50 ${
+                              formData.tingkat_kesulitan === option.value ? 'bg-blue-100 text-blue-700' : 'text-gray-700'
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Certificate Settings */}
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Pengaturan Sertifikat</h2>
+              
+              <div className="space-y-6">
+                {/* Certificate Toggle */}
+                <div>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="memberikan_sertifikat"
+                      checked={formData.memberikan_sertifikat}
+                      onChange={(e) => setFormData(prev => ({ ...prev, memberikan_sertifikat: e.target.checked }))}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <span className="ml-2 text-sm font-medium text-gray-700">
+                      <Award className="inline h-4 w-4 mr-1" />
+                      Event ini memberikan sertifikat
+                    </span>
+                  </label>
+                </div>
+
+                {formData.memberikan_sertifikat && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    {/* Duration */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <Hash className="inline h-4 w-4 mr-1" />
+                        Durasi Event (Hari) *
+                      </label>
+                      <input
+                        type="number"
+                        name="durasi_hari"
+                        value={formData.durasi_hari}
+                        onChange={handleInputChange}
+                        min="1"
+                        max="30"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    {/* Minimum Attendance */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <Users className="inline h-4 w-4 mr-1" />
+                        Min. Kehadiran (Hari) *
+                      </label>
+                      <input
+                        type="number"
+                        name="minimum_kehadiran"
+                        value={formData.minimum_kehadiran}
+                        onChange={handleInputChange}
+                        min="1"
+                        max={formData.durasi_hari}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    {/* End Date */}
+                    {formData.durasi_hari > 1 && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <Calendar className="inline h-4 w-4 mr-1" />
+                          Tanggal Selesai *
+                        </label>
+                        <input
+                          type="date"
+                          name="tanggal_selesai"
+                          value={formData.tanggal_selesai}
+                          onChange={handleInputChange}
+                          min={formData.date}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {formData.memberikan_sertifikat && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <h4 className="text-sm font-semibold text-amber-800 mb-2">Catatan Sertifikat</h4>
+                    <ul className="text-sm text-amber-700 space-y-1">
+                      <li>• Peserta harus hadir minimal {formData.minimum_kehadiran} dari {formData.durasi_hari} hari untuk mendapat sertifikat</li>
+                      <li>• Admin dapat mencatat kehadiran harian melalui halaman manajemen kehadiran</li>
+                      <li>• Sertifikat akan diterbitkan otomatis setelah event selesai</li>
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -5,6 +5,8 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const eventController = require('../controllers/eventController');
 const eventRegistrationController = require('../controllers/eventRegistrationController');
+const userController = require('../controllers/userController');
+const certificateController = require('../controllers/certificateController');
 const dashboardController = require('../controllers/dashboardController');
 
 // Import middleware
@@ -28,7 +30,7 @@ router.get('/events', eventController.getEvents);
 router.get('/events/:id', eventController.getEventById);
 
 // Protected routes (require authentication)
-router.use(authenticateToken          );
+router.use(authenticateToken);
 router.use(sessionTimeout);
 
 // User routes
@@ -37,6 +39,19 @@ router.put('/users/profile', authController.updateUserProfile);
 router.put('/users/change-password', authController.changePassword);
 router.get('/users/events', authController.getUserHistory);
 router.get('/users/events/:id', eventController.getEventById); // Event detail with registration status
+
+// Attendance & certificate routes for logged-in user
+router.get('/events/:eventId/my-attendance', userController.getMyAttendance);
+router.get('/events/:eventId/certificate-eligibility', userController.getCertificateEligibility);
+router.get('/events/:eventId/certificate/download', userController.downloadCertificate);
+router.post('/events/:eventId/attendance/check-in', userController.checkInAttendance);
+router.post('/events/:eventId/attendance/check-out', userController.checkOutAttendance);
+router.post('/events/:eventId/attendance/request-otp', userController.requestAttendanceOtp);
+router.post('/events/:eventId/attendance/verify-otp', userController.verifyAttendanceOtp);
+
+// User attendance routes (matching frontend API calls)
+router.get('/users/events/:eventId/attendance/check', userController.checkAttendanceAvailability);
+router.post('/users/events/:eventId/attendance/verify-token', userController.verifyAttendanceToken);
 
 // Event registration routes
 router.post('/events/:id/register', eventController.registerForEvent);
@@ -57,6 +72,9 @@ router.get('/dashboard/export/participants/:eventId', eventController.exportEven
 
 // Certificate issuance (admin only)
 router.post('/events/:id/issue-certificates', eventController.issueCertificates);
+
+// Admin: check a user's certificate eligibility
+router.get('/admin/events/:eventId/users/:userId/certificate-eligibility', certificateController.checkCertificateEligibility);
 
 // Dashboard routes (admin only)
 router.get('/dashboard/stats', dashboardController.getDashboardStatistics);

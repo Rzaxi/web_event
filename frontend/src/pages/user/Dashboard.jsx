@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Calendar, Settings, User, LogOut, Clock, Users, Award, TrendingUp, Activity, Bell } from 'lucide-react';
+import { BarChart, Calendar, Settings, User, LogOut, Clock, Users, Award, TrendingUp, Activity, Bell, Filter, Play, CheckCircle, GraduationCap, X } from 'lucide-react';
 import { userAPI } from '../../services/api';
 import { toast } from 'react-toastify';
 
@@ -8,10 +8,13 @@ const Dashboard = () => {
   const [stats, setStats] = useState({
     totalEvents: 0,
     upcomingEvents: 0,
+    ongoingEvents: 0,
     completedEvents: 0,
     certificates: 0
   });
   const [recentEvents, setRecentEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -38,19 +41,61 @@ const Dashboard = () => {
       // Fetch user events
       const eventsResponse = await userAPI.getMyEvents();
       const events = eventsResponse.data || [];
-      setRecentEvents(events.slice(0, 5)); // Get latest 5 events
 
-      // Calculate statistics
+      // Calculate statistics with proper event status logic
       const now = new Date();
-      const upcoming = events.filter(event => new Date(event.tanggal) > now).length;
-      const completed = events.filter(event => new Date(event.tanggal) <= now).length;
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      const eventsWithStatus = events.map(event => {
+        const eventDate = new Date(event.tanggal);
+        let eventEndDate = new Date(eventDate);
+        
+        if (event.tanggal_selesai) {
+          eventEndDate = new Date(event.tanggal_selesai);
+        } else if (event.durasi_hari && event.durasi_hari > 1) {
+          eventEndDate.setDate(eventEndDate.getDate() + event.durasi_hari - 1);
+        } else {
+          eventEndDate.setDate(eventEndDate.getDate() + 2);
+        }
+        
+        const eventStart = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+        const eventEnd = new Date(eventEndDate.getFullYear(), eventEndDate.getMonth(), eventEndDate.getDate());
+        
+        let status = 'upcoming';
+        if (todayStart > eventEnd) {
+          status = 'completed';
+        } else if (todayStart >= eventStart && todayStart < eventEnd) {
+          status = 'ongoing';
+        } else if (todayStart.getTime() === eventEnd.getTime()) {
+          status = 'completed';
+        }
+        
+        return { ...event, status };
+      });
+      
+      const upcoming = eventsWithStatus.filter(event => event.status === 'upcoming').length;
+      const ongoing = eventsWithStatus.filter(event => event.status === 'ongoing').length;
+      const completed = eventsWithStatus.filter(event => event.status === 'completed').length;
+      
+      // Only count certificates for events that are actually completed and have certificate processing
+      const certificatesEarned = eventsWithStatus.filter(event => 
+        event.status === 'completed' && 
+        event.memberikan_sertifikat && 
+        event.certificate_processed // This would need to be added to track processed certificates
+      ).length;
       
       setStats({
         totalEvents: events.length,
         upcomingEvents: upcoming,
+        ongoingEvents: ongoing,
         completedEvents: completed,
-        certificates: completed // Assuming completed events give certificates
+        certificates: certificatesEarned
       });
+      
+      // Update recent events with status
+      const recentEventsData = eventsWithStatus.slice(0, 10);
+      setRecentEvents(recentEventsData);
+      setFilteredEvents(recentEventsData);
 
       // Fetch user profile
       const profileResponse = await userAPI.getProfile();
@@ -95,169 +140,163 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="bg-gray-50/50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Main Content */}
         <main>
-            {/* Dynamic Header */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between">
+            {/* Clean Header */}
+            <div className="mb-12">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
                 <div>
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    {getGreeting()}, {user.nama_lengkap || user.nama || 'User'}!
+                  <h1 className="text-3xl sm:text-4xl font-light text-gray-900 tracking-tight">
+                    {getGreeting()}, <span className="font-medium">{user.nama_lengkap || user.nama || 'User'}</span>
                   </h1>
-                  <p className="text-gray-600 mt-2">Kelola aktivitas event Anda dengan mudah</p>
+                  <p className="text-lg text-gray-500 mt-2 font-light">Kelola aktivitas event Anda dengan mudah</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">Hari ini</p>
-                  <p className="text-lg font-semibold text-gray-800">
+                <div className="text-left sm:text-right">
+                  <p className="text-sm text-gray-400 uppercase tracking-wider font-medium">Hari ini</p>
+                  <p className="text-xl font-light text-gray-900 mt-1">
                     {currentTime.toLocaleDateString('id-ID', { 
                       weekday: 'long', 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
+                      day: 'numeric',
+                      month: 'long'
                     })}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Dynamic Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-xl shadow-lg border border-indigo-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Total Events</p>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      {stats.totalEvents}
-                    </p>
-                    <p className="text-xs text-green-600 mt-1">
-                      <TrendingUp className="w-3 h-3 inline mr-1" />
-                      Event terdaftar
-                    </p>
-                  </div>
-                  <div className="p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg">
-                    <BarChart className="h-6 w-6 text-indigo-600" />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white p-6 rounded-xl shadow-lg border border-indigo-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Upcoming</p>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      {stats.upcomingEvents}
-                    </p>
-                    <p className="text-xs text-blue-600 mt-1">
-                      <Clock className="w-3 h-3 inline mr-1" />
-                      Event mendatang
-                    </p>
-                  </div>
-                  <div className="p-3 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg">
+            {/* Statistics Cards - Reference Style */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
                     <Calendar className="h-6 w-6 text-blue-600" />
                   </div>
-                </div>
-              </div>
-              
-              <div className="bg-white p-6 rounded-xl shadow-lg border border-indigo-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Completed</p>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      {stats.completedEvents}
-                    </p>
-                    <p className="text-xs text-green-600 mt-1">
-                      <Award className="w-3 h-3 inline mr-1" />
-                      Event selesai
-                    </p>
-                  </div>
-                  <div className="p-3 bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg">
-                    <Users className="h-6 w-6 text-green-600" />
+                    <p className="text-sm text-blue-600 font-medium">Total Event</p>
+                    <p className="text-lg font-semibold text-gray-900">{stats.totalEvents} Event</p>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white p-6 rounded-xl shadow-lg border border-indigo-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Certificates</p>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      {stats.certificates}
-                    </p>
-                    <p className="text-xs text-yellow-600 mt-1">
-                      <Award className="w-3 h-3 inline mr-1" />
-                      Sertifikat earned
-                    </p>
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                    <Award className="h-6 w-6 text-green-600" />
                   </div>
-                  <div className="p-3 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg">
-                    <Award className="h-6 w-6 text-yellow-600" />
+                  <div>
+                    <p className="text-sm text-green-600 font-medium">Sertifikat</p>
+                    <p className="text-lg font-semibold text-gray-900">{stats.certificates} Earned</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4">
+                    <Play className="h-6 w-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-orange-600 font-medium">Ongoing</p>
+                    <p className="text-lg font-semibold text-gray-900">{stats.ongoingEvents} Active</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Recent Events */}
-            <div className="bg-white rounded-xl shadow-lg border border-indigo-100 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Event Terbaru
-                </h2>
-                <div className="flex items-center text-sm text-gray-500">
-                  <Activity className="w-4 h-4 mr-2" />
-                  Live updates
-                </div>
-              </div>
+            {/* Activities Section */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+              <div className="p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-6">Aktivitas</h2>
               
-              {recentEvents.length === 0 ? (
-                <div className="text-center py-12">
-                  <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500 text-lg">Belum ada event terdaftar</p>
-                  <p className="text-gray-400 text-sm mt-2">Mulai jelajahi event menarik untuk Anda</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {recentEvents.map((event, index) => {
-                    const isUpcoming = new Date(event.tanggal) > new Date();
-                    return (
-                      <div key={event.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100 hover:shadow-md transition-all duration-300">
-                        <div className="flex items-center">
-                          <div className={`p-3 rounded-lg mr-4 ${
-                            isUpcoming 
-                              ? 'bg-gradient-to-r from-green-100 to-emerald-100' 
-                              : 'bg-gradient-to-r from-gray-100 to-slate-100'
-                          }`}>
-                            <Calendar className={`h-5 w-5 ${
-                              isUpcoming ? 'text-green-600' : 'text-gray-600'
-                            }`} />
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">{event.nama_event}</p>
-                            <p className="text-sm text-gray-600">
-                              {formatDate(event.tanggal)} • {event.lokasi}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                            isUpcoming 
-                              ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
-                              : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white'
-                          }`}>
-                            {isUpcoming ? 'Upcoming' : 'Completed'}
-                          </span>
-                          {index === 0 && (
-                            <div className="flex items-center">
-                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                              <span className="text-xs text-green-600 ml-1">New</span>
+                {recentEvents.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 text-lg">Belum ada event terdaftar</p>
+                    <p className="text-gray-400 text-sm mt-2">Mulai jelajahi event menarik untuk Anda</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {recentEvents.map((event, index) => {
+                      // Use same status calculation logic as MyEvents page
+                      const now = new Date();
+                      const eventDate = new Date(event.tanggal);
+                      let eventEndDate = new Date(eventDate);
+                      
+                      if (event.tanggal_selesai) {
+                        eventEndDate = new Date(event.tanggal_selesai);
+                      } else if (event.durasi_hari && event.durasi_hari > 1) {
+                        eventEndDate.setDate(eventEndDate.getDate() + event.durasi_hari - 1);
+                      } else {
+                        eventEndDate.setDate(eventEndDate.getDate() + 2);
+                      }
+                      
+                      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                      const eventStart = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+                      const eventEnd = new Date(eventEndDate.getFullYear(), eventEndDate.getMonth(), eventEndDate.getDate());
+                      
+                      let actualStatus = 'upcoming';
+                      if (todayStart > eventEnd) {
+                        actualStatus = 'completed';
+                      } else if (todayStart >= eventStart && todayStart < eventEnd) {
+                        actualStatus = 'ongoing';
+                      } else if (todayStart.getTime() === eventEnd.getTime()) {
+                        actualStatus = 'completed';
+                      }
+                      
+                      const getStatusBadge = (status) => {
+                        switch(status) {
+                          case 'upcoming': return 'bg-blue-100 text-blue-700 border border-blue-200';
+                          case 'ongoing': return 'bg-green-100 text-green-700 border border-green-200';
+                          case 'completed': return 'bg-gray-100 text-gray-700 border border-gray-200';
+                          default: return 'bg-gray-100 text-gray-700 border border-gray-200';
+                        }
+                      };
+                      
+                      const getStatusText = (status) => {
+                        switch(status) {
+                          case 'upcoming': return 'Upcoming';
+                          case 'ongoing': return 'Ongoing';
+                          case 'completed': return 'Completed';
+                          default: return 'Unknown';
+                        }
+                      };
+                      
+                      return (
+                        <div key={event.id} className="bg-white border border-gray-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start">
+                              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                <Calendar className="h-6 w-6 text-blue-600" />
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-gray-900 mb-1">{event.nama_event}</h3>
+                                <p className="text-sm text-gray-600 mb-2">{event.deskripsi || 'Belajar Mandiri (Micro Skill)'}</p>
+                                <div className="flex items-center text-sm text-gray-500 space-x-4">
+                                  <span className="flex items-center">
+                                    <Calendar className="w-4 h-4 mr-1" />
+                                    {formatDate(event.tanggal)}
+                                  </span>
+                                  <span className="flex items-center">
+                                    <Users className="w-4 h-4 mr-1" />
+                                    {event.lokasi}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                          )}
+                            <div className="flex items-center">
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(actualStatus)}`}>
+                                {getStatusText(actualStatus)}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
         </main>
       </div>

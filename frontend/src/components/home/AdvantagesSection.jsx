@@ -1,138 +1,135 @@
 import React from 'react';
-import { UserPlus, CreditCard, CheckCircle } from 'lucide-react';
+import { UserPlus, CreditCard, CheckCircle, ArrowRight, Trophy } from 'lucide-react';
 
 const AdvantagesSection = () => {
-  const advantages = [
+  const steps = [
     {
       id: 1,
+      step: "STEP ONE",
+      title: "Smart Registration",
+      subtitle: "Easy Peasy!",
       icon: UserPlus,
-      title: "Buat Akun",
-      description: "Daftar dengan mudah dan akses ribuan event menarik",
-      gradient: "from-indigo-500 to-indigo-600",
-      bgGradient: "from-indigo-50 to-indigo-100"
+      bgGradient: "from-indigo-100 via-indigo-50 to-white"
     },
     {
       id: 2,
+      step: "STEP TWO", 
+      title: "Choose Your Event",
+      subtitle: "Superfast!",
       icon: CreditCard,
-      title: "Pilih & Bayar Event",
-      description: "Pilih event favorit dan bayar dengan aman dalam hitungan detik",
-      gradient: "from-green-500 to-green-600",
-      bgGradient: "from-green-50 to-green-100"
+      bgGradient: "from-blue-100 via-blue-50 to-white"
     },
     {
       id: 3,
+      step: "STEP THREE",
+      title: "Secure Payment",
+      subtitle: "Smartest!",
       icon: CheckCircle,
-      title: "Dapatkan Tiket",
-      description: "Terima tiket digital langsung dan siap untuk mengikuti event",
-      gradient: "from-orange-400 to-orange-500",
-      bgGradient: "from-orange-50 to-orange-100"
+      bgGradient: "from-indigo-100 via-indigo-50 to-white"
+    },
+    {
+      id: 4,
+      step: "STEP FOUR",
+      title: "Enjoy Your Event",
+      subtitle: "Amazing Experience!",
+      icon: Trophy,
+      bgGradient: "from-purple-100 via-purple-50 to-white"
     }
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-      <div className="absolute bottom-0 right-0 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
-
+    <section className="py-20 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2 animate-pulse"></span>
-            Proses Mudah & Cepat
-          </div>
-
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Tidak Perlu Antri!
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-green-500">
-              3 Langkah Mudah
-            </span>
+          <span className="text-sm font-medium text-indigo-600 mb-4 block uppercase tracking-wide">
+            How It Works
+          </span>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 max-w-4xl mx-auto leading-tight">
+            Join Events in 4 Simple Steps
           </h2>
-
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Pesan tiket event impianmu secara online dengan proses yang super mudah dan dapatkan kepastian tempat tanpa perlu mengantri
-          </p>
         </div>
 
-        {/* Advantages Grid */}
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 relative">
-          {advantages.map((advantage, index) => {
-            const IconComponent = advantage.icon;
+        {/* Steps Container */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto mb-12">
+          {steps.map((step, index) => {
+            const IconComponent = step.icon;
             return (
-              <div key={advantage.id} className="relative group">
-                {/* Card */}
-                <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                  {/* Step Number */}
-                  <div className={`absolute -top-4 left-8 w-8 h-8 bg-gradient-to-r ${advantage.gradient} text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg`}>
-                    {advantage.id}
+              <div key={step.id} className="relative">
+                {/* Step Card */}
+                <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                  {/* Step Label */}
+                  <div className="text-xs font-medium text-gray-400 mb-3 tracking-wider">
+                    {step.step}
                   </div>
 
-                  {/* Icon */}
-                  <div className={`w-20 h-20 bg-gradient-to-br ${advantage.bgGradient} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className={`w-10 h-10 text-gradient-to-r ${advantage.gradient.replace('from-', 'text-').replace('to-', '').split(' ')[0]}`} />
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-gray-900 mb-6 leading-tight">
+                    {step.title}
+                  </h3>
+
+                  {/* Illustration Area */}
+                  <div className={`relative mb-6 flex items-center justify-center bg-gradient-to-br ${step.bgGradient} rounded-2xl h-40 overflow-hidden`}>
+                    {step.id === 1 && (
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-200/30 to-transparent"></div>
+                        <div className="w-20 h-28 bg-white/40 backdrop-blur-sm rounded-2xl shadow-lg flex items-center justify-center">
+                          <div className="w-16 h-24 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center">
+                            <UserPlus className="w-10 h-10 text-indigo-600" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {step.id === 2 && (
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <div className="flex gap-3">
+                          <div className="w-12 h-3 bg-gray-300 rounded-full"></div>
+                          <div className="w-20 h-3 bg-indigo-400 rounded-full"></div>
+                        </div>
+                        <div className="absolute bottom-4 left-4 w-6 h-6 bg-gray-200 rounded"></div>
+                        <div className="absolute bottom-4 right-4 flex gap-1">
+                          <div className="w-8 h-2 bg-gray-300 rounded"></div>
+                          <div className="w-8 h-2 bg-gray-300 rounded"></div>
+                        </div>
+                      </div>
+                    )}
+                    {step.id === 3 && (
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <div className="w-24 h-24 bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg flex items-center justify-center">
+                          <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center relative">
+                            <CheckCircle className="w-10 h-10 text-indigo-600" />
+                            <div className="absolute top-2 right-2 w-3 h-3 bg-indigo-500 rounded-full animate-pulse"></div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {step.id === 4 && (
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <div className="relative">
+                          <div className="absolute top-0 right-0 text-2xl">🎉</div>
+                          <div className="w-24 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center px-4 shadow-xl">
+                            <Trophy className="w-8 h-8 text-white" />
+                          </div>
+                          <div className="absolute -bottom-2 -right-2 bg-white rounded-lg px-3 py-1 shadow-md text-xs font-medium">
+                            Finally
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Content */}
-                  <div className="text-center space-y-4">
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
-                      {advantage.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {advantage.description}
-                    </p>
+                  {/* Subtitle */}
+                  <div className="bg-indigo-50 rounded-full px-4 py-2 text-xs font-medium text-indigo-700 text-center">
+                    {step.subtitle}
                   </div>
-
-                  {/* Hover Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-green-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
 
-                {/* Arrow Connector - improved */}
-                {index < advantages.length - 1 && (
-                  <div
-                    className="hidden lg:flex absolute top-1/2 left-full ml-10 -translate-y-1/2 w-40 items-center justify-center z-0 pointer-events-none"
-                    aria-hidden="true"
-                  >
-                    <svg
-                      width="160"
-                      height="60"
-                      viewBox="0 0 160 60"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="overflow-visible"
-                    >
-                      <defs>
-                        <linearGradient id={`grad-${index}`} x1="0" y1="30" x2="160" y2="30" gradientUnits="userSpaceOnUse">
-                          <stop offset="0%" stopColor="#6366F1" />
-                          <stop offset="100%" stopColor="#22C55E" />
-                        </linearGradient>
-                      </defs>
-
-                      {/* smooth curved line */}
-                      <path
-                        d="M10 30 C 50 30, 110 30, 140 30"
-                        stroke={`url(#grad-${index})`}
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        fill="none"
-                      />
-
-                      {/* subtle dotted background guide */}
-                      <path
-                        d="M10 30 C 50 30, 110 30, 140 30"
-                        stroke="#E0E7FF"
-                        strokeWidth="1"
-                        strokeDasharray="4 6"
-                        fill="none"
-                      />
-
-                      {/* arrow head */}
-                      <path d="M140 24 L154 30 L140 36 Z" fill="#4F46E5" />
-
-                      {/* highlight line on arrow head */}
-                      <path d="M142 30 L150 30" stroke="white" strokeWidth="1.2" opacity="0.7" />
-                    </svg>
+                {/* Arrow Connector */}
+                {index < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-1/2 -right-2 transform -translate-y-1/2 z-10">
+                    <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shadow-md">
+                      <ArrowRight className="w-5 h-5 text-white" />
+                    </div>
                   </div>
                 )}
               </div>
@@ -140,6 +137,12 @@ const AdvantagesSection = () => {
           })}
         </div>
 
+        {/* Bottom Description */}
+        <div className="mt-8 text-center max-w-4xl mx-auto">
+          <p className="text-sm text-gray-600 leading-relaxed">
+            Bergabunglah dengan EventHub dan rasakan pengalaman mendaftar event yang revolusioner dalam 4 langkah mudah. Platform kami menjamin keamanan data dan memberikan pengalaman terbaik untuk setiap event.
+          </p>
+        </div>
       </div>
     </section>
   );

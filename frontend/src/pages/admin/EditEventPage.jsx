@@ -21,28 +21,38 @@ const EditEventPage = () => {
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [errors, setErrors] = useState({});
 
-  const kategoriOptions = [
-    { value: 'akademik', label: 'Akademik' },
-    { value: 'olahraga', label: 'Olahraga' },
-    { value: 'seni_budaya', label: 'Seni & Budaya' },
-    { value: 'teknologi', label: 'Teknologi' },
-    { value: 'kewirausahaan', label: 'Kewirausahaan' },
-    { value: 'sosial', label: 'Sosial' },
-    { value: 'kompetisi', label: 'Kompetisi' },
-    { value: 'workshop', label: 'Workshop' },
-    { value: 'seminar', label: 'Seminar' },
-    { value: 'lainnya', label: 'Lainnya' }
-  ];
-
-  const tingkatKesulitanOptions = [
-    { value: 'pemula', label: 'Pemula' },
-    { value: 'menengah', label: 'Menengah' },
-    { value: 'lanjutan', label: 'Lanjutan' }
-  ];
+  const [kategoriOptions, setKategoriOptions] = useState([]);
+  const [tingkatKesulitanOptions, setTingkatKesulitanOptions] = useState([]);
+  const [optionsLoading, setOptionsLoading] = useState(true);
 
   useEffect(() => {
     fetchEvent();
+    fetchEventOptions();
   }, [id]);
+
+  // Fetch event options from API
+  const fetchEventOptions = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/admin/events/options', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setKategoriOptions(result.data.categories);
+        setTingkatKesulitanOptions(result.data.difficulties);
+      } else {
+        console.error('Failed to fetch event options');
+      }
+    } catch (error) {
+      console.error('Error fetching event options:', error);
+    } finally {
+      setOptionsLoading(false);
+    }
+  };
 
   const fetchEvent = async () => {
     try {

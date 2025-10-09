@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Event.belongsTo(models.User, { foreignKey: 'created_by', as: 'creator' });
       Event.hasMany(models.EventRegistration, { foreignKey: 'event_id' });
+      Event.hasMany(models.DailyAttendance, { foreignKey: 'event_id' });
     }
   }
   Event.init({
@@ -23,9 +24,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATEONLY,
       allowNull: false
     },
-    waktu: {
+    waktu_mulai: {
       type: DataTypes.TIME,
-      allowNull: false
+      allowNull: true,
+      comment: 'Waktu mulai event'
+    },
+    waktu_selesai: {
+      type: DataTypes.TIME,
+      allowNull: true,
+      comment: 'Waktu selesai event'
     },
     lokasi: {
       type: DataTypes.STRING,
@@ -85,6 +92,34 @@ module.exports = (sequelize, DataTypes) => {
         model: 'Users',
         key: 'id'
       }
+    },
+    durasi_hari: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+      comment: 'Durasi event dalam hari'
+    },
+    minimum_kehadiran: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+      comment: 'Minimum hari kehadiran untuk mendapat sertifikat'
+    },
+    memberikan_sertifikat: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      comment: 'Apakah event ini memberikan sertifikat'
+    },
+    tanggal_selesai: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+      comment: 'Tanggal selesai event (untuk multi-day events)'
+    },
+    penyelenggara: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'Nama penyelenggara event'
     }
   }, {
     sequelize,

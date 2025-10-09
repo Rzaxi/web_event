@@ -18,6 +18,44 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
       },
+      '/admin/login': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/admin/statistics': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/admin/events': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/api/events': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/admin/users': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/admin/attendances': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/admin/participants': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/admin/registrations': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/admin/events/*': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
     }
   }
 })

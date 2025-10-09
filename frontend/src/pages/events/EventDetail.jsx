@@ -24,8 +24,12 @@ const EventDetail = () => {
       const response = await eventsAPI.getById(id);
       console.log('Event Detail Response:', response.data);
       setEvent(response.data);
-      // Check if user is already registered (you might need to add this to backend response)
-      setIsRegistered(response.data.isRegistered || false);
+      // Explicitly check registration status from the backend response
+      if (response.data.isRegistered) {
+        setIsRegistered(true);
+      } else {
+        setIsRegistered(false);
+      }
     } catch (error) {
       toast.error('Gagal memuat detail event');
       navigate('/events');
@@ -120,25 +124,25 @@ const EventDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Modern Header with Gradient */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-white/20 sticky top-0 z-40">
+    <div className="min-h-screen bg-gray-50">
+      {/* Clean Header */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/events')}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-xl hover:bg-white hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Events
               </button>
             </div>
-            <div className="flex items-center space-x-3">
-              <button className="p-2 text-gray-600 hover:text-red-500 bg-white/90 rounded-xl border border-gray-200/50 hover:border-red-200 transition-all duration-200">
+            <div className="flex items-center space-x-2">
+              <button className="p-2 text-gray-600 hover:text-red-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <Heart className="w-5 h-5" />
               </button>
-              <button className="p-2 text-gray-600 hover:text-blue-500 bg-white/90 rounded-xl border border-gray-200/50 hover:border-blue-200 transition-all duration-200">
+              <button className="p-2 text-gray-600 hover:text-blue-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <Share2 className="w-5 h-5" />
               </button>
             </div>
@@ -146,92 +150,71 @@ const EventDetail = () => {
         </div>
       </header>
 
-      {/* Hero Section with Modern Design */}
-      <section className="relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-purple-600/5 to-teal-600/5"></div>
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-100/20 to-purple-100/20"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Hero Section */}
+      <section className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-12">
             {/* Event Content */}
             <div className="lg:col-span-7">
-              {/* Breadcrumb with Modern Style */}
-              <nav className="flex mb-8" aria-label="Breadcrumb">
+              {/* Breadcrumb */}
+              <nav className="flex mb-6" aria-label="Breadcrumb">
                 <ol className="flex items-center space-x-2">
                   <li>
-                    <span className="text-sm font-medium text-gray-500 bg-white/60 px-3 py-1 rounded-full backdrop-blur-sm">Events</span>
+                    <span className="text-sm text-gray-500">Events</span>
                   </li>
                   <li>
                     <div className="flex items-center">
                       <svg className="flex-shrink-0 h-4 w-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                       </svg>
-                      <span className="text-sm font-medium text-gray-700 bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm border border-white/50">{event.judul}</span>
+                      <span className="text-sm text-gray-700">{event.judul}</span>
                     </div>
                   </li>
                 </ol>
               </nav>
 
-              {/* Enhanced Event Meta */}
-              <div className="flex flex-wrap items-center gap-3 mb-8">
-                <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25">
-                  <Award className="w-4 h-4 mr-2" />
+              {/* Event Meta */}
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-blue-100 text-blue-800">
+                  <Award className="w-4 h-4 mr-1" />
                   {event.kategori}
                 </span>
-                <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/90 text-gray-700 border border-gray-200/50 backdrop-blur-sm shadow-sm">
-                  <Users className="w-4 h-4 mr-2 text-blue-500" />
+                <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-gray-100 text-gray-700">
+                  <Users className="w-4 h-4 mr-1" />
                   {event.participantCount || 0} Terdaftar
                 </span>
                 {event.tingkat_kesulitan && (
-                  <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/90 text-gray-700 border border-gray-200/50 backdrop-blur-sm shadow-sm">
-                    <Star className="w-4 h-4 mr-2 text-yellow-500" />
+                  <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-yellow-100 text-yellow-800">
+                    <Star className="w-4 h-4 mr-1" />
                     {event.tingkat_kesulitan}
                   </span>
                 )}
                 {event.biaya !== undefined && (
-                  <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/90 text-gray-700 border border-gray-200/50 backdrop-blur-sm shadow-sm">
-                    <DollarSign className="w-4 h-4 mr-2 text-green-500" />
+                  <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-green-100 text-green-800">
+                    <DollarSign className="w-4 h-4 mr-1" />
                     {event.biaya > 0 ? `Rp ${event.biaya.toLocaleString('id-ID')}` : 'Gratis'}
                   </span>
                 )}
               </div>
 
-              {/* Enhanced Title & Description */}
-              <div className="mb-12">
-                <div className="mb-8">
-                  <h1 className="text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-4 leading-tight">
-                    {event.judul}
-                  </h1>
-                  <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full"></div>
-                </div>
-
-                <div className="relative">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-100/50 to-purple-100/50 rounded-2xl blur opacity-75"></div>
-                  <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/50">
-                    <div className="flex items-start space-x-6">
-                      <div className="flex-shrink-0">
-                        <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                          <Zap className="w-7 h-7 text-white" />
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Tentang Event Ini</h3>
-                        <p className="text-gray-700 leading-relaxed text-lg">{event.deskripsi}</p>
-                      </div>
-                    </div>
-                  </div>
+              {/* Title & Description */}
+              <div className="mb-8">
+                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+                  {event.judul}
+                </h1>
+                
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Tentang Event Ini</h3>
+                  <p className="text-gray-600 leading-relaxed">{event.deskripsi}</p>
                 </div>
               </div>
             </div>
 
-            {/* Compact Event Card */}
-            <div className="lg:col-span-5 mt-10 lg:mt-0">
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 overflow-hidden">
+            {/* Event Card */}
+            <div className="lg:col-span-5 mt-8 lg:mt-0">
+              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                 {/* Event Image */}
-                <div className="relative h-48">
+                <div className="relative h-40">
                   {event.flyer_url ? (
                     <img
                       src={event.flyer_url}
@@ -243,78 +226,76 @@ const EventDetail = () => {
                       }}
                     />
                   ) : null}
-                  <div className={`w-full h-full bg-gradient-to-br from-blue-100 via-purple-100 to-teal-100 flex items-center justify-center ${event.flyer_url ? 'hidden' : 'flex'}`}>
-                    <Calendar className="w-16 h-16 text-gray-400" />
-                  </div>
-                  
-                  {/* Status Badge */}
-                  <div className="absolute top-4 right-4">
-                    <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold flex items-center">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                      Event Mendatang
-                    </div>
+                  <div className={`w-full h-full bg-gray-100 flex items-center justify-center ${event.flyer_url ? 'hidden' : 'flex'}`}>
+                    <Calendar className="w-12 h-12 text-gray-400" />
                   </div>
                 </div>
 
                 {/* Event Info */}
-                <div className="p-6 space-y-4">
+                <div className="p-4 space-y-3">
                   {/* Participant Count */}
-                  <div className="text-center pb-4 border-b border-gray-100">
-                    <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-1">{event.participantCount || 0}</div>
-                    <div className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-3">Terdaftar</div>
-                    <div className="flex items-center justify-center">
-                      <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full mr-2 animate-pulse shadow-lg"></div>
-                      <span className="text-xs font-bold text-emerald-600 uppercase tracking-wide">Aktif</span>
-                    </div>
+                  <div className="text-center pb-3 border-b border-gray-200">
+                    <div className="text-2xl font-bold text-blue-600 mb-1">{event.participantCount || 0}</div>
+                    <div className="text-sm text-gray-600">Peserta Terdaftar</div>
                   </div>
 
-                  {/* Quick Event Details */}
-                  <div className="space-y-3">
+                  {/* Event Details */}
+                  <div className="space-y-2">
                     {/* Date */}
-                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-xl">
+                    <div className="flex items-center justify-between py-2">
                       <div className="flex items-center">
-                        <Calendar className="w-5 h-5 text-blue-600 mr-3" />
-                        <span className="text-sm font-medium text-gray-700">Tanggal</span>
+                        <Calendar className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-sm text-gray-600">Tanggal</span>
                       </div>
-                      <span className="text-sm font-bold text-gray-900">
-                        {new Date(event.tanggal).toLocaleDateString('id-ID', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
-                        })}
-                      </span>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-gray-900">
+                          {formatDate(event.tanggal)}
+                        </div>
+                        {event.tanggal_selesai && event.tanggal_selesai !== event.tanggal && (
+                          <div className="text-xs text-gray-500">
+                            s/d {formatDate(event.tanggal_selesai)}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Time */}
-                    <div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl">
+                    <div className="flex items-center justify-between py-2">
                       <div className="flex items-center">
-                        <Clock className="w-5 h-5 text-purple-600 mr-3" />
-                        <span className="text-sm font-medium text-gray-700">Waktu</span>
+                        <Clock className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-sm text-gray-600">Waktu</span>
                       </div>
-                      <span className="text-sm font-bold text-gray-900">
-                        {event.waktu_mulai ? formatTime(event.waktu_mulai) : '10:30'}
-                      </span>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-gray-900">
+                          {event.waktu_mulai ? formatTime(event.waktu_mulai) : '10:30'}
+                        </div>
+                        {event.waktu_selesai && (
+                          <div className="text-xs text-gray-500">
+                            s/d {formatTime(event.waktu_selesai)}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Location */}
-                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-xl">
+                    <div className="flex items-center justify-between py-2">
                       <div className="flex items-center">
-                        <MapPin className="w-5 h-5 text-green-600 mr-3" />
-                        <span className="text-sm font-medium text-gray-700">Lokasi</span>
+                        <MapPin className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-sm text-gray-600">Lokasi</span>
                       </div>
-                      <span className="text-sm font-bold text-gray-900 text-right max-w-[120px] truncate">
+                      <span className="text-sm font-medium text-gray-900 text-right max-w-[150px] truncate">
                         {event.lokasi}
                       </span>
                     </div>
 
-                    {/* Participants */}
-                    <div className="flex items-center justify-between p-3 bg-orange-50 rounded-xl">
+                    {/* Capacity */}
+                    <div className="flex items-center justify-between py-2">
                       <div className="flex items-center">
-                        <Users className="w-5 h-5 text-orange-600 mr-3" />
-                        <span className="text-sm font-medium text-gray-700">Peserta</span>
+                        <Users className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-sm text-gray-600">Kapasitas</span>
                       </div>
-                      <span className="text-sm font-bold text-gray-900">
-                        {event.participantCount || 0} terdaftar
+                      <span className="text-sm font-medium text-gray-900">
+                        {event.participantCount || 0}/{event.kuota || event.kapasitas_peserta}
                       </span>
                     </div>
                   </div>
@@ -326,208 +307,279 @@ const EventDetail = () => {
         </div>
       </section>
 
-      {/* Modern Event Information Section */}
-      <section className="relative py-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30"></div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-4">Informasi Event</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Detail lengkap tentang event ini</p>
+      {/* Event Information Section */}
+      <section className="bg-gray-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Informasi Event</h2>
+            <p className="text-gray-600">Detail lengkap tentang event ini</p>
           </div>
 
           <div className="lg:grid lg:grid-cols-3 lg:gap-8">
-            {/* Enhanced Event Details Cards */}
+            {/* Event Details Cards */}
             <div className="lg:col-span-2">
-              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {/* Date Card */}
-                <div className="group relative bg-white/80 backdrop-blur-sm overflow-hidden shadow-xl rounded-2xl border border-white/50 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
-                  <div className="relative p-8">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+                  <div className="p-4">
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
-                        <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                          <Calendar className="h-7 w-7 text-white" />
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <Calendar className="h-5 w-5 text-blue-600" />
                         </div>
                       </div>
-                      <div className="ml-6 w-0 flex-1">
-                        <dl>
-                          <dt className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wide">Tanggal</dt>
-                          <dd className="text-xl font-bold text-gray-900">
-                            {new Date(event.tanggal).toLocaleDateString('id-ID', {
-                              weekday: 'long',
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
+                      <div className="ml-3 flex-1">
+                        <dt className="text-sm font-medium text-gray-500">Tanggal Event</dt>
+                        <dd className="text-base font-semibold text-gray-900">
+                          {formatDate(event.tanggal)}
+                        </dd>
+                        {event.tanggal_selesai && event.tanggal_selesai !== event.tanggal && (
+                          <dd className="text-sm text-gray-600">
+                            s/d {formatDate(event.tanggal_selesai)}
                           </dd>
-                        </dl>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Time Card */}
-                <div className="group relative bg-white/80 backdrop-blur-sm overflow-hidden shadow-xl rounded-2xl border border-white/50 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-emerald-500/5"></div>
-                  <div className="relative p-8">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+                  <div className="p-4">
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
-                        <div className="w-14 h-14 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                          <Clock className="h-7 w-7 text-white" />
+                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                          <Clock className="h-5 w-5 text-green-600" />
                         </div>
                       </div>
-                      <div className="ml-6 w-0 flex-1">
-                        <dl>
-                          <dt className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wide">Waktu</dt>
-                          <dd className="text-xl font-bold text-gray-900">{event.waktu}</dd>
-                        </dl>
+                      <div className="ml-3 flex-1">
+                        <dt className="text-sm font-medium text-gray-500">Waktu Event</dt>
+                        <dd className="text-base font-semibold text-gray-900">
+                          {event.waktu_mulai ? formatTime(event.waktu_mulai) : (event.waktu || '10:30')}
+                        </dd>
+                        {event.waktu_selesai && (
+                          <dd className="text-sm text-gray-600">
+                            s/d {formatTime(event.waktu_selesai)}
+                          </dd>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Location Card */}
-                <div className="group relative bg-white/80 backdrop-blur-sm overflow-hidden shadow-xl rounded-2xl border border-white/50 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-teal-500/5"></div>
-                  <div className="relative p-8">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+                  <div className="p-4">
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
-                        <div className="w-14 h-14 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                          <MapPin className="h-7 w-7 text-white" />
+                        <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                          <MapPin className="h-5 w-5 text-red-600" />
                         </div>
                       </div>
-                      <div className="ml-6 w-0 flex-1">
-                        <dl>
-                          <dt className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wide">Lokasi</dt>
-                          <dd className="text-xl font-bold text-gray-900">{event.lokasi}</dd>
-                        </dl>
+                      <div className="ml-3 flex-1">
+                        <dt className="text-sm font-medium text-gray-500">Lokasi</dt>
+                        <dd className="text-base font-semibold text-gray-900">{event.lokasi}</dd>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Capacity Card */}
-                <div className="group relative bg-white/80 backdrop-blur-sm overflow-hidden shadow-xl rounded-2xl border border-white/50 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5"></div>
-                  <div className="relative p-8">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0">
-                        <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                          <Users className="h-7 w-7 text-white" />
+                {/* Organizer Card */}
+                {event.penyelenggara && (
+                  <div className="group relative bg-white/80 backdrop-blur-sm overflow-hidden shadow-xl rounded-2xl border border-white/50 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-blue-500/5"></div>
+                    <div className="relative p-8">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <div className="w-14 h-14 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Shield className="h-7 w-7 text-white" />
+                          </div>
+                        </div>
+                        <div className="ml-6 w-0 flex-1">
+                          <dl>
+                            <dt className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wide">Penyelenggara</dt>
+                            <dd className="text-xl font-bold text-gray-900">{event.penyelenggara}</dd>
+                          </dl>
                         </div>
                       </div>
-                      <div className="ml-6 w-0 flex-1">
-                        <dl>
-                          <dt className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wide">Kapasitas</dt>
-                          <dd className="text-xl font-bold text-gray-900 mb-4">
-                            {event.participantCount || 0} / {event.kuota || event.kapasitas_peserta} peserta
-                          </dd>
-                          <div className="w-full bg-gray-200/60 rounded-full h-3 mb-3">
-                            <div
-                              className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500 shadow-sm"
-                              style={{ width: `${(event.kuota || event.kapasitas_peserta) ? Math.min(((event.participantCount || 0) / (event.kuota || event.kapasitas_peserta)) * 100, 100) : 0}%` }}
-                            ></div>
-                          </div>
-                          <div className="flex justify-between text-sm text-gray-600">
-                            <span className="font-medium">{(event.kuota || event.kapasitas_peserta) ? Math.round(((event.participantCount || 0) / (event.kuota || event.kapasitas_peserta)) * 100) : 0}% Terisi</span>
-                            <span className="font-medium">{((event.kuota || event.kapasitas_peserta) || 0) - (event.participantCount || 0)} slot tersisa</span>
-                          </div>
-                        </dl>
+                    </div>
+                  </div>
+                )}
+
+                {/* Capacity Card */}
+                <div className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+                  <div className="p-4">
+                    <div className="flex items-center mb-3">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                          <Users className="h-5 w-5 text-purple-600" />
+                        </div>
                       </div>
+                      <div className="ml-3 flex-1">
+                        <dt className="text-sm font-medium text-gray-500">Kapasitas</dt>
+                        <dd className="text-base font-semibold text-gray-900">
+                          {event.participantCount || 0} / {event.kuota || event.kapasitas_peserta} peserta
+                        </dd>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                      <div
+                        className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${(event.kuota || event.kapasitas_peserta) ? Math.min(((event.participantCount || 0) / (event.kuota || event.kapasitas_peserta)) * 100, 100) : 0}%` }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-600">
+                      <span>{(event.kuota || event.kapasitas_peserta) ? Math.round(((event.participantCount || 0) / (event.kuota || event.kapasitas_peserta)) * 100) : 0}% Terisi</span>
+                      <span>{((event.kuota || event.kapasitas_peserta) || 0) - (event.participantCount || 0)} slot tersisa</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Enhanced Registration Sidebar */}
-            <div className="mt-12 lg:mt-0">
-              <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur"></div>
-                <div className="relative bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50">
-                  <div className="text-center">
-                    <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 mb-6 shadow-lg">
-                      <UserPlus className="h-8 w-8 text-white" />
+            {/* Unified Registration Card */}
+            <div className="mt-8 lg:mt-0">
+              <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-1 shadow-xl">
+                <div className="bg-white rounded-xl p-5">
+                  {/* Header */}
+                  <div className="text-center mb-4">
+                    <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl mb-3 shadow-lg">
+                      <UserPlus className="h-7 w-7 text-white" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Daftar Event</h3>
-                    <p className="text-base text-gray-600 mb-8">
+                    <h3 className="text-xl font-bold text-slate-800 mb-1">Join Event</h3>
+                    <p className="text-sm text-slate-600">
                       {isRegistered
-                        ? "Anda sudah terdaftar untuk event ini"
+                        ? "✅ Sudah terdaftar!"
                         : event.participantCount >= (event.kuota || event.kapasitas_peserta)
-                          ? "Event ini sudah penuh"
-                          : "Amankan tempat Anda sekarang"}
+                          ? "⚠️ Event penuh"
+                          : "🚀 Daftar sekarang!"}
                     </p>
+                  </div>
 
-                    {/* Enhanced Registration Progress */}
-                    {(event.kuota || event.kapasitas_peserta) && (
-                      <div className="mb-8">
-                        <div className="p-6 bg-gradient-to-r from-gray-50 to-blue-50/50 rounded-2xl border border-gray-100/50">
-                          <div className="flex justify-between items-center mb-4">
-                            <span className="text-sm font-bold text-gray-700 uppercase tracking-wide">Progress Pendaftaran</span>
-                            <span className="text-lg font-black text-gray-900">{event.participantCount || 0}/{event.kuota || event.kapasitas_peserta}</span>
-                          </div>
-                          <div className="w-full bg-gray-200/80 rounded-full h-4 mb-4 shadow-inner">
-                            <div
-                              className="bg-gradient-to-r from-blue-500 to-purple-600 h-4 rounded-full transition-all duration-700 shadow-lg"
-                              style={{ width: `${Math.min(((event.participantCount || 0) / (event.kuota || event.kapasitas_peserta)) * 100, 100)}%` }}
-                            ></div>
-                          </div>
-                          <div className="flex justify-between text-sm text-gray-600">
-                            <span className="font-semibold">{Math.round(((event.participantCount || 0) / (event.kuota || event.kapasitas_peserta)) * 100)}% Terisi</span>
-                            <span className="font-semibold">{((event.kuota || event.kapasitas_peserta) || 0) - (event.participantCount || 0)} slot tersisa</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    <button
-                      onClick={handleRegisterClick}
-                      disabled={isRegistering || (event.participantCount >= (event.kuota || event.kapasitas_peserta) && !isRegistered)}
-                      className={`w-full flex justify-center py-4 px-6 border border-transparent rounded-2xl shadow-lg text-base font-bold focus:outline-none focus:ring-4 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 ${isRegistered
-                          ? 'text-red-700 bg-gradient-to-r from-red-100 to-pink-100 hover:from-red-200 hover:to-pink-200 focus:ring-red-500 border-red-200'
-                          : event.participantCount >= (event.kuota || event.kapasitas_peserta)
-                            ? 'text-gray-500 bg-gray-200 cursor-not-allowed transform-none hover:scale-100'
-                            : 'text-white bg-gradient-to-r from-blue-600 via-purple-600 to-teal-500 hover:from-blue-700 hover:via-purple-700 hover:to-teal-600 focus:ring-blue-500 shadow-blue-500/25'
-                        }`}
-                    >
-                      {isRegistering ? (
-                        <div className="flex items-center">
-                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
-                          Memproses...
-                        </div>
-                      ) : (
-                        <div className="flex items-center">
-                          {isRegistered ? (
-                            <>
-                              <UserMinus className="w-5 h-5 mr-3" />
-                              Batalkan Pendaftaran
-                            </>
-                          ) : event.participantCount >= (event.kuota || event.kapasitas_peserta) ? (
-                            'Event Penuh'
-                          ) : (
-                            <>
-                              <UserPlus className="w-5 h-5 mr-3" />
-                              Daftar Sekarang
-                            </>
-                          )}
+                  {/* Event Highlights - Integrated Benefits */}
+                  <div className="mb-4">
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                      {/* Certificate */}
+                      {event.memberikan_sertifikat && (
+                        <div className="flex items-center p-2 bg-emerald-50 rounded-lg border border-emerald-100">
+                          <Award className="w-4 h-4 text-emerald-600 mr-2" />
+                          <span className="text-xs font-medium text-emerald-800">Sertifikat</span>
                         </div>
                       )}
-                    </button>
-
-                    {isRegistered && (
-                      <div className="mt-6 p-4 bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl border border-green-200">
-                        <div className="flex items-center justify-center">
-                          <svg className="w-5 h-5 text-green-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                          <p className="text-sm text-green-800 font-bold">Pendaftaran Dikonfirmasi</p>
+                      
+                      {/* Multi-day */}
+                      {event.durasi_hari && event.durasi_hari > 1 && (
+                        <div className="flex items-center p-2 bg-blue-50 rounded-lg border border-blue-100">
+                          <Calendar className="w-4 h-4 text-blue-600 mr-2" />
+                          <span className="text-xs font-medium text-blue-800">{event.durasi_hari} Hari</span>
                         </div>
+                      )}
+                      
+                      {/* Level */}
+                      {event.tingkat_kesulitan && (
+                        <div className="flex items-center p-2 bg-amber-50 rounded-lg border border-amber-100">
+                          <Star className="w-4 h-4 text-amber-600 mr-2" />
+                          <span className="text-xs font-medium text-amber-800">{event.tingkat_kesulitan}</span>
+                        </div>
+                      )}
+                      
+                      {/* Cost */}
+                      <div className="flex items-center p-2 bg-green-50 rounded-lg border border-green-100">
+                        <DollarSign className="w-4 h-4 text-green-600 mr-2" />
+                        <span className="text-xs font-medium text-green-800">
+                          {event.biaya && event.biaya > 0 ? 'Berbayar' : 'Gratis'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="bg-gradient-to-r from-slate-50 to-indigo-50 rounded-lg p-4 mb-4">
+                    <div className="grid grid-cols-3 gap-3 text-center">
+                      <div>
+                        <div className="text-xl font-bold text-indigo-600">{event.participantCount || 0}</div>
+                        <div className="text-xs text-slate-600">Terdaftar</div>
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold text-purple-600">{event.kuota || event.kapasitas_peserta}</div>
+                        <div className="text-xs text-slate-600">Kapasitas</div>
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold text-emerald-600">{((event.kuota || event.kapasitas_peserta) || 0) - (event.participantCount || 0)}</div>
+                        <div className="text-xs text-slate-600">Tersisa</div>
+                      </div>
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    <div className="mt-4">
+                      <div className="w-full bg-slate-200 rounded-full h-3">
+                        <div
+                          className="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full transition-all duration-500 shadow-sm"
+                          style={{ width: `${Math.min(((event.participantCount || 0) / (event.kuota || event.kapasitas_peserta)) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                      <div className="text-center mt-2">
+                        <span className="text-xs font-semibold text-slate-700">
+                          {Math.round(((event.participantCount || 0) / (event.kuota || event.kapasitas_peserta)) * 100)}% Terisi
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Button */}
+                  <button
+                    onClick={handleRegisterClick}
+                    disabled={isRegistering || (event.participantCount >= (event.kuota || event.kapasitas_peserta) && !isRegistered)}
+                    className={`w-full rounded-xl py-4 px-6 text-base font-bold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-offset-2 shadow-lg ${isRegistered
+                        ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700 focus:ring-red-500'
+                        : event.participantCount >= (event.kuota || event.kapasitas_peserta)
+                          ? 'bg-slate-300 text-slate-500 cursor-not-allowed transform-none hover:scale-100'
+                          : 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 focus:ring-indigo-500'
+                      }`}
+                  >
+                    {isRegistering ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
+                        Processing...
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center">
+                        {isRegistered ? (
+                          <>
+                            <UserMinus className="w-5 h-5 mr-3" />
+                            Cancel Registration
+                          </>
+                        ) : event.participantCount >= (event.kuota || event.kapasitas_peserta) ? (
+                          <>🔒 Event Full</>
+                        ) : (
+                          <>
+                            <UserPlus className="w-5 h-5 mr-3" />
+                            Register Now
+                          </>
+                        )}
                       </div>
                     )}
-                  </div>
+                  </button>
+
+                  {/* Success Message */}
+                  {isRegistered && (
+                    <div className="mt-4 p-3 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-200">
+                      <div className="flex items-center justify-center">
+                        <div className="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center mr-3">
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-emerald-800">Registration Confirmed!</p>
+                          <p className="text-xs text-emerald-600">Check your email for details</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
+
             </div>
           </div>
         </div>

@@ -24,8 +24,8 @@ const register = async (req, res) => {
     // Validate password strength
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/;
     if (!passwordRegex.test(password)) {
-      return res.status(400).json({ 
-        message: 'Password harus minimal 8 karakter dan mengandung huruf besar, huruf kecil, angka, dan karakter khusus' 
+      return res.status(400).json({
+        message: 'Password harus minimal 8 karakter dan mengandung huruf besar, huruf kecil, angka, dan karakter khusus'
       });
     }
 
@@ -90,7 +90,7 @@ const verifyEmail = async (req, res) => {
       attributes: ['id', 'email', 'verification_token', 'verification_expiry', 'is_verified'],
       order: [['createdAt', 'DESC']]
     });
-    
+
     console.log('=== DEBUG: All users in database ===');
     allUsers.forEach(user => {
       console.log(`User: ${user.email}`);
@@ -147,21 +147,21 @@ const verifyEmail = async (req, res) => {
 
     console.log('Token not found in database');
     console.log('Looking for token:', token);
-    
+
     // Check if there are any users with tokens that might match partially
     const usersWithTokens = allUsers.filter(user => user.verification_token);
     console.log('Users with tokens:', usersWithTokens.length);
-    
+
     if (usersWithTokens.length > 0) {
       console.log('Available tokens in database:');
       usersWithTokens.forEach((user, index) => {
         console.log(`${index + 1}. ${user.email}: ${user.verification_token}`);
       });
     }
-    
-    return res.status(400).json({ 
+
+    return res.status(400).json({
       success: false,
-      message: 'Token tidak valid atau sudah kedaluwarsa' 
+      message: 'Token tidak valid atau sudah kedaluwarsa'
     });
 
   } catch (error) {
@@ -300,8 +300,8 @@ const confirmPasswordReset = async (req, res) => {
     // Validate password strength
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/;
     if (!passwordRegex.test(newPassword)) {
-      return res.status(400).json({ 
-        message: 'Password harus minimal 8 karakter dan mengandung huruf besar, huruf kecil, angka, dan karakter khusus' 
+      return res.status(400).json({
+        message: 'Password harus minimal 8 karakter dan mengandung huruf besar, huruf kecil, angka, dan karakter khusus'
       });
     }
 
@@ -329,42 +329,53 @@ const getUserHistory = async (req, res) => {
 
     const registrations = await EventRegistration.findAll({
       where: { user_id: userId },
-      include: [{
-        model: Event,
-        as: 'event',
-        required: true
-      }],
+      include: [
+        {
+          model: Event,
+          required: true,
+          attributes: ['id', 'judul', 'tanggal', 'waktu_mulai', 'waktu_selesai', 'lokasi', 'kategori', 'flyer_url', 'deskripsi', 'memberikan_sertifikat', 'durasi_hari', 'tanggal_selesai']
+        }
+      ],
       order: [['createdAt', 'DESC']]
     });
 
     const events = registrations.map(reg => {
-      const eventData = reg.event.toJSON();
-      const eventDate = new Date(eventData.tanggal);
+      const eventData = reg.Event.toJSON();
+      const eventStartDate = new Date(eventData.tanggal);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      eventDate.setHours(0, 0, 0, 0);
+      eventStartDate.setHours(0, 0, 0, 0);
+
+      // Calculate end date based on tanggal_selesai or duration
+      let eventEndDate = new Date(eventStartDate);
+      if (eventData.tanggal_selesai) {
+        eventEndDate = new Date(eventData.tanggal_selesai);
+      } else if (eventData.durasi_hari && eventData.durasi_hari > 1) {
+        eventEndDate.setDate(eventEndDate.getDate() + eventData.durasi_hari - 1);
+      }
 
       let status = 'upcoming';
-      if (eventDate < today) {
-        status = 'completed';
-      } else if (eventDate.getTime() === today.getTime()) {
+      if (today >= eventStartDate && today <= eventEndDate) {
         status = 'ongoing';
+      } else if (today > eventEndDate) {
+        status = 'completed';
       }
 
       return {
         id: eventData.id,
         nama_event: eventData.judul,
         tanggal: eventData.tanggal,
-        waktu_mulai: eventData.waktu,
-        waktu_selesai: eventData.waktu, // Assuming same start/end time from data model
+        jam_mulai: eventData.waktu_mulai,
+        jam_selesai: eventData.waktu_selesai,
         lokasi: eventData.lokasi,
-        kategori: 'General', // Placeholder as in original query
+        kategori: eventData.kategori,
         flyer: eventData.flyer_url,
-        jumlah_peserta: 0, // Placeholder as in original query
+        jumlah_peserta: 0,
         deskripsi: eventData.deskripsi,
         registered_at: reg.createdAt,
         sertifikat_url: reg.sertifikat_url,
-        status: status
+        status: status,
+        memberikan_sertifikat: eventData.memberikan_sertifikat
       };
     });
 

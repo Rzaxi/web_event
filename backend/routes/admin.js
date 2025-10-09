@@ -10,7 +10,13 @@ const {
   getDashboardOverview,
   getMonthlyEventsStats,
   getMonthlyParticipantsStats,
-  getTopEventsStats
+  getTopEventsStats,
+  getAllUsers,
+  getAllRegistrations,
+  updateRegistrationStatus,
+  updateUserVerification,
+  getAllAttendances,
+  updateAttendanceStatus
 } = require('../controllers/adminController');
 
 const {
@@ -20,8 +26,16 @@ const {
   updateEvent,
   deleteEvent,
   getEventParticipants,
-  getAllParticipants
+  getAllParticipants,
+  getEventOptions
 } = require('../controllers/adminEventController');
+
+const {
+  checkCertificateEligibility,
+  markDailyAttendance,
+  getEventAttendanceSummary,
+  issueCertificatesForEvent
+} = require('../controllers/certificateController');
 
 // Middleware
 const adminAuth = require('../middleware/adminAuth');
@@ -80,6 +94,7 @@ router.get('/statistics/top-events', adminAuth, getTopEventsStats);
 
 // Event Management Routes (Protected)
 router.get('/events', adminAuth, getAllEvents);
+router.get('/events/options', adminAuth, getEventOptions);
 router.get('/events/:id', adminAuth, getEventById);
 router.post('/events', adminAuth, upload.single('flyer'), createEvent);
 router.put('/events/:id', adminAuth, upload.single('flyer'), updateEvent);
@@ -88,5 +103,30 @@ router.delete('/events/:id', adminAuth, deleteEvent);
 // Participant Management Routes (Protected)
 router.get('/events/:id/participants', adminAuth, getEventParticipants);
 router.get('/participants/export', adminAuth, getAllParticipants);
+router.put('/registrations/:id/status', adminAuth, require('../controllers/adminParticipantController').updateRegistrationStatus);
+router.put('/registrations/bulk-status', adminAuth, require('../controllers/adminParticipantController').bulkUpdateStatus);
+
+// User Management Routes (Protected)
+router.get('/users', adminAuth, getAllUsers);
+router.put('/users/:id/verification', adminAuth, updateUserVerification);
+
+// Registration Management Routes (Protected)
+router.get('/registrations', (req, res, next) => {
+  console.log('=== ROUTE /admin/registrations HIT ===');
+  console.log('Full URL:', req.originalUrl);
+  console.log('Method:', req.method);
+  next();
+}, adminAuth, getAllRegistrations);
+router.put('/registrations/:id/status', adminAuth, updateRegistrationStatus);
+
+// Attendance Management Routes (Protected)
+router.get('/attendances', adminAuth, getAllAttendances);
+router.put('/attendances/:id/status', adminAuth, updateAttendanceStatus);
+
+// Certificate Management Routes (Protected)
+router.get('/events/:eventId/attendance-summary', adminAuth, getEventAttendanceSummary);
+router.post('/events/:eventId/daily-attendance', adminAuth, markDailyAttendance);
+router.get('/events/:eventId/users/:userId/certificate-eligibility', adminAuth, checkCertificateEligibility);
+router.post('/events/:eventId/issue-certificates', adminAuth, issueCertificatesForEvent);
 
 module.exports = router;

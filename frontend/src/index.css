@@ -16,14 +16,20 @@ body {
 }
 
 /* Professional heading fonts */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Poppins', 'Playfair Display', serif;
   font-weight: 600;
   letter-spacing: -0.025em;
 }
 
 /* Remove dots and use professional styling */
-ul, ol {
+ul,
+ol {
   list-style: none;
   padding-left: 0;
 }

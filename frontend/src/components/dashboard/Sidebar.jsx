@@ -6,6 +6,8 @@ const Sidebar = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const location = useLocation();
   const isSettingsPage = location.pathname === '/account-settings';
+  
+  // Always show profile section on all dashboard pages
 
   const navLinkClass = ({ isActive }) =>
     `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${isActive

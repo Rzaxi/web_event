@@ -1,268 +1,411 @@
 import React from 'react';
-import { Download, Star, Users, Rocket, Smartphone, Bell, Cloud, Zap, Heart } from 'lucide-react';
+import { Download, Calendar, Users, Bell, Search } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const MobileAppSection = () => {
+  const stats = [
+    { value: '8M+', label: 'Active Users' },
+    { value: '0%', label: 'Commission' },
+    { value: '4.7', label: 'App Rating' }
+  ];
+
+  const events = [
+    {
+      id: 1,
+      title: 'Tech Conference 2024',
+      date: 'Dec 15, 2024',
+      price: 'Free',
+      attendees: 1250
+    },
+    {
+      id: 2,
+      title: 'Music Festival',
+      date: 'Dec 20, 2024',
+      price: '$25',
+      attendees: 5000
+    },
+    {
+      id: 3,
+      title: 'Startup Meetup',
+      date: 'Dec 18, 2024',
+      price: 'Free',
+      attendees: 300
+    }
+  ];
+
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-teal-50 relative overflow-hidden">
-      {/* Simple Background Decorations */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-20">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-blue-200 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-40 h-40 bg-teal-200 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-purple-200 rounded-full blur-2xl"></div>
-      </div>
+    <section className="py-32 bg-white relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        {/* Header Section */}
+        <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-sm font-medium text-indigo-600 mb-4 block uppercase tracking-wide">
+              Mobile App
+            </span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 max-w-4xl mx-auto leading-tight">
+              EventHub Mobile App
+            </h2>
+          </motion.div>
+        </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-20 items-center">
           {/* Left Content */}
-          <div className="text-gray-900 space-y-8">
-            <div className="space-y-6">
-              <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-6 py-3 rounded-full text-sm font-semibold">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
-                Aplikasi Mobile Terbaru
-              </div>
-
-              <h2 className="text-4xl lg:text-5xl font-bold leading-tight tracking-tight">
-                Akses SchoolEvents
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="space-y-10"
+          >
+            <div>
+              <h2 className="text-6xl lg:text-7xl xl:text-8xl font-bold text-gray-900 leading-tight mb-8">
+                Manage Events
                 <br />
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Dimana Saja
-                </span>
+                <span className="text-indigo-600">More Easily</span>
               </h2>
-
-              <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full my-4"></div>
-
-              <p className="text-lg text-gray-700 leading-relaxed max-w-2xl">
-                Nikmati kemudahan mendaftar event, kompetisi, dan workshop favorit langsung dari smartphone Anda. 
-                Interface yang bersih dan mudah digunakan.
+              <p className="text-xl text-gray-600 leading-relaxed mb-10">
+                Help you fulfill all aspirations in life. Discover amazing events, connect with communities, and manage your schedule with our innovative platform.
               </p>
             </div>
 
-            {/* Features Grid */}
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                <div className="flex items-start space-x-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-md">
-                    <Rocket className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 mb-2 text-lg">Akses Cepat</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">Buka platform langsung dari browser tanpa perlu instalasi aplikasi.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 hover:border-purple-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                <div className="flex items-start space-x-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-md">
-                    <Smartphone className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 mb-2 text-lg">Responsif</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">Tampilan optimal di semua perangkat, dari smartphone hingga desktop.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 hover:border-teal-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                <div className="flex items-start space-x-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-md">
-                    <Bell className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 mb-2 text-lg">Notifikasi Real-time</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">Dapatkan update langsung untuk event dan pengumuman terbaru.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 hover:border-green-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                <div className="flex items-start space-x-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-md">
-                    <Cloud className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 mb-2 text-lg">Cloud Sync</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">Data tersimpan aman dan tersinkronisasi di semua perangkat Anda.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button 
-                aria-label="Akses Platform SchoolEvents" 
-                className="group relative bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] overflow-hidden"
+            <div className="flex flex-col sm:flex-row gap-6">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-4 bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative flex items-center justify-center space-x-3">
-                  <Rocket className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                  <span>Akses Platform</span>
-                </div>
-              </button>
-              
-              <button 
-                aria-label="Pelajari lebih lanjut" 
-                className="group relative bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg border-2 border-blue-200 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl"
+                <Download className="w-6 h-6" />
+                Download Now
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-4 text-indigo-600 font-bold text-lg hover:text-indigo-700 transition-colors"
               >
-                <div className="relative flex items-center justify-center space-x-3">
-                  <Star className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
-                  <span>Pelajari Lebih Lanjut</span>
+                <div className="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center">
+                  <div className="w-0 h-0 border-l-[8px] border-l-indigo-600 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent ml-1"></div>
                 </div>
-              </button>
+                See How it Works
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Right Content - Phone Mockup */}
-          <div className="relative">
-            {/* Background Glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-purple-500 rounded-[4rem] transform rotate-3 scale-105 opacity-10 blur-2xl"></div>
+          {/* Right Content - Phone + Floating Elements */}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="relative flex justify-center"
+          >
+            {/* Floating Event Stats Card - Left Top */}
+            <motion.div
+              initial={{ opacity: 0, x: -30, y: 20 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="absolute -left-20 top-8 z-20"
+            >
+              <motion.div
+                animate={{ 
+                  y: [0, -10, 0],
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 3,
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="w-52 h-32 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl p-5 shadow-xl">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="text-white text-xs font-medium">Total Events</div>
+                    <div className="w-10 h-10 bg-white/20 rounded-xl backdrop-blur-sm flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-white text-3xl font-bold mb-2">156</div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-white/80 text-xs">This Month</div>
+                    <div className="px-2 py-1 bg-green-400/20 rounded-full">
+                      <span className="text-green-300 text-xs font-semibold">+12%</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
 
-            <div className="relative mx-auto max-w-sm">
-              {/* Phone Frame */}
-              <div className="relative bg-gradient-to-b from-gray-800 to-gray-900 rounded-[2.5rem] p-3 shadow-2xl">
-                {/* Phone Screen */}
-                <div className="bg-black rounded-[2rem] overflow-hidden relative">
-                  {/* Screen Content */}
-                  <div className="bg-gradient-to-br from-blue-50 via-white to-teal-50 p-6 h-[600px] relative">
+            {/* Floating Events Chart - Right Top */}
+            <motion.div
+              initial={{ opacity: 0, x: 30, y: 20 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="absolute -right-16 top-24 z-20"
+            >
+              <motion.div
+                animate={{ 
+                  y: [0, -8, 0],
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 2.5,
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="w-44 bg-white rounded-2xl p-5 shadow-xl border border-gray-100">
+                  <div className="text-xs font-bold text-gray-900 mb-4">Events by Category</div>
+                  <div className="flex items-end justify-between h-20 gap-2">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-6 bg-indigo-200 rounded-t" style={{ height: '45%' }}></div>
+                      <span className="text-xs text-gray-500">Tech</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-6 bg-indigo-600 rounded-t" style={{ height: '75%' }}></div>
+                      <span className="text-xs text-gray-500">Music</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-6 bg-indigo-200 rounded-t" style={{ height: '55%' }}></div>
+                      <span className="text-xs text-gray-500">Sport</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-6 bg-indigo-200 rounded-t" style={{ height: '65%' }}></div>
+                      <span className="text-xs text-gray-500">Art</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Floating Attendance Rate - Left Bottom */}
+            <motion.div
+              initial={{ opacity: 0, x: -30, y: -20 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="absolute -left-20 bottom-12 z-20"
+            >
+              <motion.div
+                animate={{ 
+                  y: [0, 10, 0],
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 3.5,
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="w-36 bg-white rounded-2xl p-5 shadow-xl border border-gray-100">
+                  <div className="relative w-20 h-20 mx-auto mb-3">
+                    <svg className="transform -rotate-90 w-20 h-20">
+                      <circle cx="40" cy="40" r="34" stroke="#E5E7EB" strokeWidth="7" fill="none" />
+                      <circle cx="40" cy="40" r="34" stroke="#4F46E5" strokeWidth="7" fill="none"
+                        strokeDasharray="213.6" strokeDashoffset="53.4" strokeLinecap="round" />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xl font-bold text-indigo-600">75%</span>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs font-bold text-gray-900 mb-1">Attendance Rate</div>
+                    <div className="flex items-center justify-center gap-1">
+                      <Users className="w-3 h-3 text-gray-500" />
+                      <span className="text-xs text-gray-500">1,248 people</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Floating Active Users - Right Bottom */}
+            <motion.div
+              initial={{ opacity: 0, x: 30, y: -20 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="absolute -right-16 bottom-4 z-20"
+            >
+              <motion.div
+                animate={{ 
+                  y: [0, -8, 0],
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 2.8,
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="w-40 bg-white rounded-2xl p-4 shadow-xl border border-gray-100">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                      <Users className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500">Active Users</div>
+                      <div className="text-lg font-bold text-gray-900">2.4K</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full" style={{ width: '68%' }}></div>
+                    </div>
+                    <span className="text-xs text-gray-500">68%</span>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* iPhone Mockup - 1:1 Scale */}
+            <div className="relative w-[280px] mx-auto">
+              <div className="relative bg-black rounded-[3rem] p-2 shadow-2xl">
+                {/* iPhone Notch */}
+                <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-24 h-5 bg-black rounded-b-2xl z-30"></div>
+
+                <div className="bg-white rounded-[2.8rem] overflow-hidden relative">
+                  <div className="relative h-[570px]">
                     {/* Status Bar */}
-                    <div className="flex justify-between items-center mb-6">
-                      <div className="text-sm font-bold text-gray-900">19:28</div>
-                      <div className="flex items-center space-x-1">
-                        <div className="flex space-x-1">
-                          <div className="w-1 h-1 bg-gray-900 rounded-full"></div>
-                          <div className="w-1 h-1 bg-gray-900 rounded-full"></div>
-                          <div className="w-1 h-1 bg-gray-900 rounded-full"></div>
+                    <div className="flex items-center justify-between px-6 py-3 bg-white">
+                      <span className="text-sm font-semibold text-gray-900">9:41</span>
+                      <div className="flex items-center gap-1">
+                        <div className="flex gap-0.5">
+                          <div className="w-0.5 h-0.5 bg-gray-900 rounded-full"></div>
+                          <div className="w-0.5 h-0.5 bg-gray-900 rounded-full"></div>
+                          <div className="w-0.5 h-0.5 bg-gray-900 rounded-full"></div>
+                          <div className="w-0.5 h-0.5 bg-gray-400 rounded-full"></div>
                         </div>
-                        <div className="w-6 h-3 bg-green-500 rounded-sm"></div>
+                        <div className="w-5 h-2.5 border border-gray-900 rounded-sm ml-1">
+                          <div className="w-full h-full bg-green-500"></div>
+                        </div>
                       </div>
                     </div>
 
-                    {/* App Header */}
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
-                          <div className="w-6 h-6 bg-white rounded-xl flex items-center justify-center">
-                            <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg"></div>
-                          </div>
-                        </div>
+                    {/* App Content - Event App */}
+                    <div className="h-full bg-white px-4 py-4">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-6">
                         <div>
-                          <h3 className="font-bold text-gray-900 text-lg">SchoolEvents</h3>
-                          <p className="text-xs text-gray-500">Event Sekolah Terbaik</p>
+                          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center mb-2">
+                            <Calendar className="w-5 h-5 text-white" />
+                          </div>
+                          <h3 className="text-sm font-bold text-gray-900">EventHub</h3>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                            <Search className="w-4 h-4 text-gray-600" />
+                          </div>
+                          <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                            <Bell className="w-4 h-4 text-gray-600" />
+                          </div>
                         </div>
                       </div>
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full shadow-lg flex items-center justify-center">
-                        <div className="w-5 h-5 bg-white rounded-full"></div>
-                      </div>
-                    </div>
 
-                    {/* Search Bar */}
-                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 mb-6 shadow-lg border border-blue-100/50">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-5 h-5 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
-                        <div className="text-sm text-gray-500 font-medium">Temukan event seru...</div>
-                      </div>
-                    </div>
-
-                    {/* Event Cards */}
-                    <div className="space-y-4">
-                      <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-blue-100/30">
-                        <div className="flex space-x-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl shadow-lg flex items-center justify-center">
-                            <Star className="w-8 h-8 text-white" />
+                      {/* Card Section */}
+                      <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl p-4 mb-6 shadow-lg">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <p className="text-white/80 text-xs mb-1">Total Events</p>
+                            <p className="text-white text-2xl font-bold">156</p>
                           </div>
-                          <div className="flex-1">
-                            <div className="h-4 bg-gradient-to-r from-blue-200 to-purple-200 rounded-lg mb-2"></div>
-                            <div className="h-3 bg-gray-200 rounded-lg mb-3 w-4/5"></div>
-                            <div className="flex space-x-2">
-                              <div className="px-2 py-1 bg-blue-100 rounded-full">
-                                <div className="text-xs text-blue-700 font-semibold">Popular</div>
+                          <div className="w-10 h-10 bg-white/20 rounded-xl backdrop-blur-sm flex items-center justify-center">
+                            <Calendar className="w-5 h-5 text-white" />
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <div className="text-white/80 text-xs">Next Event</div>
+                          <div className="text-white text-xs font-semibold">Tech Conf 2024</div>
+                        </div>
+                      </div>
+
+                      {/* Recent Transactions / Events */}
+                      <div className="mb-4">
+                        <div className="flex justify-between items-center mb-3">
+                          <h4 className="text-xs font-bold text-gray-900">Recent Registrations</h4>
+                          <button className="text-xs text-indigo-600 font-medium">See all</button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          {/* Event Item 1 */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                                <div className="w-5 h-6 bg-red-500 rounded-sm"></div>
                               </div>
-                              <div className="px-2 py-1 bg-purple-100 rounded-full">
-                                <div className="text-xs text-purple-700 font-semibold">New</div>
+                              <div>
+                                <p className="text-xs font-semibold text-gray-900">Tech Conference</p>
+                                <p className="text-xs text-gray-500">Dec 28, 2024</p>
                               </div>
                             </div>
+                            <p className="text-xs font-bold text-gray-900">+50</p>
                           </div>
-                        </div>
-                      </div>
 
-                      <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-teal-100/30">
-                        <div className="flex space-x-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-green-500 rounded-2xl shadow-lg flex items-center justify-center">
-                            <Users className="w-8 h-8 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="h-4 bg-gradient-to-r from-teal-200 to-green-200 rounded-lg mb-2"></div>
-                            <div className="h-3 bg-gray-200 rounded-lg mb-3 w-3/4"></div>
-                            <div className="flex space-x-2">
-                              <div className="px-2 py-1 bg-teal-100 rounded-full">
-                                <div className="text-xs text-teal-700 font-semibold">Workshop</div>
+                          {/* Event Item 2 */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <Users className="w-5 h-5 text-blue-600" />
                               </div>
-                              <div className="px-2 py-1 bg-green-100 rounded-full">
-                                <div className="text-xs text-green-700 font-semibold">Free</div>
+                              <div>
+                                <p className="text-xs font-semibold text-gray-900">Music Festival</p>
+                                <p className="text-xs text-gray-500">Dec 30, 2024</p>
                               </div>
                             </div>
+                            <p className="text-xs font-bold text-gray-900">+125</p>
                           </div>
-                        </div>
-                      </div>
 
-                      <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-orange-100/30">
-                        <div className="flex space-x-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl shadow-lg flex items-center justify-center">
-                            <Star className="w-8 h-8 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="h-4 bg-gradient-to-r from-orange-200 to-red-200 rounded-lg mb-2"></div>
-                            <div className="h-3 bg-gray-200 rounded-lg mb-3 w-5/6"></div>
-                            <div className="flex space-x-2">
-                              <div className="px-2 py-1 bg-orange-100 rounded-full">
-                                <div className="text-xs text-orange-700 font-semibold">Competition</div>
+                          {/* Event Item 3 */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                                <Calendar className="w-5 h-5 text-green-600" />
                               </div>
-                              <div className="px-2 py-1 bg-red-100 rounded-full">
-                                <div className="text-xs text-red-700 font-semibold">Prize</div>
+                              <div>
+                                <p className="text-xs font-semibold text-gray-900">Startup Meetup</p>
+                                <p className="text-xs text-gray-500">Jan 5, 2025</p>
                               </div>
                             </div>
+                            <p className="text-xs font-bold text-gray-900">+32</p>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Futuristic Bottom Navigation */}
-                    <div className="absolute bottom-8 left-6 right-6">
-                      <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-5 shadow-2xl border border-white/10">
-                        <div className="flex justify-around items-center">
-                          <div className="relative w-12 h-12 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-2xl shadow-lg shadow-cyan-500/25 flex items-center justify-center">
-                            <div className="w-6 h-6 bg-white/90 rounded-xl backdrop-blur-sm"></div>
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-orange-400 to-red-500 rounded-full animate-pulse"></div>
+                      {/* Bottom Navigation */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 px-4 py-3">
+                        <div className="flex justify-around">
+                          <div className="flex flex-col items-center gap-1 text-indigo-600">
+                            <Calendar className="w-5 h-5" />
+                            <span className="text-xs font-medium">Events</span>
                           </div>
-                          <div className="w-10 h-10 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/20"></div>
-                          <div className="w-10 h-10 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/20"></div>
-                          <div className="w-10 h-10 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/20"></div>
+                          <div className="flex flex-col items-center gap-1 text-gray-400">
+                            <Search className="w-5 h-5" />
+                            <span className="text-xs font-medium">Search</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-1 text-gray-400">
+                            <Users className="w-5 h-5" />
+                            <span className="text-xs font-medium">Community</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-1 text-gray-400">
+                            <Bell className="w-5 h-5" />
+                            <span className="text-xs font-medium">Profile</span>
+                          </div>
+                        </div>
+
+                        {/* iPhone Home Indicator */}
+                        <div className="flex justify-center mt-2">
+                          <div className="w-24 h-1 bg-gray-900 rounded-full opacity-50"></div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* Enhanced Floating Elements */}
-              <div className="absolute -top-8 -right-8 bg-gradient-to-r from-orange-400 to-red-500 p-5 rounded-3xl shadow-2xl shadow-orange-500/25 animate-float">
-                <Star className="w-10 h-10 text-white" />
-              </div>
-              <div className="absolute -bottom-8 -left-8 bg-gradient-to-r from-emerald-400 to-teal-500 p-5 rounded-3xl shadow-2xl shadow-emerald-500/25 animate-bounce">
-                <Download className="w-10 h-10 text-white" />
-              </div>
-              <div className="absolute top-1/4 -left-6 bg-gradient-to-r from-purple-400 to-pink-500 p-4 rounded-2xl shadow-xl shadow-purple-500/25 animate-pulse">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <div className="absolute bottom-1/4 -right-6 bg-gradient-to-r from-cyan-400 to-blue-500 p-4 rounded-2xl shadow-xl shadow-cyan-500/25 animate-bounce delay-500">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-              <div className="absolute top-1/2 -right-8 bg-gradient-to-r from-pink-400 to-rose-500 p-3 rounded-xl shadow-lg animate-pulse delay-1000">
-                <Heart className="w-6 h-6 text-white" />
-              </div>
             </div>
-          </div>
+
+          </motion.div>
         </div>
       </div>
     </section>
