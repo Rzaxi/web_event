@@ -122,7 +122,7 @@ const UserManagement = () => {
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   const UserDetailModal = ({ user, onClose }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Detail Pengguna</h2>

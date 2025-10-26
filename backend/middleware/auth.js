@@ -35,9 +35,9 @@ const sessionTimeout = (req, res, next) => {
   if (req.session.lastActivity) {
     const now = Date.now();
     const timeDiff = now - req.session.lastActivity;
-    const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+    const thirtyMinutes = 30 * 60 * 1000; // 30 minutes in milliseconds
 
-    if (timeDiff > fiveMinutes) {
+    if (timeDiff > thirtyMinutes) {
       req.session.destroy();
       return res.status(401).json({ message: 'Session expired due to inactivity' });
     }
@@ -47,8 +47,34 @@ const sessionTimeout = (req, res, next) => {
   next();
 };
 
+// Optional authentication - doesn't fail if no token
+const optionalAuth = async (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    // No token, continue without user
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findByPk(decoded.userId);
+    
+    if (user) {
+      req.user = user;
+    }
+  } catch (error) {
+    // Invalid token, continue without user
+    console.error('Optional auth error:', error.message);
+  }
+  
+  next();
+};
+
 module.exports = {
   authenticateToken,
   requireAdmin,
-  sessionTimeout
+  sessionTimeout,
+  optionalAuth
 };

@@ -3,6 +3,26 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
 const Sponsored = () => {
+  // Inline styles for seamless infinite scroll
+  const scrollLeftStyle = `
+    @keyframes scrollLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .scroll-left {
+      animation: scrollLeft 40s linear infinite;
+    }
+  `;
+
+  const scrollRightStyle = `
+    @keyframes scrollRight {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
+    }
+    .scroll-right {
+      animation: scrollRight 40s linear infinite;
+    }
+  `;
   const topRowPartners = [
     { 
       name: 'Zoom',
@@ -140,6 +160,10 @@ const Sponsored = () => {
 
   return (
     <section className="relative py-20 px-4 bg-white overflow-hidden">
+      {/* Add CSS Keyframes */}
+      <style>{scrollLeftStyle}</style>
+      <style>{scrollRightStyle}</style>
+      
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
@@ -163,64 +187,44 @@ const Sponsored = () => {
           </motion.h2>
         </div>
 
-        {/* Top Row - Slides Left */}
+        {/* Top Row - Slides Left (Infinite) */}
         <div className="relative mb-8 overflow-hidden">
-          <motion.div
-            className="flex gap-6"
-            animate={{
-              x: [0, -1674], // Width of one set (9 items * 186px)
-            }}
-            transition={{
-              x: {
-                repeat: Infinity,
-                repeatType: "loop",
-                duration: 30,
-                ease: "linear",
-              },
-            }}
-          >
-            {[...topRowPartners, ...topRowPartners, ...topRowPartners, ...topRowPartners].map((partner, index) => (
-              <div
-                key={`top-${index}`}
-                className="flex-shrink-0 bg-white rounded-xl shadow-sm border border-gray-100 px-8 py-6 flex items-center justify-center hover:shadow-md transition-shadow duration-300"
-                style={{ minWidth: '180px', height: '80px' }}
-              >
-                <div className="text-gray-800">
-                  {partner.icon}
+          <div className="scroll-left flex gap-6" style={{ width: 'fit-content' }}>
+            {/* Duplicate 2 times for seamless infinite loop */}
+            {[...Array(2)].flatMap((_, setIndex) =>
+              topRowPartners.map((partner, index) => (
+                <div
+                  key={`top-${setIndex}-${index}`}
+                  className="flex-shrink-0 bg-white rounded-xl shadow-sm border border-gray-100 px-8 py-6 flex items-center justify-center hover:shadow-md transition-shadow duration-300"
+                  style={{ minWidth: '180px', height: '80px' }}
+                >
+                  <div className="text-gray-800">
+                    {partner.icon}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </motion.div>
+              ))
+            )}
+          </div>
         </div>
 
-        {/* Bottom Row - Slides Right */}
+        {/* Bottom Row - Slides Right (Infinite) */}
         <div className="relative overflow-hidden">
-          <motion.div
-            className="flex gap-6"
-            animate={{
-              x: [-1302, 0], // Width of one set (7 items * 186px)
-            }}
-            transition={{
-              x: {
-                repeat: Infinity,
-                repeatType: "loop",
-                duration: 30,
-                ease: "linear",
-              },
-            }}
-          >
-            {[...bottomRowPartners, ...bottomRowPartners, ...bottomRowPartners, ...bottomRowPartners].map((partner, index) => (
-              <div
-                key={`bottom-${index}`}
-                className="flex-shrink-0 bg-white rounded-xl shadow-sm border border-gray-100 px-8 py-6 flex items-center justify-center hover:shadow-md transition-shadow duration-300"
-                style={{ minWidth: '180px', height: '80px' }}
-              >
-                <div className="text-gray-800">
-                  {partner.icon}
+          <div className="scroll-right flex gap-6" style={{ width: 'fit-content' }}>
+            {/* Duplicate 2 times for seamless infinite loop */}
+            {[...Array(2)].flatMap((_, setIndex) =>
+              bottomRowPartners.map((partner, index) => (
+                <div
+                  key={`bottom-${setIndex}-${index}`}
+                  className="flex-shrink-0 bg-white rounded-xl shadow-sm border border-gray-100 px-8 py-6 flex items-center justify-center hover:shadow-md transition-shadow duration-300"
+                  style={{ minWidth: '180px', height: '80px' }}
+                >
+                  <div className="text-gray-800">
+                    {partner.icon}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </motion.div>
+              ))
+            )}
+          </div>
         </div>
 
         {/* CTA Button */}

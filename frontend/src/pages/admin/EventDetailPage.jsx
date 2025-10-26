@@ -135,16 +135,11 @@ const EventDetailPage = () => {
 
   const getKategoriLabel = (kategori) => {
     const kategoriMap = {
-      'akademik': 'Akademik',
-      'olahraga': 'Olahraga',
-      'seni_budaya': 'Seni & Budaya',
-      'teknologi': 'Teknologi',
-      'kewirausahaan': 'Kewirausahaan',
-      'sosial': 'Sosial',
-      'kompetisi': 'Kompetisi',
-      'workshop': 'Workshop',
-      'seminar': 'Seminar',
-      'lainnya': 'Lainnya'
+      'webinar': 'Webinar',
+      'bootcamp': 'Bootcamp',
+      'pelatihan': 'Pelatihan',
+      'konser': 'Konser',
+      'kompetisi': 'Kompetisi'
     };
     return kategoriMap[kategori] || kategori;
   };

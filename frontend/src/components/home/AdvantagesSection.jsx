@@ -1,147 +1,298 @@
-import React from 'react';
-import { UserPlus, CreditCard, CheckCircle, ArrowRight, Trophy } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  UserPlus, 
+  LogIn, 
+  Search, 
+  CreditCard, 
+  CheckCircle, 
+  FileText,
+  ArrowRight,
+  Settings,
+  Sparkles,
+  Shield
+} from 'lucide-react';
+import { useScrollAnimation, useStaggeredAnimation } from '../../hooks/useScrollAnimation';
 
 const AdvantagesSection = () => {
-  const steps = [
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Add custom CSS animations
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+      
+      @keyframes sway {
+        0%, 100% { transform: translateX(0px) rotate(0deg); }
+        25% { transform: translateX(-3px) rotate(-0.5deg); }
+        75% { transform: translateX(3px) rotate(0.5deg); }
+      }
+      
+      @keyframes bounce-slow {
+        0%, 100% { transform: translateY(0px) scale(1); }
+        50% { transform: translateY(-5px) scale(1.05); }
+      }
+      
+      .animate-float {
+        animation: float 3s ease-in-out infinite;
+      }
+      
+      .animate-sway {
+        animation: sway 4s ease-in-out infinite;
+      }
+      
+      .animate-bounce-slow {
+        animation: bounce-slow 2s ease-in-out infinite;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+  
+  const registrationSteps = [
     {
       id: 1,
-      step: "STEP ONE",
-      title: "Smart Registration",
-      subtitle: "Easy Peasy!",
-      icon: UserPlus,
-      bgGradient: "from-indigo-100 via-indigo-50 to-white"
+      step: "Step 1 of 4",
+      title: "Browse & Select Events",
+      description: "Search events...",
+      icon: Search,
+      illustration: "search",
+      gradient: "from-blue-50 to-indigo-50",
+      color: "blue"
     },
     {
       id: 2,
-      step: "STEP TWO", 
-      title: "Choose Your Event",
-      subtitle: "Superfast!",
-      icon: CreditCard,
-      bgGradient: "from-blue-100 via-blue-50 to-white"
+      step: "Step 2 of 4", 
+      title: "Complete Registration",
+      description: "Fill in your details",
+      icon: FileText,
+      illustration: "registration",
+      gradient: "from-green-50 to-emerald-50",
+      color: "green"
     },
     {
       id: 3,
-      step: "STEP THREE",
+      step: "Step 3 of 4",
       title: "Secure Payment",
-      subtitle: "Smartest!",
-      icon: CheckCircle,
-      bgGradient: "from-indigo-100 via-indigo-50 to-white"
+      description: "Card, Bank",
+      icon: CreditCard,
+      illustration: "payment",
+      gradient: "from-blue-50 to-cyan-50",
+      color: "blue"
     },
     {
       id: 4,
-      step: "STEP FOUR",
-      title: "Enjoy Your Event",
-      subtitle: "Amazing Experience!",
-      icon: Trophy,
-      bgGradient: "from-purple-100 via-purple-50 to-white"
+      step: "Step 4 of 4",
+      title: "Attend Event",
+      description: "Check-in Successful!",
+      icon: CheckCircle,
+      illustration: "success",
+      gradient: "from-green-50 to-emerald-50",
+      color: "green"
     }
   ];
 
+  // Animation hooks
+  const [headerRef, isHeaderVisible] = useScrollAnimation(0.2);
+  const [stepsRef, visibleSteps] = useStaggeredAnimation(registrationSteps, 200);
+  
+  // Page load animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Custom illustrations for each step
+  const renderIllustration = (step, index) => {
+    const stepColor = step.color === 'green' ? 'green' : 'blue';
+    const bgColor = stepColor === 'green' ? 'bg-green-500' : 'bg-blue-500';
+    const borderColor = stepColor === 'green' ? 'border-green-200' : 'border-blue-200';
+    
+    switch(step.illustration) {
+      case 'search':
+        return (
+          <div className="relative w-full h-40 bg-gray-50 rounded-2xl p-4 overflow-hidden">
+            {/* Search Interface */}
+            <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+                <div className="flex-1 h-2 bg-gray-100 rounded"></div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-3 bg-blue-100 rounded w-3/4"></div>
+                <div className="h-2 bg-gray-100 rounded w-1/2"></div>
+                <div className="h-3 bg-green-100 rounded w-2/3"></div>
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'registration':
+        return (
+          <div className="relative w-full h-40 bg-gray-50 rounded-2xl p-4 overflow-hidden">
+            {/* Registration Form */}
+            <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+              <div className="mb-2">
+                <div className="h-1 bg-green-400 rounded w-1/2 mb-2"></div>
+                <div className="text-xs text-gray-500">Step 2 of 4</div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-2 bg-gray-200 rounded w-full"></div>
+                <div className="h-2 bg-gray-200 rounded w-3/4"></div>
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'payment':
+        return (
+          <div className="relative w-full h-40 bg-gray-50 rounded-2xl p-4 overflow-hidden">
+            {/* Payment Interface */}
+            <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+              <div className="flex gap-2 mb-3">
+                <div className="flex-1 bg-blue-100 rounded p-2 text-center">
+                  <div className="text-xs font-medium text-blue-600">Card</div>
+                </div>
+                <div className="flex-1 bg-gray-100 rounded p-2 text-center">
+                  <div className="text-xs text-gray-500">Bank</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-2 bg-blue-200 rounded w-full"></div>
+                <div className="h-2 bg-gray-200 rounded w-2/3"></div>
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'success':
+        return (
+          <div className="relative w-full h-40 bg-gray-50 rounded-2xl p-4 overflow-hidden">
+            {/* Success State */}
+            <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 text-center">
+              <div className="w-8 h-8 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-xs font-medium text-green-600 mb-1">Check-in Successful!</div>
+              <div className="space-y-1">
+                <div className="h-2 bg-gray-200 rounded w-3/4 mx-auto"></div>
+                <div className="h-1 bg-orange-200 rounded w-1/2 mx-auto"></div>
+              </div>
+            </div>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
   return (
-    <section className="py-20 bg-white relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Header */}
-        <div className="text-center mb-16">
-          <span className="text-sm font-medium text-indigo-600 mb-4 block uppercase tracking-wide">
+        <div 
+          ref={headerRef}
+          className={`text-center mb-16 transition-all duration-1000 ease-out ${
+            isHeaderVisible && isLoaded 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-8'
+          }`}
+        >
+          <div className={`text-sm font-medium text-blue-600 mb-4 transition-all duration-700 delay-200 ${
+            isHeaderVisible && isLoaded 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-4'
+          }`}>
             How It Works
-          </span>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 max-w-4xl mx-auto leading-tight">
-            Join Events in 4 Simple Steps
+          </div>
+          <h2 className={`text-3xl md:text-4xl font-bold text-gray-900 max-w-3xl mx-auto leading-tight transition-all duration-1000 delay-300 ${
+            isHeaderVisible && isLoaded 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-8'
+          }`}>
+            4 Simple Steps
           </h2>
         </div>
 
-        {/* Steps Container */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto mb-12">
-          {steps.map((step, index) => {
-            const IconComponent = step.icon;
-            return (
-              <div key={step.id} className="relative">
-                {/* Step Card */}
-                <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-                  {/* Step Label */}
-                  <div className="text-xs font-medium text-gray-400 mb-3 tracking-wider">
-                    {step.step}
+        {/* Registration Steps Container - Straight Layout with Floating Animation */}
+        <div ref={stepsRef} className="relative">
+          {/* Connection Line */}
+          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-green-200 to-blue-200 transform -translate-y-1/2 z-0"></div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+            {registrationSteps.map((step, index) => {
+              const isVisible = visibleSteps.has(index) && isLoaded;
+              const stepColor = step.color === 'green' ? 'green' : 'blue';
+              const bgColor = stepColor === 'green' ? 'bg-green-500' : 'bg-blue-500';
+              
+              return (
+                <div 
+                  key={step.id} 
+                  className={`transition-all duration-700 ease-out animate-float ${
+                    isVisible 
+                      ? 'opacity-100 translate-y-0 scale-100' 
+                      : 'opacity-0 translate-y-12 scale-95'
+                  }`}
+                  style={{ 
+                    transitionDelay: `${index * 150}ms`,
+                    animationDelay: `${index * 0.5}s`,
+                    animationDuration: `${3 + index * 0.3}s`
+                  }}
+                >
+                  {/* Step Number Circle - Floating */}
+                  <div className={`w-12 h-12 ${bgColor} rounded-full flex items-center justify-center text-white font-bold text-lg mb-6 mx-auto shadow-lg relative z-20 animate-bounce-slow`}
+                       style={{
+                         animationDelay: `${index * 0.7}s`,
+                         animationDuration: `${2 + index * 0.2}s`
+                       }}>
+                    {step.id}
                   </div>
-
-                  {/* Title */}
-                  <h3 className="text-lg font-bold text-gray-900 mb-6 leading-tight">
-                    {step.title}
-                  </h3>
-
-                  {/* Illustration Area */}
-                  <div className={`relative mb-6 flex items-center justify-center bg-gradient-to-br ${step.bgGradient} rounded-2xl h-40 overflow-hidden`}>
-                    {step.id === 1 && (
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-200/30 to-transparent"></div>
-                        <div className="w-20 h-28 bg-white/40 backdrop-blur-sm rounded-2xl shadow-lg flex items-center justify-center">
-                          <div className="w-16 h-24 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center">
-                            <UserPlus className="w-10 h-10 text-indigo-600" />
-                          </div>
-                        </div>
+                  
+                  {/* Step Card with floating animation */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-500 group relative overflow-hidden animate-sway"
+                       style={{
+                         animationDelay: `${index * 0.8}s`,
+                         animationDuration: `${4 + index * 0.4}s`
+                       }}>
+                    {/* Step Badge */}
+                    <div className="px-4 pt-4 pb-2">
+                      <div className="text-xs font-medium text-gray-500 mb-2">
+                        {step.step}
                       </div>
-                    )}
-                    {step.id === 2 && (
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <div className="flex gap-3">
-                          <div className="w-12 h-3 bg-gray-300 rounded-full"></div>
-                          <div className="w-20 h-3 bg-indigo-400 rounded-full"></div>
-                        </div>
-                        <div className="absolute bottom-4 left-4 w-6 h-6 bg-gray-200 rounded"></div>
-                        <div className="absolute bottom-4 right-4 flex gap-1">
-                          <div className="w-8 h-2 bg-gray-300 rounded"></div>
-                          <div className="w-8 h-2 bg-gray-300 rounded"></div>
-                        </div>
-                      </div>
-                    )}
-                    {step.id === 3 && (
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <div className="w-24 h-24 bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg flex items-center justify-center">
-                          <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center relative">
-                            <CheckCircle className="w-10 h-10 text-indigo-600" />
-                            <div className="absolute top-2 right-2 w-3 h-3 bg-indigo-500 rounded-full animate-pulse"></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {step.id === 4 && (
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <div className="relative">
-                          <div className="absolute top-0 right-0 text-2xl">🎉</div>
-                          <div className="w-24 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center px-4 shadow-xl">
-                            <Trophy className="w-8 h-8 text-white" />
-                          </div>
-                          <div className="absolute -bottom-2 -right-2 bg-white rounded-lg px-3 py-1 shadow-md text-xs font-medium">
-                            Finally
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Subtitle */}
-                  <div className="bg-indigo-50 rounded-full px-4 py-2 text-xs font-medium text-indigo-700 text-center">
-                    {step.subtitle}
+                    </div>
+                    
+                    {/* Illustration */}
+                    <div className="px-4 mb-4">
+                      {renderIllustration(step, index)}
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="px-4 pb-6">
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 leading-tight">
+                        {step.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        {step.description}
+                      </p>
+                    </div>
+                    
+                    {/* Floating decorative elements */}
+                    <div className="absolute top-2 right-2 w-2 h-2 bg-blue-400 rounded-full opacity-40 animate-ping" style={{animationDelay: `${index * 1.2}s`}}></div>
+                    <div className="absolute bottom-2 left-2 w-1.5 h-1.5 bg-green-400 rounded-full opacity-30 animate-pulse" style={{animationDelay: `${index * 0.9}s`}}></div>
                   </div>
                 </div>
-
-                {/* Arrow Connector */}
-                {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-1/2 -right-2 transform -translate-y-1/2 z-10">
-                    <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shadow-md">
-                      <ArrowRight className="w-5 h-5 text-white" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Bottom Description */}
-        <div className="mt-8 text-center max-w-4xl mx-auto">
-          <p className="text-sm text-gray-600 leading-relaxed">
-            Bergabunglah dengan EventHub dan rasakan pengalaman mendaftar event yang revolusioner dalam 4 langkah mudah. Platform kami menjamin keamanan data dan memberikan pengalaman terbaik untuk setiap event.
-          </p>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

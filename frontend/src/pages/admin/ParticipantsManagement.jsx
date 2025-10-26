@@ -16,7 +16,6 @@ import {
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { toast } from 'react-toastify';
-import AttendanceStatusBadge from '../../components/AttendanceStatusBadge';
 
 const ParticipantsManagement = () => {
   const [participants, setParticipants] = useState([]);
@@ -137,7 +136,7 @@ const ParticipantsManagement = () => {
   const totalPages = Math.ceil(filteredParticipants.length / participantsPerPage);
 
   const ParticipantDetailModal = ({ participant, onClose }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
       <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Detail Peserta</h2>

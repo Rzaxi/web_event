@@ -12,7 +12,7 @@ const CreateEventPage = () => {
     time: '',
     location: '',
     maxParticipants: '',
-    kategori: 'lainnya',
+    kategori: 'webinar',
     tingkat_kesulitan: 'pemula',
     durasi_hari: 1,
     minimum_kehadiran: 1,

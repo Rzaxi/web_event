@@ -119,14 +119,4 @@ router.get('/registrations', (req, res, next) => {
 }, adminAuth, getAllRegistrations);
 router.put('/registrations/:id/status', adminAuth, updateRegistrationStatus);
 
-// Attendance Management Routes (Protected)
-router.get('/attendances', adminAuth, getAllAttendances);
-router.put('/attendances/:id/status', adminAuth, updateAttendanceStatus);
-
-// Certificate Management Routes (Protected)
-router.get('/events/:eventId/attendance-summary', adminAuth, getEventAttendanceSummary);
-router.post('/events/:eventId/daily-attendance', adminAuth, markDailyAttendance);
-router.get('/events/:eventId/users/:userId/certificate-eligibility', adminAuth, checkCertificateEligibility);
-router.post('/events/:eventId/issue-certificates', adminAuth, issueCertificatesForEvent);
-
 module.exports = router;

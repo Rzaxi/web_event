@@ -51,6 +51,7 @@ export const authAPI = {
     verifyEmail: (token) => api.get(`/auth/verify-email/${token}`),
     forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
     resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, newPassword }),
+    changePassword: (passwordData) => api.put('/users/change-password', passwordData),
     updateProfile: (userData) => api.put('/users/profile', userData),
     logout: () => {
         localStorage.removeItem('token');
@@ -63,15 +64,26 @@ export const userAPI = {
     getProfile: () => api.get('/users/profile'),
     updateProfile: (userData) => api.put('/users/profile', userData),
     changePassword: (passwordData) => api.put('/users/change-password', passwordData),
-    getMyEvents: () => api.get('/users/events'), // User event history
+    getMyEvents: () => axios.get('http://localhost:3000/users/events', {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+        }
+    }), // Direct call to correct endpoint
+    getMyCertificates: () => axios.get('http://localhost:3000/users/certificates', {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+        }
+    }), // Direct call to correct endpoint
 };
 
 // Events API (User/Public - hanya read dan register)
 export const eventsAPI = {
     getAll: (params) => publicApi.get('/events', { params }), // Use public API for listing
     getById: (id) => {
-        // Always use public API for event details - no auth required
-        return publicApi.get(`/events/${id}`);
+        // Use authenticated API to get registration status (optionalAuth middleware)
+        return api.get(`/events/${id}`); // Sends token if available, backend handles optional auth
     },
     register: (eventId) => api.post(`/events/${eventId}/register`), // Auth required for registration
     unregister: (eventId) => api.delete(`/events/${eventId}/register`), // Auth required

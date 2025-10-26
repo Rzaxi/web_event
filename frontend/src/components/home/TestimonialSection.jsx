@@ -14,8 +14,8 @@ const TestimonialSection = () => {
       name: "Sarah Johnson",
       role: "Event Organizer",
       company: "Creative Events Co.",
-      description: "EventHub has completely transformed how we manage our events. The platform is incredibly intuitive and user-friendly.",
-      fullDescription: "Our innovative event management platform represents the perfect balance between functionality and ease of use. EventHub has revolutionized how we organize events, making it simple for our entire team to collaborate effectively. We've seen a 300% increase in attendee engagement and our event planning time has been reduced by 50%. The real-time analytics help us make data-driven decisions, and the automated features have streamlined our entire workflow process.",
+      description: "Evoria has completely transformed how we manage our events. The platform is incredibly intuitive and user-friendly.",
+      fullDescription: "Our innovative event management platform represents the perfect balance between functionality and ease of use. Evoria has revolutionized how we organize events, making it simple for our entire team to collaborate effectively. We've seen a 300% increase in attendee engagement and our event planning time has been reduced by 50%. The real-time analytics help us make data-driven decisions, and the automated features have streamlined our entire workflow process.",
       image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face",
       bgColor: "bg-indigo-50",
       color: "text-indigo-600"
@@ -28,7 +28,7 @@ const TestimonialSection = () => {
       role: "Marketing Director",
       company: "Tech Innovations Ltd.",
       description: "The analytics and reporting features are absolutely outstanding. We can track every aspect of our events in real-time.",
-      fullDescription: "Our event analytics platform is engineered for the most demanding marketing campaigns. With enhanced real-time tracking and comprehensive reporting, EventHub provides reliable insights in dynamic event environments. The platform features advanced integration capabilities and automated reporting, making it ideal for both small and large-scale event management operations.",
+      fullDescription: "Our event analytics platform is engineered for the most demanding marketing campaigns. With enhanced real-time tracking and comprehensive reporting, Evoria provides reliable insights in dynamic event environments. The platform features advanced integration capabilities and automated reporting, making it ideal for both small and large-scale event management operations.",
       image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
       bgColor: "bg-indigo-50",
       color: "text-indigo-600"
@@ -41,7 +41,7 @@ const TestimonialSection = () => {
       role: "Community Manager",
       company: "Global Conferences",
       description: "Managing multiple events simultaneously has never been easier. The automated features save us countless hours.",
-      fullDescription: "Our specialized event coordination platform delivers exceptional performance for critical business events. Built with precision and user experience in mind, EventHub offers outstanding team collaboration, automated workflows, and excellent scalability. The platform is designed to meet the stringent requirements of modern event management, providing reliable performance and long-term value.",
+      fullDescription: "Our specialized event coordination platform delivers exceptional performance for critical business events. Built with precision and user experience in mind, Evoria offers outstanding team collaboration, automated workflows, and excellent scalability. The platform is designed to meet the stringent requirements of modern event management, providing reliable performance and long-term value.",
       image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face",
       bgColor: "bg-indigo-50",
       color: "text-indigo-600"

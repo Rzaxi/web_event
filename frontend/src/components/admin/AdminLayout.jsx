@@ -9,7 +9,6 @@ import {
   Settings, 
   LogOut,
   FileText,
-  UserCheck,
   LayoutDashboard 
 } from 'lucide-react';
 import { useState } from 'react';
@@ -108,18 +107,6 @@ const AdminLayout = () => {
             >
               <Users className="mr-3 h-5 w-5" />
               Manajemen Pengguna
-            </Link>
-            
-            <Link
-              to="/admin/daily-attendance"
-              className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                location.pathname === '/admin/daily-attendance'
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              <UserCheck className="mr-3 h-5 w-5" />
-              Kehadiran Harian
             </Link>
             
             <Link

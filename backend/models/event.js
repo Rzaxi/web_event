@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Event.belongsTo(models.User, { foreignKey: 'created_by', as: 'creator' });
       Event.hasMany(models.EventRegistration, { foreignKey: 'event_id' });
-      Event.hasMany(models.DailyAttendance, { foreignKey: 'event_id' });
     }
   }
   Event.init({
@@ -52,24 +51,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     kategori: {
       type: DataTypes.ENUM(
-        'akademik',
-        'olahraga', 
-        'seni_budaya',
-        'teknologi',
-        'kewirausahaan',
-        'sosial',
-        'kompetisi',
-        'workshop',
-        'seminar',
-        'lainnya'
+        'webinar',
+        'bootcamp',
+        'pelatihan',
+        'konser',
+        'kompetisi'
       ),
       allowNull: false,
-      defaultValue: 'lainnya'
-    },
-    tingkat_kesulitan: {
-      type: DataTypes.ENUM('pemula', 'menengah', 'lanjutan'),
-      allowNull: false,
-      defaultValue: 'pemula'
+      defaultValue: 'webinar'
     },
     kapasitas_peserta: {
       type: DataTypes.INTEGER,

@@ -1,22 +1,6 @@
-import React, { useState } from 'react';
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  Send,
-  MessageSquare,
-  Users,
-  Building,
-  ArrowRight,
-  CheckCircle,
-  Globe,
-  Facebook,
-  Instagram,
-  Twitter,
-  Linkedin
-} from 'lucide-react';
-import AnimatedSection from '../components/common/AnimatedSection';
+import React, { useState, useEffect } from 'react';
+import { Phone, Mail, MapPin, Send, MessageSquare, CheckCircle, Facebook, Instagram, Twitter, Wifi, Plus, Minus } from 'lucide-react';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -28,6 +12,22 @@ const Contact = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [openFAQ, setOpenFAQ] = useState(null);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  // Animation hooks
+  const [heroRef, heroVisible] = useScrollAnimation(0.1);
+  const [contactFormRef, contactFormVisible] = useScrollAnimation(0.1);
+  const [faqHeaderRef, faqHeaderVisible] = useScrollAnimation(0.1);
+  const [faqListRef, faqListVisible] = useScrollAnimation(0.1);
+
+  // Page load animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHasLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,319 +55,328 @@ const Contact = () => {
     }, 2000);
   };
 
-  const contactInfo = [
+  const contactInfo = {
+    phone: '+62 859-3971-1150',
+    email: 'tanjintar01@gmail.com',
+    address: 'Jl. Raya Tajur, Kp. Buntar RT.02/RW.08, Kel. Muara Sari, Kec. Bogor Selatan'
+  };
+
+  const faqData = [
     {
-      icon: Mail,
-      title: 'Email',
-      details: 'info@schoolevents.id',
-      subtitle: 'Respon dalam 24 jam',
-      color: 'blue'
+      id: 1,
+      question: "Apa itu platform event management?",
+      answer: "Platform event management adalah sistem digital yang membantu Anda merencanakan, mengelola, dan melaksanakan event dari awal hingga akhir. Mulai dari pendaftaran peserta, manajemen tiket, hingga laporan analytics."
     },
     {
-      icon: Phone,
-      title: 'Telepon',
-      details: '+62 21 1234 5678',
-      subtitle: 'Senin - Jumat, 08:00 - 17:00',
-      color: 'green'
+      id: 2,
+      question: "Jenis event apa saja yang bisa dikelola?",
+      answer: "Platform kami mendukung berbagai jenis event seperti konferensi, seminar, workshop, webinar, festival, pameran, konser, dan acara korporat lainnya dengan skala kecil hingga besar."
     },
     {
-      icon: MapPin,
-      title: 'Alamat',
-      details: 'Jl. Pendidikan No. 123',
-      subtitle: 'Jakarta Selatan, 12345',
-      color: 'purple'
+      id: 3,
+      question: "Bagaimana cara memulai menggunakan platform ini?",
+      answer: "Sangat mudah! Cukup daftar akun, verifikasi email, buat event pertama Anda dengan mengisi detail acara, atur pendaftaran peserta, dan platform siap digunakan. Tim support kami siap membantu jika diperlukan."
     },
     {
-      icon: Clock,
-      title: 'Jam Operasional',
-      details: 'Senin - Jumat',
-      subtitle: '08:00 - 17:00 WIB',
-      color: 'orange'
+      id: 4,
+      question: "Apakah ada biaya berlangganan atau per event?",
+      answer: "Kami menyediakan berbagai paket yang fleksibel, mulai dari paket gratis untuk event kecil hingga paket premium untuk event besar. Hubungi tim sales kami untuk konsultasi paket yang sesuai kebutuhan Anda."
+    },
+    {
+      id: 5,
+      question: "Bagaimana dengan keamanan data peserta event?",
+      answer: "Keamanan data adalah prioritas utama kami. Kami menggunakan enkripsi tingkat enterprise, backup rutin, dan mematuhi standar keamanan internasional untuk melindungi data pribadi peserta event Anda."
     }
   ];
 
-  const inquiryTypes = [
-    { value: 'general', label: 'Pertanyaan Umum', icon: MessageSquare },
-    { value: 'partnership', label: 'Kemitraan Sekolah', icon: Building },
-    { value: 'support', label: 'Bantuan Teknis', icon: Users },
-    { value: 'feedback', label: 'Saran & Masukan', icon: CheckCircle }
-  ];
-
-  const socialLinks = [
-    { icon: Facebook, name: 'Facebook', url: '#', color: 'blue' },
-    { icon: Instagram, name: 'Instagram', url: '#', color: 'pink' },
-    { icon: Twitter, name: 'Twitter', url: '#', color: 'sky' },
-    { icon: Linkedin, name: 'LinkedIn', url: '#', color: 'indigo' }
-  ];
+  const toggleFAQ = (id) => {
+    setOpenFAQ(openFAQ === id ? null : id);
+  };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50 pt-20">
       {/* Hero Section */}
-      <section className="pt-20 pb-16 bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative">
-        <div className="container mx-auto px-4 sm:px-6">
-          <AnimatedSection animation="fade-up">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-6 py-3 rounded-full text-sm font-medium mb-8 border border-blue-200">
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Hubungi Kami
-              </div>
-              
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-8 leading-tight">
-                Mari Berkolaborasi
-                <br />
-                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  Bersama Kami
-                </span>
-              </h1>
-              
-              <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-12">
-                Kami siap membantu sekolah Anda dalam menghadirkan event-event yang berkesan. 
-                Hubungi tim kami untuk konsultasi gratis dan solusi terbaik.
-              </p>
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
-
-      {/* Contact Info Cards */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {contactInfo.map((info, index) => {
-              const Icon = info.icon;
-              const colorClasses = {
-                blue: 'from-blue-100 to-blue-200 text-blue-600',
-                green: 'from-green-100 to-green-200 text-green-600',
-                purple: 'from-purple-100 to-purple-200 text-purple-600',
-                orange: 'from-orange-100 to-orange-200 text-orange-600'
-              };
-              
-              return (
-                <AnimatedSection key={index} animation="fade-up" delay={index * 200}>
-                  <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 group">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${colorClasses[info.color]} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{info.title}</h3>
-                    <p className="text-gray-900 font-medium mb-1 text-sm">{info.details}</p>
-                    <p className="text-gray-600 text-xs">{info.subtitle}</p>
-                  </div>
-                </AnimatedSection>
-              );
-            })}
+      <section ref={heroRef} className="pt-20 pb-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className={`text-4xl lg:text-5xl font-bold text-gray-900 mb-4 transition-all duration-1000 ${
+              hasLoaded || heroVisible
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 -translate-y-8'
+            }`}>
+              Hubungi Kami
+            </h1>
+            <p className={`text-lg text-gray-600 max-w-3xl mx-auto transition-all duration-1000 delay-200 ${
+              hasLoaded || heroVisible
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 -translate-y-8'
+            }`}>
+              Kami akan membantu Anda menciptakan event yang berkualitas tinggi dan membangun pengalaman 
+              yang tak terlupakan, membuka jalan bagi kesuksesan acara Anda.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Contact Form Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
-            {/* Form */}
-            <AnimatedSection animation="fade-right">
-              <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">Kirim Pesan</h2>
-                  <p className="text-gray-600">
-                    Isi formulir di bawah ini dan tim kami akan segera menghubungi Anda.
-                  </p>
+      {/* Contact Section */}
+      <section ref={contactFormRef} className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative">
+            {/* Contact Form - Full Width */}
+            <div className={`bg-white rounded-3xl p-8 shadow-sm border border-gray-100 transition-all duration-1000 ${
+              hasLoaded || contactFormVisible
+                ? 'opacity-100 translate-y-0 scale-100'
+                : 'opacity-0 translate-y-12 scale-95'
+            }`}>
+              <div className="grid lg:grid-cols-3 gap-8">
+                
+                {/* Contact Information Card - Full Height */}
+                <div className={`bg-gray-50 rounded-3xl p-8 text-gray-900 relative overflow-hidden flex flex-col justify-between min-h-full transition-all duration-1000 delay-200 ${
+                  hasLoaded || contactFormVisible
+                    ? 'opacity-100 translate-x-0'
+                    : 'opacity-0 -translate-x-8'
+                }`}>
+                  <div className="relative z-10">
+                    {/* Informasi Kontak Section */}
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold mb-6 text-gray-900">Informasi Kontak</h3>
+                      
+                      <div className="space-y-4">
+                        <div className="flex items-start space-x-3">
+                          <div className="w-6 h-6 flex items-center justify-center mt-1">
+                            <MapPin className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div className="text-sm text-gray-700 leading-relaxed">
+                            {contactInfo.address}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3">
+                          <div className="w-6 h-6 flex items-center justify-center">
+                            <Phone className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div className="text-sm text-gray-700">
+                            {contactInfo.phone}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3">
+                          <div className="w-6 h-6 flex items-center justify-center">
+                            <Mail className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div className="text-sm text-gray-700">
+                            {contactInfo.email}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Ikuti Kami Section */}
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold mb-4 text-gray-900">Ikuti Kami</h3>
+                      <div className="flex space-x-4">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-blue-50 transition-all duration-300 cursor-pointer shadow-sm hover:scale-110 hover:-translate-y-1 hover:shadow-md">
+                          <Facebook className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-blue-50 transition-all duration-300 cursor-pointer shadow-sm hover:scale-110 hover:-translate-y-1 hover:shadow-md">
+                          <Instagram className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-blue-50 transition-all duration-300 cursor-pointer shadow-sm hover:scale-110 hover:-translate-y-1 hover:shadow-md">
+                          <Twitter className="w-5 h-5 text-blue-600" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Logo Section */}
+                    <div className="flex justify-center mt-8">
+                      <div className="w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center">
+                        <div className="text-white font-bold text-lg">
+                          E
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                {isSubmitted ? (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle className="w-8 h-8 text-green-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Pesan Terkirim!</h3>
-                    <p className="text-gray-600 mb-6">
-                      Terima kasih atas pesan Anda. Tim kami akan segera menghubungi Anda.
-                    </p>
-                    <button
-                      onClick={() => setIsSubmitted(false)}
-                      className="text-blue-600 hover:text-blue-700 font-semibold"
-                    >
-                      Kirim Pesan Lain
-                    </button>
+                {/* Contact Form Content */}
+                <div className={`lg:col-span-2 transition-all duration-1000 delay-300 ${
+                  hasLoaded || contactFormVisible
+                    ? 'opacity-100 translate-x-0'
+                    : 'opacity-0 translate-x-8'
+                }`}>
+              {isSubmitted ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-8 h-8 text-green-600" />
                   </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Nama Lengkap *
-                        </label>
-                        <input
-                          type="text"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                          placeholder="Masukkan nama lengkap"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Email *
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                          placeholder="nama@email.com"
-                        />
-                      </div>
-                    </div>
-
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Pesan Terkirim!</h3>
+                  <p className="text-gray-600 mb-6">
+                    Terima kasih atas pesan Anda. Tim kami akan segera menghubungi Anda.
+                  </p>
+                  <button
+                    onClick={() => setIsSubmitted(false)}
+                    className="text-gray-900 hover:text-gray-700 font-medium"
+                  >
+                    Kirim Pesan Lain
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Jenis Pertanyaan
-                      </label>
-                      <select
-                        name="type"
-                        value={formData.type}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                      >
-                        {inquiryTypes.map((type) => (
-                          <option key={type.value} value={type.value}>
-                            {type.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Subjek *
-                      </label>
+                      <label className="block text-sm font-medium text-gray-600 mb-2">Your Name</label>
                       <input
                         type="text"
-                        name="subject"
-                        value={formData.subject}
+                        name="name"
+                        value={formData.name}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                        placeholder="Subjek pesan Anda"
+                        className="w-full px-0 py-3 border-0 border-b-2 border-gray-200 focus:border-indigo-600 focus:ring-0 bg-transparent transition-all duration-300 placeholder-gray-500"
+                        placeholder="Nama Lengkap"
                       />
                     </div>
-
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Pesan *
-                      </label>
-                      <textarea
-                        name="message"
-                        value={formData.message}
+                      <label className="block text-sm font-medium text-gray-600 mb-2">Your Email</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
                         onChange={handleInputChange}
                         required
-                        rows={6}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 resize-none"
-                        placeholder="Tulis pesan Anda di sini..."
+                        className="w-full px-0 py-3 border-0 border-b-2 border-gray-200 focus:border-indigo-600 focus:ring-0 bg-transparent transition-all duration-300 placeholder-gray-500"
+                        placeholder="email@example.com"
                       />
                     </div>
+                  </div>
 
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Your Subject</label>
+                    <input
+                      type="text"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-0 py-3 border-0 border-b-2 border-gray-200 focus:border-indigo-600 focus:ring-0 bg-transparent transition-all duration-300 placeholder-gray-500"
+                      placeholder="Saya ingin menanyakan tentang layanan event management"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Pesan
+                    </label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      required
+                      rows={6}
+                      className="w-full px-0 py-3 border-0 border-b-2 border-gray-200 focus:border-gray-900 focus:ring-0 bg-transparent transition-all duration-300 resize-none placeholder-gray-500"
+                      placeholder="Tulis pesan Anda di sini..."
+                    />
+                  </div>
+
+                  <div className="pt-4">
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none flex items-center justify-center"
+                      className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-medium py-3 px-8 rounded-lg transition-all duration-300 flex items-center"
                     >
                       {isSubmitting ? (
                         <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                           Mengirim...
                         </>
                       ) : (
                         <>
                           Kirim Pesan
-                          <Send className="w-5 h-5 ml-2" />
                         </>
                       )}
                     </button>
-                  </form>
-                )}
-              </div>
-            </AnimatedSection>
-
-            {/* Additional Info */}
-            <AnimatedSection animation="fade-left">
-              <div className="space-y-8">
-                {/* FAQ */}
-                <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Pertanyaan Umum</h3>
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Bagaimana cara mendaftar sekolah?</h4>
-                      <p className="text-gray-600 text-sm">
-                        Hubungi tim kami melalui formulir atau email untuk konsultasi gratis dan proses onboarding.
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Apakah ada biaya berlangganan?</h4>
-                      <p className="text-gray-600 text-sm">
-                        Kami menyediakan berbagai paket sesuai kebutuhan sekolah. Konsultasi gratis untuk menentukan paket terbaik.
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Bagaimana dukungan teknis?</h4>
-                      <p className="text-gray-600 text-sm">
-                        Tim support kami siap membantu 24/7 melalui berbagai channel komunikasi.
-                      </p>
-                    </div>
                   </div>
-                </div>
-
-                {/* Social Media */}
-                <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Ikuti Kami</h3>
-                  <p className="text-gray-600 mb-6">
-                    Dapatkan update terbaru dan tips mengelola event sekolah di media sosial kami.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4">
-                    {socialLinks.map((social, index) => {
-                      const Icon = social.icon;
-                      
-                      return (
-                        <a
-                          key={index}
-                          href={social.url}
-                          className="flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-700 hover:text-gray-900 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-md group"
-                        >
-                          <Icon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                          <span className="font-medium">{social.name}</span>
-                        </a>
-                      );
-                    })}
-                  </div>
+                </form>
+              )}
                 </div>
               </div>
-            </AnimatedSection>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Map Section (Placeholder) */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6">
-          <AnimatedSection animation="fade-up">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Lokasi Kami</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Kunjungi kantor kami untuk diskusi lebih lanjut tentang kebutuhan event sekolah Anda.
-              </p>
+      {/* FAQ Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* FAQ Header */}
+          <div ref={faqHeaderRef} className="text-center mb-16">
+            <div className={`inline-block bg-gray-200 text-gray-600 text-sm font-medium px-4 py-2 rounded-full mb-6 transition-all duration-1000 ${
+              faqHeaderVisible
+                ? 'opacity-100 scale-100'
+                : 'opacity-0 scale-90'
+            }`}>
+              Sering Ditanya
             </div>
-            
-            <div className="bg-gray-100 rounded-3xl h-96 flex items-center justify-center border border-gray-200">
-              <div className="text-center">
-                <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 font-medium">Interactive Map</p>
-                <p className="text-gray-400 text-sm">Jl. Pendidikan No. 123, Jakarta Selatan</p>
+            <h2 className={`text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight transition-all duration-1000 delay-100 ${
+              faqHeaderVisible
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-8'
+            }`}>
+              We're here to answer all your questions.
+            </h2>
+            <p className={`text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed transition-all duration-1000 delay-200 ${
+              faqHeaderVisible
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-8'
+            }`}>
+              Jika Anda baru mengenal platform kami atau ingin meningkatkan pengalaman event Anda, 
+              bagian ini akan membantu Anda mempelajari lebih lanjut tentang platform dan fitur-fiturnya.
+            </p>
+          </div>
+
+          {/* FAQ Items */}
+          <div ref={faqListRef} className="space-y-4">
+            {faqData.map((faq, index) => (
+              <div 
+                key={faq.id} 
+                className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-700 hover:shadow-lg hover:-translate-y-1 ${
+                  faqListVisible
+                    ? 'opacity-100 translate-y-0 scale-100'
+                    : 'opacity-0 translate-y-12 scale-95'
+                }`}
+                style={{ 
+                  transitionDelay: `${index * 100}ms`,
+                  animationFillMode: 'both'
+                }}
+              >
+                <button
+                  onClick={() => toggleFAQ(faq.id)}
+                  className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
+                >
+                  <span className="text-lg font-semibold text-gray-900 pr-4">
+                    {faq.question}
+                  </span>
+                  <div className="flex-shrink-0">
+                    <div className={`transform transition-transform duration-300 ${openFAQ === faq.id ? 'rotate-45' : 'rotate-0'}`}>
+                      <Plus className="w-6 h-6 text-gray-600" />
+                    </div>
+                  </div>
+                </button>
+                <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                  openFAQ === faq.id ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                }`}>
+                  <div className={`px-8 pb-6 transform transition-all duration-500 ease-out ${
+                    openFAQ === faq.id ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
+                  }`}>
+                    <div className="border-t border-gray-100 pt-6">
+                      <p className="text-gray-600 leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </AnimatedSection>
+            ))}
+          </div>
         </div>
       </section>
     </div>

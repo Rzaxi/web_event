@@ -57,7 +57,6 @@ const getAllEvents = async (req, res) => {
       flyer: event.flyer_url,
       flyer_url: event.flyer_url ? `http://localhost:3000${event.flyer_url}` : null,
       kategori: event.kategori,
-      tingkat_kesulitan: event.tingkat_kesulitan,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt
     }));
@@ -93,7 +92,6 @@ const createEvent = async (req, res) => {
       location, 
       maxParticipants,
       kategori,
-      tingkat_kesulitan,
       durasi_hari,
       minimum_kehadiran,
       memberikan_sertifikat,
@@ -128,7 +126,6 @@ const createEvent = async (req, res) => {
       sertifikat_template: req.body.sertifikat_template,
       deskripsi: description,
       kategori: kategori || 'lainnya',
-      tingkat_kesulitan: tingkat_kesulitan || 'pemula',
       kapasitas_peserta: parseInt(maxParticipants),
       biaya: 0,
       status_event: 'published',
@@ -441,7 +438,6 @@ const getEventById = async (req, res) => {
       flyer: event.flyer_url,
       flyer_url: event.flyer_url ? `http://localhost:3000${event.flyer_url}` : null,
       kategori: event.kategori,
-      tingkat_kesulitan: event.tingkat_kesulitan,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt
     };
@@ -460,7 +456,7 @@ const getEventById = async (req, res) => {
   }
 };
 
-// Get Event Options (kategori and tingkat_kesulitan)
+// Get Event Options (kategori)
 const getEventOptions = async (req, res) => {
   try {
     const { Event } = require('../models');
@@ -472,25 +468,14 @@ const getEventOptions = async (req, res) => {
       raw: true
     });
     
-    // Get unique difficulty levels from database
-    const difficulties = await Event.findAll({
-      attributes: ['tingkat_kesulitan'],
-      group: ['tingkat_kesulitan'],
-      raw: true
-    });
 
     // Default options if database is empty
     const defaultCategories = [
-      { value: 'akademik', label: 'Akademik' },
-      { value: 'olahraga', label: 'Olahraga' },
-      { value: 'seni_budaya', label: 'Seni & Budaya' },
-      { value: 'teknologi', label: 'Teknologi' },
-      { value: 'kewirausahaan', label: 'Kewirausahaan' },
-      { value: 'sosial', label: 'Sosial' },
-      { value: 'kompetisi', label: 'Kompetisi' },
-      { value: 'workshop', label: 'Workshop' },
-      { value: 'seminar', label: 'Seminar' },
-      { value: 'lainnya', label: 'Lainnya' }
+      { value: 'webinar', label: 'Webinar' },
+      { value: 'bootcamp', label: 'Bootcamp' },
+      { value: 'pelatihan', label: 'Pelatihan' },
+      { value: 'konser', label: 'Konser' },
+      { value: 'kompetisi', label: 'Kompetisi' }
     ];
 
     const defaultDifficulties = [

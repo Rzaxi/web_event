@@ -1,41 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './styles/skeleton.css';
 
 // Components
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
-import AppLoader from './components/ui/AppLoader';
-import PageLoader from './components/ui/PageLoader';
+import ScrollToTop from './components/common/ScrollToTop';
 
 // Pages
 import Home from './pages/Home';
 import Events from './pages/Events';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 import Register from './pages/auth/Register';
 import VerifyEmail from './pages/auth/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-import Profile from './pages/user/Profile';
-import MyEvents from './pages/user/MyEvents';
-import AttendanceCertificatePage from './pages/user/AttendanceCertificatePage';
+import ProfileSettings from './pages/user/ProfileSettings';
 import EventDetail from './pages/events/EventDetail';
 import EventConfirmation from './pages/events/EventConfirmation';
-import ProfileCompletion from './pages/ProfileCompletion';
-
-import DashboardLayout from './components/layout/DashboardLayout';
-import Dashboard from './pages/user/Dashboard';
-import AccountSettings from './pages/user/AccountSettings';
+import EventTicket from './pages/events/EventTicket';
+import NotFound from './pages/NotFound';
 
 // Admin Pages
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserManagement from './pages/admin/UserManagement';
-import AttendanceManagement from './pages/admin/AttendanceManagement';
-import DailyAttendanceManagement from './pages/admin/DailyAttendanceManagement';
 import ParticipantsManagement from './pages/admin/ParticipantsManagement';
 import AdminEvents from './pages/admin/AdminEvents';
 import CreateEventPage from './pages/admin/CreateEventPage';
@@ -44,35 +38,35 @@ import EventDetailPage from './pages/admin/EventDetailPage';
 import AdminRoute from './components/auth/AdminRoute';
 import AdminLayout from './components/admin/AdminLayout';
 
+// Event Organizer Auth
+import OrganizerRoute from './components/auth/OrganizerRoute';
+
+// Event Organizer Pages
+import EODashboard from './pages/organizer/EODashboard';
+import EOEvents from './pages/organizer/EOEvents';
+import CreateEvent from './pages/organizer/CreateEvent';
+import EOParticipants from './pages/organizer/EOParticipants';
+import EOAnalytics from './pages/organizer/EOAnalytics';
+import EOAttendance from './pages/organizer/EOAttendance';
+import EOLayout from './components/organizer/EOLayout';
+
 // Layout component to conditionally show header/footer
 function Layout({ children }) {
   const location = useLocation();
-  const [isPageLoading, setIsPageLoading] = useState(false);
-  const [prevLocation, setPrevLocation] = useState(location);
 
-  const authPages = ['/login', '/register', '/verify-email', '/forgot-password', '/reset-password', '/profile-completion', '/login/admin'];
+  const authPages = ['/login', '/register', '/verify-email', '/forgot-password', '/reset-password', '/login/admin'];
   const isAuthPage = authPages.some(page => location.pathname.startsWith(page));
   const isAdminPage = location.pathname.startsWith('/admin');
+  const isOrganizerPage = location.pathname.startsWith('/organizer');
+  const isProfileSettingsPage = location.pathname.startsWith('/profile/settings');
+  const is404Page = false; // Always show navbar and footer
 
-  useEffect(() => {
-    if (location !== prevLocation) {
-      setIsPageLoading(true);
+  // Hide header and footer on event detail pages (e.g., /events/1, /events/2, etc.)
+  const isEventDetailPage = /^\/events\/\d+$/.test(location.pathname);
+  const isEventConfirmPage = /^\/events\/\d+\/confirm/.test(location.pathname);
+  const isEventTicketPage = /^\/events\/\d+\/ticket/.test(location.pathname);
 
-      // Simulate page loading time
-      const timer = setTimeout(() => {
-        setIsPageLoading(false);
-        setPrevLocation(location);
-      }, 600);
-
-      return () => clearTimeout(timer);
-    }
-  }, [location, prevLocation]);
-
-  if (isPageLoading) {
-    return <PageLoader isVisible={true} />;
-  }
-
-  if (isAuthPage || isAdminPage) {
+  if (isAuthPage || isAdminPage || isOrganizerPage || isEventDetailPage || isEventConfirmPage || isEventTicketPage || isProfileSettingsPage || is404Page) {
     return (
       <div className="animate-fade-in">
         {children}
@@ -90,52 +84,34 @@ function Layout({ children }) {
 }
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-
-  const handleLoadingComplete = () => {
-    setIsLoading(false);
-  };
-
-  if (isLoading) {
-    return <AppLoader onLoadingComplete={handleLoadingComplete} />;
-  }
-
   return (
     <Router>
+      <ScrollToTop />
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/events/:id/confirm" element={<EventConfirmation />} />
+          <Route path="/events/:id/ticket/:registrationId" element={<EventTicket />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/profile-completion" element={<ProfileCompletion />} />
           <Route path="/verify-email/:token" element={<VerifyEmail />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* User Routes */}
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/my-events" element={<MyEvents />} />
-          <Route path="/events/:eventId/attendance" element={<AttendanceCertificatePage />} />
-          <Route path="/account-settings" element={<AccountSettings />} />
-
-          {/* Dashboard Routes */}
-          <Route path="/" element={<DashboardLayout />}>
-            <Route path="dashboard" element={<Dashboard />} />
-          </Route>
+          <Route path="/profile/settings" element={<ProfileSettings />} />
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
             <Route path="users" element={<AdminRoute><UserManagement /></AdminRoute>} />
-            <Route path="attendances" element={<AdminRoute><AttendanceManagement /></AdminRoute>} />
-            <Route path="daily-attendance" element={<AdminRoute><DailyAttendanceManagement /></AdminRoute>} />
             <Route path="participants" element={<AdminRoute><ParticipantsManagement /></AdminRoute>} />
             <Route path="events" element={<AdminRoute><AdminEvents /></AdminRoute>} />
             <Route path="events/create" element={<AdminRoute><CreateEventPage /></AdminRoute>} />
@@ -143,8 +119,22 @@ function App() {
             <Route path="events/:id/edit" element={<AdminRoute><EditEventPage /></AdminRoute>} />
           </Route>
 
+          {/* Event Organizer Routes */}
+          <Route path="/organizer" element={<EOLayout />}>
+            <Route index element={<OrganizerRoute><EODashboard /></OrganizerRoute>} />
+            <Route path="events" element={<OrganizerRoute><EOEvents /></OrganizerRoute>} />
+            <Route path="events/create" element={<OrganizerRoute><CreateEvent /></OrganizerRoute>} />
+            <Route path="participants" element={<OrganizerRoute><EOParticipants /></OrganizerRoute>} />
+            <Route path="analytics" element={<OrganizerRoute><EOAnalytics /></OrganizerRoute>} />
+            <Route path="attendance" element={<OrganizerRoute><EOAttendance /></OrganizerRoute>} />
+          </Route>
+
           {/* Admin Login Route */}
           <Route path="/login/admin" element={<AdminLogin />} />
+          
+          {/* 404 Routes */}
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
 

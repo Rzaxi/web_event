@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User, Event, EventRegistration, Attendance, DailyAttendance } = require('../models');
+const { User, Event, EventRegistration } = require('../models');
 const { Op } = require('sequelize');
 
 // Admin Login
@@ -372,7 +372,7 @@ const getAllRegistrations = async (req, res) => {
       }),
       Event.findAll({
         where: { id: eventIds },
-        attributes: ['id', 'judul', 'tanggal', 'waktu_mulai', 'waktu_selesai', 'lokasi', 'kategori', 'tingkat_kesulitan', 'deskripsi']
+        attributes: ['id', 'judul', 'tanggal', 'waktu_mulai', 'waktu_selesai', 'lokasi', 'kategori', 'deskripsi']
       })
     ]);
 
@@ -493,80 +493,6 @@ const updateUserVerification = async (req, res) => {
   }
 };
 
-// Get All Attendances for Attendance Management
-const getAllAttendances = async (req, res) => {
-  try {
-    const attendances = await Attendance.findAll({
-      include: [
-        {
-          model: User,
-          attributes: ['id', 'nama_lengkap', 'email'],
-        },
-        {
-          model: Event,
-          attributes: ['id', 'judul', 'tanggal'],
-        },
-      ],
-      order: [['createdAt', 'DESC']],
-    });
-
-    res.json({
-      success: true,
-      data: attendances,
-    });
-
-  } catch (error) {
-    console.error('Get all attendances error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Gagal mengambil data kehadiran',
-      error: error.message,
-    });
-  }
-};
-
-// Update Attendance Status
-const updateAttendanceStatus = async (req, res) => {
-  try {
-    const { id } = req.params; // This is the attendance ID
-    const { status } = req.body;
-
-    if (!['present', 'absent', 'late', 'excused'].includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Status kehadiran tidak valid',
-      });
-    }
-
-    const attendance = await Attendance.findByPk(id);
-    if (!attendance) {
-      return res.status(404).json({
-        success: false,
-        message: 'Data kehadiran tidak ditemukan',
-      });
-    }
-
-    const updateData = { status };
-    if (status === 'present' && !attendance.check_in_time) {
-        updateData.check_in_time = new Date();
-    }
-
-    await attendance.update(updateData);
-
-    res.json({
-      success: true,
-      message: 'Status kehadiran berhasil diperbarui',
-    });
-
-  } catch (error) {
-    console.error('Update attendance status error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Gagal memperbarui status kehadiran',
-    });
-  }
-};
-
 module.exports = {
   adminLogin,
   getDashboardOverview,
@@ -576,7 +502,5 @@ module.exports = {
   getAllUsers,
   getAllRegistrations,
   updateRegistrationStatus,
-  updateUserVerification,
-  getAllAttendances,
-  updateAttendanceStatus
+  updateUserVerification
 };

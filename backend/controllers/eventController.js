@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { Op } = require('sequelize');
 const XLSX = require('xlsx');
-const { generateAttendanceToken } = require('../utils/attendanceTokenGenerator');
+const { createNotification, NOTIFICATION_TYPES } = require('./notificationController');
 
 // Get all events (public)
 const getEvents = async (req, res) => {
@@ -16,7 +16,6 @@ const getEvents = async (req, res) => {
       sortBy = 'tanggal',
       sortOrder = 'DESC',
       kategori,
-      tingkat_kesulitan,
       price_filter
     } = req.query;
     const offset = (page - 1) * limit;
@@ -37,10 +36,6 @@ const getEvents = async (req, res) => {
       whereClause.kategori = kategori;
     }
 
-    // Difficulty filter
-    if (tingkat_kesulitan && tingkat_kesulitan.trim()) {
-      whereClause.tingkat_kesulitan = tingkat_kesulitan;
-    }
 
     // Price filter
     if (price_filter && price_filter.trim()) {
@@ -165,7 +160,6 @@ const createEvent = async (req, res) => {
       sertifikat_template,
       deskripsi,
       kategori = 'lainnya',
-      tingkat_kesulitan = 'pemula',
       kapasitas_peserta,
       biaya = 0,
       status_event = 'published'
@@ -187,7 +181,6 @@ const createEvent = async (req, res) => {
       sertifikat_template,
       deskripsi,
       kategori,
-      tingkat_kesulitan,
       kapasitas_peserta: kapasitas_peserta ? parseInt(kapasitas_peserta) : null,
       biaya: parseFloat(biaya),
       status_event,
@@ -237,7 +230,6 @@ const updateEvent = async (req, res) => {
       sertifikat_template,
       deskripsi,
       kategori,
-      tingkat_kesulitan,
       kapasitas_peserta,
       biaya,
       status_event
@@ -274,7 +266,6 @@ const updateEvent = async (req, res) => {
       sertifikat_template,
       deskripsi,
       kategori: kategori || event.kategori,
-      tingkat_kesulitan: tingkat_kesulitan || event.tingkat_kesulitan,
       kapasitas_peserta: kapasitas_peserta ? parseInt(kapasitas_peserta) : event.kapasitas_peserta,
       biaya: biaya !== undefined ? parseFloat(biaya) : event.biaya,
       status_event: status_event || event.status_event
@@ -363,29 +354,23 @@ const registerForEvent = async (req, res) => {
       return res.status(400).json({ message: 'Anda sudah terdaftar untuk event ini' });
     }
 
-    // Generate attendance token
-    const attendanceToken = generateAttendanceToken();
-
-    // Create registration with token
+    // Create registration
     await EventRegistration.create({
       event_id: id,
-      user_id: userId,
-      attendance_token: attendanceToken
+      user_id: userId
     });
 
-    // Send attendance token to user's email
-    try {
-      const { sendAttendanceTokenEmail } = require('../utils/emailService');
-      await sendAttendanceTokenEmail(req.user.email, req.user.nama_lengkap, event.judul, attendanceToken);
-      console.log('Attendance token email sent to:', req.user.email);
-    } catch (emailError) {
-      console.error('Failed to send attendance token email:', emailError);
-      // Don't fail the registration if email fails, just log it
-    }
+    // Create notification for successful registration
+    await createNotification(
+      userId,
+      NOTIFICATION_TYPES.EVENT_REGISTERED,
+      'Pendaftaran Berhasil!',
+      `Anda telah berhasil mendaftar untuk event "${event.judul}". Jangan lupa hadir pada tanggal yang ditentukan!`,
+      id
+    );
 
     res.status(201).json({ 
-      message: 'Berhasil mendaftar event. Token kehadiran telah dikirim ke email Anda.',
-      attendanceToken: attendanceToken // Include token in response as fallback
+      message: 'Berhasil mendaftar event'
     });
   } catch (error) {
     console.error('Register event error:', error);
@@ -399,6 +384,9 @@ const unregisterFromEvent = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
+    // Get event details before deleting registration
+    const event = await Event.findByPk(id);
+    
     // Find and delete registration
     const registration = await EventRegistration.findOne({
       where: {
@@ -412,6 +400,17 @@ const unregisterFromEvent = async (req, res) => {
     }
 
     await registration.destroy();
+
+    // Create notification for cancelled registration
+    if (event) {
+      await createNotification(
+        userId,
+        NOTIFICATION_TYPES.EVENT_CANCELLED,
+        'Pendaftaran Dibatalkan',
+        `Anda telah membatalkan pendaftaran untuk event "${event.judul}".`,
+        id
+      );
+    }
 
     res.json({ message: 'Berhasil membatalkan pendaftaran event' });
   } catch (error) {

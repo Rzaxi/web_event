@@ -31,26 +31,6 @@ export const isProfileComplete = (user) => {
     return !isTemporary;
   });
   
-  // Debug logging
-  console.log('Profile completion check:', {
-    user: user,
-    requiredFields: requiredFields,
-    fieldValues: requiredFields.map(field => {
-      const value = user[field];
-      const lowerValue = value ? value.toString().toLowerCase().trim() : '';
-      const isTemporary = temporaryValues.some(temp => 
-        lowerValue.includes(temp.toLowerCase())
-      );
-      return { 
-        [field]: value,
-        isTemporary: isTemporary
-      };
-    }),
-    isComplete: isComplete,
-    profile_completed: user.profile_completed,
-    allUserKeys: Object.keys(user)
-  });
-  
   return isComplete;
 };
 

@@ -28,6 +28,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var apiRouter = require('./routes/api');
 var adminRouter = require('./routes/admin');
+var organizerRouter = require('./routes/organizer');
 
 var app = express();
 
@@ -62,6 +63,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);  // Admin routes di luar /api
+app.use('/api/organizer', organizerRouter);  // Organizer routes
 app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler

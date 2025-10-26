@@ -12,7 +12,7 @@ const EditEventPage = () => {
     time: '',
     location: '',
     maxParticipants: '',
-    kategori: 'lainnya',
+    kategori: 'webinar',
     tingkat_kesulitan: 'pemula'
   });
   const [flyer, setFlyer] = useState(null);
@@ -74,7 +74,7 @@ const EditEventPage = () => {
           time: event.time || '',
           location: event.location || '',
           maxParticipants: event.maxParticipants || '',
-          kategori: event.kategori || 'lainnya',
+          kategori: event.kategori || 'webinar',
           tingkat_kesulitan: event.tingkat_kesulitan || 'pemula'
         });
         setCurrentFlyer(event.flyer || '');

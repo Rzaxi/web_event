@@ -8,128 +8,7 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
-// Attendance routes
-router.get('/events/:eventId/attendance/check', authenticateToken, userController.checkAttendanceAvailability);
-router.post('/events/:eventId/attendance/verify-token', authenticateToken, userController.verifyAttendanceToken);
-router.post('/events/:eventId/attendance/request-otp', authenticateToken, userController.requestAttendanceOtp);
-router.post('/events/:eventId/attendance/verify-otp', authenticateToken, userController.verifyAttendanceOtp);
-
-// User attendance and certificate routes - inline implementation to avoid import issues
-router.get('/events/:eventId/my-attendance', authenticateToken, async (req, res) => {
-  try {
-    const { User, Event, EventRegistration, DailyAttendance } = require('../models');
-    const { eventId } = req.params;
-    const userId = req.user.id;
-
-    // Check if user is registered for this event
-    const registration = await EventRegistration.findOne({
-      where: { 
-        user_id: userId, 
-        event_id: eventId 
-      },
-      include: [
-        {
-          model: Event,
-          attributes: ['id', 'judul', 'tanggal', 'durasi_hari', 'minimum_kehadiran', 'memberikan_sertifikat']
-        }
-      ]
-    });
-
-    if (!registration) {
-      return res.status(404).json({
-        success: false,
-        message: 'Anda tidak terdaftar untuk event ini'
-      });
-    }
-
-    // Get daily attendance records
-    const dailyAttendance = await DailyAttendance.findAll({
-      where: {
-        user_id: userId,
-        event_id: eventId
-      },
-      order: [['hari_ke', 'ASC']]
-    });
-
-    res.json({
-      success: true,
-      registration,
-      attendance: dailyAttendance
-    });
-
-  } catch (error) {
-    console.error('Get my attendance error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Gagal mengambil data kehadiran'
-    });
-  }
-});
-
-router.get('/events/:eventId/certificate-eligibility', authenticateToken, async (req, res) => {
-  try {
-    const { User, Event, EventRegistration, DailyAttendance } = require('../models');
-    const { eventId } = req.params;
-    const userId = req.user.id;
-
-    // Check if user is registered
-    const registration = await EventRegistration.findOne({
-      where: { 
-        user_id: userId, 
-        event_id: eventId 
-      },
-      include: [
-        {
-          model: Event,
-          attributes: ['durasi_hari', 'minimum_kehadiran', 'memberikan_sertifikat']
-        }
-      ]
-    });
-
-    if (!registration) {
-      return res.status(404).json({
-        success: false,
-        message: 'Anda tidak terdaftar untuk event ini'
-      });
-    }
-
-    if (!registration.Event.memberikan_sertifikat) {
-      return res.json({
-        success: true,
-        eligible: false,
-        message: 'Event ini tidak memberikan sertifikat'
-      });
-    }
-
-    // Count present days from daily attendance
-    const presentDays = await DailyAttendance.count({
-      where: {
-        user_id: userId,
-        event_id: eventId,
-        status: ['present', 'late']
-      }
-    });
-
-    const eligible = presentDays >= registration.Event.minimum_kehadiran;
-
-    res.json({
-      success: true,
-      eligible,
-      present_days: presentDays,
-      required_days: registration.Event.minimum_kehadiran,
-      certificate_issued: registration.sertifikat_url ? true : false,
-      certificate_url: registration.sertifikat_url
-    });
-
-  } catch (error) {
-    console.error('Get certificate eligibility error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Gagal mengecek kelayakan sertifikat'
-    });
-  }
-});
-
+// Certificate routes
 router.get('/events/:eventId/certificate/download', authenticateToken, async (req, res) => {
   try {
     const { EventRegistration } = require('../models');
@@ -173,21 +52,120 @@ router.get('/events', authenticateToken, async (req, res) => {
     const { Event, EventRegistration } = require('../models');
     const userId = req.user.id;
 
+    // Get registrations first
     const registrations = await EventRegistration.findAll({
       where: { user_id: userId },
-      include: [{
-        model: Event,
-        attributes: ['id', 'judul', 'tanggal', 'waktu', 'lokasi', 'flyer_url']
-      }],
-      order: [[Event, 'tanggal', 'DESC']]
+      order: [['createdAt', 'DESC']]
     });
 
-    const events = registrations.map(reg => reg.Event);
+    // Get events separately to avoid association issues
+    const events = [];
+    for (const registration of registrations) {
+      try {
+        const event = await Event.findByPk(registration.event_id, {
+          attributes: ['id', 'judul', 'tanggal', 'waktu', 'lokasi', 'flyer_url']
+        });
+        if (event) {
+          events.push(event);
+        }
+      } catch (eventError) {
+        // Skip this event if there's an error
+        continue;
+      }
+    }
 
     res.json({ success: true, events });
   } catch (error) {
-    console.error('Error fetching user events:', error);
     res.status(500).json({ success: false, message: 'Gagal mengambil event saya' });
+  }
+});
+
+// Route to get user's registered events with registration details
+router.get('/my-events', authenticateToken, async (req, res) => {
+  try {
+    const { EventRegistration, Event } = require('../models');
+    const userId = req.user.id;
+
+    // First, try to get registrations without include
+    const registrations = await EventRegistration.findAll({
+      where: {
+        user_id: userId
+      },
+      order: [['createdAt', 'DESC']]
+    });
+
+
+    // Then get events separately to avoid association issues
+    const eventsData = [];
+    for (const registration of registrations) {
+      try {
+        const event = await Event.findByPk(registration.event_id);
+        if (event) {
+          eventsData.push({
+            ...registration.toJSON(),
+            Event: event.toJSON()
+          });
+        } else {
+          eventsData.push({
+            ...registration.toJSON(),
+            Event: null
+          });
+        }
+      } catch (eventError) {
+        eventsData.push({
+          ...registration.toJSON(),
+          Event: null
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      data: eventsData
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Gagal memuat event Anda'
+    });
+  }
+});
+
+// Route to get user's certificates
+router.get('/certificates', authenticateToken, async (req, res) => {
+  try {
+    const { EventRegistration, Event } = require('../models');
+    const userId = req.user.id;
+
+    const certificates = await EventRegistration.findAll({
+      where: { 
+        user_id: userId,
+        sertifikat_url: {
+          [require('sequelize').Op.not]: null
+        }
+      },
+      include: [{
+        model: Event,
+        attributes: ['id', 'judul', 'tanggal', 'lokasi']
+      }],
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.json({ 
+      success: true, 
+      certificates: certificates.map(cert => ({
+        id: cert.id,
+        event: cert.Event,
+        certificate_url: cert.sertifikat_url,
+        issued_at: cert.updatedAt
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: 'Gagal mengambil sertifikat' 
+    });
   }
 });
 

@@ -9,34 +9,59 @@ import MobileAppSection from 'src/components/home/MobileAppSection';
 import Sponsored from 'src/components/home/Sponsored';
 import PageTransition from 'src/components/common/PageTransition';
 import AnimatedSection from 'src/components/common/AnimatedSection';
+import ProfileCompletionPopup from 'src/components/common/ProfileCompletionPopup';
+import { EventListSkeleton } from '../components/ui/SkeletonLoader';
+import { useLazyLoading } from '../hooks/useLazyLoading';
 import { useStaggeredAnimation } from '../hooks/useScrollAnimation';
 import { eventsAPI } from '../services/api';
+import { isProfileComplete } from '../utils/profileUtils';
 
 const Home = () => {
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // State untuk profile completion popup
+  const [showProfilePopup, setShowProfilePopup] = useState(false);
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
+  // Lazy loading untuk events
   const fetchEvents = async () => {
-    try {
-      setLoading(true);
-      const response = await eventsAPI.getAll();
-      console.log('Home page API response:', response.data);
-      const eventsData = response.data?.data?.events || response.data?.events || [];
-      setEvents(eventsData);
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      setEvents([]);
-    } finally {
-      setLoading(false);
-    }
+    const response = await eventsAPI.getAll();
+    return response.data?.data?.events || response.data?.events || [];
   };
 
-  const featuredEvents = (events || []).slice(0, 4);
+  const { data: events, loading } = useLazyLoading(fetchEvents, [], 1200);
+
+  const featuredEvents = (events || []).slice(0, 3);
   const [eventsRef, visibleEvents] = useStaggeredAnimation(featuredEvents, 150);
+
+  // Check if profile completion popup should be shown
+  useEffect(() => {
+    const checkProfileCompletion = () => {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      // Check if popup was already shown in this session
+      const popupShownThisSession = sessionStorage.getItem('profile_popup_shown');
+      
+      // Only show popup if:
+      // 1. User is logged in
+      // 2. Profile is not complete
+      // 3. User hasn't skipped
+      // 4. Popup hasn't been shown in this session
+      if (token && user && user.id && !isProfileComplete(user) && !user.profile_skipped && !popupShownThisSession) {
+        // Show popup after a short delay for better UX
+        setTimeout(() => {
+          setShowProfilePopup(true);
+          // Mark popup as shown in this session
+          sessionStorage.setItem('profile_popup_shown', 'true');
+        }, 2000);
+      }
+    };
+
+    checkProfileCompletion();
+  }, []);
+
+  // Handle popup close
+  const handlePopupClose = () => {
+    setShowProfilePopup(false);
+  };
 
   return (
     <PageTransition>
@@ -58,40 +83,21 @@ const Home = () => {
               <AnimatedSection animation="fade-right" delay={100}>
                 <div className="text-center mb-16">
                   <span className="text-sm font-medium text-indigo-600 mb-4 block uppercase tracking-wide">
-                    Featured Events
+                    Event Unggulan
                   </span>
                   <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 max-w-4xl mx-auto leading-tight mb-4">
-                    Discover Amazing Events
+                    Temukan Event Menarik
                   </h2>
                   <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-                    Join concerts, festivals, sports events, and cultural celebrations
+                    Bergabunglah dalam konser, festival, acara olahraga, dan perayaan budaya
                   </p>
                 </div>
               </AnimatedSection>
 
               {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <AnimatedSection key={index} animation="fade-up" delay={index * 100}>
-                      <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200 animate-pulse">
-                        <div className="h-48 bg-gray-200"></div>
-                        <div className="p-5 space-y-3">
-                          <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                          <div className="h-4 bg-gray-200 rounded w-full"></div>
-                          <div className="space-y-3 mt-4">
-                            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                          </div>
-                          <div className="h-1 bg-gray-200 rounded-full w-full mt-4"></div>
-                          <div className="h-12 bg-gray-200 rounded-xl mt-4"></div>
-                        </div>
-                      </div>
-                    </AnimatedSection>
-                  ))}
-                </div>
+                <EventListSkeleton count={3} />
               ) : featuredEvents.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {featuredEvents.map((event, index) => (
                     <AnimatedSection
                       key={event.id}
@@ -99,10 +105,10 @@ const Home = () => {
                       delay={index * 150}
                       duration={600}
                     >
-                      <EventCard 
-                        event={event} 
-                        featured={index === 0} 
-                        variant={index === 1 || index === 3 ? 'dark' : 'light'} 
+                      <EventCard
+                        event={event}
+                        featured={index === 0}
+                        variant={index === 1 || index === 3 ? 'dark' : 'light'}
                       />
                     </AnimatedSection>
                   ))}
@@ -113,8 +119,8 @@ const Home = () => {
                     <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                       <Calendar className="w-12 h-12 text-gray-400" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No Events Yet</h3>
-                    <p className="text-gray-600">Amazing events are coming soon. Stay tuned!</p>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Belum Ada Event</h3>
+                    <p className="text-gray-600">Event menarik akan segera hadir. Nantikan!</p>
                   </div>
                 </AnimatedSection>
               )}
@@ -126,7 +132,7 @@ const Home = () => {
                     to="/events"
                     className="inline-flex items-center px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg group"
                   >
-                    View All Events
+                    Lihat Semua Event
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
@@ -155,6 +161,12 @@ const Home = () => {
         </AnimatedSection>
 
       </div>
+
+      {/* Profile Completion Popup */}
+      <ProfileCompletionPopup 
+        isOpen={showProfilePopup} 
+        onClose={handlePopupClose} 
+      />
     </PageTransition>
   );
 };

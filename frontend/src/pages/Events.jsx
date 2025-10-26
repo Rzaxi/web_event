@@ -5,21 +5,20 @@ import {
   Calendar, 
   MapPin, 
   Users, 
-  Clock, 
-  ChevronDown,
-  BookOpen,
-  Trophy,
-  Palette,
-  Code,
-  Briefcase,
-  Heart,
-  Target,
-  Presentation,
+  Video, 
+  Laptop, 
+  GraduationCap, 
+  Music, 
+  Trophy, 
   MoreHorizontal,
-  X,
-  SlidersHorizontal
+  ChevronDown,
+  ArrowRight,
+  X
 } from 'lucide-react';
 import EventCard from '../components/event/EventCard';
+import { EventListSkeleton } from '../components/ui/SkeletonLoader';
+import { useLazyLoading } from '../hooks/useLazyLoading';
+import { useScrollAnimation, useStaggeredAnimation } from '../hooks/useScrollAnimation';
 import { eventsAPI } from '../services/api';
 import { toast } from 'react-toastify';
 
@@ -36,24 +35,36 @@ const Events = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [priceFilter, setPriceFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const eventsPerPage = 9;
+  const totalSlides = 3;
+
+  // Animation hooks
+  const [heroRef, heroVisible] = useScrollAnimation(0.1);
+  const [categoriesRef, categoriesVisible] = useScrollAnimation(0.1);
+  const [eventsHeaderRef, eventsHeaderVisible] = useScrollAnimation(0.1);
+  const [eventsGridRef, eventsGridVisible] = useScrollAnimation(0.1);
 
   const categories = [
-    { value: 'akademik', label: 'Akademik', icon: BookOpen, color: 'blue' },
-    { value: 'olahraga', label: 'Olahraga', icon: Trophy, color: 'green' },
-    { value: 'seni_budaya', label: 'Seni & Budaya', icon: Palette, color: 'purple' },
-    { value: 'teknologi', label: 'Teknologi', icon: Code, color: 'indigo' },
-    { value: 'kewirausahaan', label: 'Kewirausahaan', icon: Briefcase, color: 'orange' },
-    { value: 'sosial', label: 'Sosial', icon: Heart, color: 'pink' },
-    { value: 'kompetisi', label: 'Kompetisi', icon: Target, color: 'red' },
-    { value: 'workshop', label: 'Workshop', icon: Presentation, color: 'teal' },
-    { value: 'seminar', label: 'Seminar', icon: Users, color: 'cyan' },
-    { value: 'lainnya', label: 'Lainnya', icon: MoreHorizontal, color: 'gray' }
+    { value: 'webinar', label: 'Webinar', icon: Video, color: 'blue' },
+    { value: 'bootcamp', label: 'Bootcamp', icon: Laptop, color: 'purple' },
+    { value: 'pelatihan', label: 'Pelatihan', icon: GraduationCap, color: 'green' },
+    { value: 'konser', label: 'Konser', icon: Music, color: 'pink' },
+    { value: 'kompetisi', label: 'Kompetisi', icon: Trophy, color: 'orange' }
   ];
 
   useEffect(() => {
     fetchEvents();
   }, [currentPage, sortBy, searchTerm, selectedCategory, selectedDifficulty, priceFilter]);
+
+  // Page load animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHasLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const fetchEvents = async () => {
     try {
@@ -67,14 +78,12 @@ const Events = () => {
         tingkat_kesulitan: selectedDifficulty,
         price_filter: priceFilter
       });
-      
-      console.log('API Response:', response.data);
+
       setEvents(response.data.data?.events || response.data.events || []);
       const total = response.data.data?.total || response.data.total || 0;
       setTotalEvents(total);
       setTotalPages(Math.ceil(total / eventsPerPage));
     } catch (error) {
-      console.error('Error fetching events:', error);
       toast.error('Gagal memuat data events');
       setEvents([]);
     } finally {
@@ -115,6 +124,28 @@ const Events = () => {
     setCurrentPage(1);
   };
 
+  // Carousel functions
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
+
+  // Auto-slide effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   const getActiveFiltersCount = () => {
     let count = 0;
     if (selectedCategory) count++;
@@ -125,15 +156,15 @@ const Events = () => {
 
   const handlePageChange = (page) => {
     if (page === currentPage || isTransitioning) return;
-    
+
     setIsTransitioning(true);
-    
+
     // Fade out current content
     setTimeout(() => {
       setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'auto' });
     }, 150);
-    
+
     // Fade in new content after data loads
     setTimeout(() => {
       setIsTransitioning(false);
@@ -143,10 +174,10 @@ const Events = () => {
   const renderPagination = () => {
     const pages = [];
     const maxVisiblePages = 5;
-    
+
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-    
+
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
@@ -157,11 +188,10 @@ const Events = () => {
           key={i}
           onClick={() => handlePageChange(i)}
           disabled={isTransitioning}
-          className={`px-4 py-2 mx-1 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 ${
-            currentPage === i
+          className={`px-4 py-2 mx-1 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 ${currentPage === i
               ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-105'
               : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300 hover:shadow-md'
-          }`}
+            }`}
         >
           {i}
         </button>
@@ -190,262 +220,310 @@ const Events = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-20 overflow-hidden">
-        {/* Background decorations */}
+      <div ref={heroRef} className="relative bg-white text-gray-900 pt-32 pb-16 overflow-hidden">
+        {/* Background Effect */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-              Semua Events
-            </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-              Temukan berbagai event menarik yang sesuai dengan minat dan passion Anda. 
-              Dari workshop teknologi hingga kompetisi olahraga, semua ada di sini!
-            </p>
-            <div className="mt-8 flex justify-center">
-              <div className="bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
-                <span className="text-white/90 font-medium">
-                  {totalEvents} Events Tersedia
-                </span>
-              </div>
-            </div>
+          {/* Light effects */}
+          <div className="absolute top-0 left-1/4 w-32 h-32 bg-gradient-to-b from-gray-200/30 to-transparent rounded-full blur-2xl"></div>
+          <div className="absolute top-0 right-1/4 w-32 h-32 bg-gradient-to-b from-gray-200/30 to-transparent rounded-full blur-2xl"></div>
+
+          {/* Subtle structure */}
+          <div className="absolute top-0 left-0 w-full h-full">
+            <div className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-gray-100/30 to-transparent transform -skew-x-12"></div>
+            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-gray-100/30 to-transparent transform skew-x-12"></div>
           </div>
+
         </div>
-      </div>
 
-      {/* Search and Filter Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8 mb-8">
-          {/* Search Bar */}
-          <div className="flex flex-col lg:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Cari event berdasarkan judul, lokasi, atau deskripsi..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/80 backdrop-blur-sm text-gray-900 placeholder-gray-500"
-              />
-            </div>
-
-            <div className="flex gap-3">
-              {/* Sort Dropdown */}
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={handleSortChange}
-                  className="appearance-none bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl px-6 py-4 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 font-medium"
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Event Future Section */}
+          <div ref={categoriesRef} className={`max-w-6xl mx-auto mb-16 transition-all duration-1000 delay-400 ${
+            hasLoaded || categoriesVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-8'
+          }`}>
+            {/* Event Carousel */}
+            <div className="relative">
+              <div className="overflow-hidden rounded-2xl">
+                <div 
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                 >
-                  <option value="tanggal">Urutkan: Tanggal</option>
-                  <option value="judul">Urutkan: Judul</option>
-                  <option value="lokasi">Urutkan: Lokasi</option>
-                  <option value="created_at">Urutkan: Terbaru</option>
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+                  {/* Event Card 1 - AI Conference */}
+                  <div className="w-full flex-shrink-0">
+                    <div className="group relative h-96 rounded-2xl overflow-hidden cursor-pointer">
+                      <img 
+                        src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                        alt="AI Technology Conference"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                      
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                        <div className="text-center text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                          <h3 className="text-3xl font-bold mb-2">Future of AI & Technology</h3>
+                          <p className="text-lg opacity-90">Dec 15, 2024 • Jakarta</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Event Card 2 - Business Summit */}
+                  <div className="w-full flex-shrink-0">
+                    <div className="group relative h-96 rounded-2xl overflow-hidden cursor-pointer">
+                      <img 
+                        src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                        alt="Business Summit"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                      
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                        <div className="text-center text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                          <h3 className="text-3xl font-bold mb-2">Digital Transformation Summit</h3>
+                          <p className="text-lg opacity-90">Jan 20, 2025 • Bali</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Event Card 3 - Green Conference */}
+                  <div className="w-full flex-shrink-0">
+                    <div className="group relative h-96 rounded-2xl overflow-hidden cursor-pointer">
+                      <img 
+                        src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                        alt="Green Future Conference"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                      
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                        <div className="text-center text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                          <h3 className="text-3xl font-bold mb-2">Green Future Conference</h3>
+                          <p className="text-lg opacity-90">Feb 10, 2025 • Surabaya</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              {/* Filter Toggle */}
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center px-6 py-4 rounded-xl font-semibold transition-all duration-200 ${
-                  showFilters || getActiveFiltersCount() > 0
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white/80 text-gray-700 border border-gray-200 hover:bg-gray-50'
-                }`}
+              
+              {/* Navigation Dots */}
+              <div className="flex justify-center mt-6 space-x-2">
+                {[0, 1, 2].map((index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      currentSlide === index 
+                        ? 'bg-blue-600' 
+                        : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              {/* Navigation Arrows */}
+              <button 
+                onClick={prevSlide}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
               >
-                <SlidersHorizontal className="w-5 h-5 mr-2" />
-                Filter
-                {getActiveFiltersCount() > 0 && (
-                  <span className="ml-2 bg-white/20 text-xs px-2 py-1 rounded-full">
-                    {getActiveFiltersCount()}
-                  </span>
-                )}
+                <ChevronDown className="w-6 h-6 text-gray-700 rotate-90" />
+              </button>
+              <button 
+                onClick={nextSlide}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+              >
+                <ChevronDown className="w-6 h-6 text-gray-700 -rotate-90" />
               </button>
             </div>
           </div>
 
-          {/* Filters Panel */}
-          {showFilters && (
-            <div className="border-t border-gray-200 pt-6 space-y-6 animate-in slide-in-from-top-2 duration-300">
-              {/* Category Filter */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <Filter className="w-5 h-5 mr-2 text-blue-600" />
-                  Kategori
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {categories.map((category) => {
-                    const IconComponent = category.icon;
-                    const isSelected = selectedCategory === category.value;
-                    return (
-                      <button
-                        key={category.value}
-                        onClick={() => handleCategoryFilter(category.value)}
-                        className={`flex items-center justify-center px-4 py-3 rounded-xl font-medium transition-all duration-200 min-h-[48px] ${
-                          isSelected
-                            ? 'bg-blue-100 text-blue-700 border-2 border-blue-300 shadow-md'
-                            : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border-2 border-transparent hover:shadow-sm'
-                        }`}
-                      >
-                        <IconComponent className="w-4 h-4 mr-2 flex-shrink-0" />
-                        <span className="text-sm text-center">{category.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+          <h1 className={`text-6xl md:text-7xl font-bold mb-6 leading-tight transition-all duration-1000 ${
+            hasLoaded || heroVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 -translate-y-8'
+          }`}>
+            Let there be live
+          </h1>
 
-              {/* Difficulty Filter */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Tingkat Kesulitan</h3>
-                <div className="flex flex-wrap gap-3">
-                  {['pemula', 'menengah', 'lanjutan'].map((difficulty) => (
-                    <button
-                      key={difficulty}
-                      onClick={() => handleDifficultyFilter(difficulty)}
-                      className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
-                        selectedDifficulty === difficulty
-                          ? 'bg-green-100 text-green-700 border-2 border-green-300'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-2 border-transparent'
-                      }`}
-                    >
-                      {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-                    </button>
-                  ))}
-                </div>
-              </div>
+          <p className={`text-xl mb-12 opacity-90 max-w-2xl mx-auto transition-all duration-1000 delay-200 ${
+            hasLoaded || heroVisible 
+              ? 'opacity-90 translate-y-0' 
+              : 'opacity-0 -translate-y-8'
+          }`}>
+            Your next best-night-ever is waiting
+          </p>
 
-              {/* Price Filter */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Harga</h3>
-                <div className="flex flex-wrap gap-3">
-                  {['gratis', 'berbayar'].map((price) => (
-                    <button
-                      key={price}
-                      onClick={() => handlePriceFilter(price)}
-                      className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
-                        priceFilter === price
-                          ? 'bg-yellow-100 text-yellow-700 border-2 border-yellow-300'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-2 border-transparent'
-                      }`}
-                    >
-                      {price.charAt(0).toUpperCase() + price.slice(1)}
-                    </button>
-                  ))}
-                </div>
+          {/* Search Bar */}
+          <div className={`max-w-2xl mx-auto mb-8 transition-all duration-1000 delay-300 ${
+            hasLoaded || heroVisible 
+              ? 'opacity-100 translate-y-0 scale-100' 
+              : 'opacity-0 translate-y-8 scale-95'
+          }`}>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                <Search className="h-6 w-6 text-gray-400" />
               </div>
+              <input
+                type="text"
+                placeholder="What do you want to see live?"
+                value={searchTerm}
+                onChange={handleSearch}
+                className="w-full pl-14 pr-6 py-5 text-lg bg-white rounded-2xl border border-gray-200 focus:ring-4 focus:ring-blue-500/20 focus:outline-none text-gray-900 placeholder-gray-500 shadow-lg"
+              />
+            </div>
+          </div>
 
-              {/* Clear Filters */}
-              {getActiveFiltersCount() > 0 && (
-                <div className="flex justify-end">
-                  <button
-                    onClick={clearAllFilters}
-                    className="flex items-center px-4 py-2 text-red-600 hover:text-red-700 font-medium transition-colors"
+        </div>
+      </div>
+
+
+      {/* Events Section */}
+      <div className="bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Events Header */}
+          <div ref={eventsHeaderRef} className={`flex flex-col md:flex-row md:items-center md:justify-between mb-8 transition-all duration-1000 ${
+            eventsHeaderVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-8'
+          }`}>
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                {selectedCategory
+                  ? `Events ${categories.find(c => c.value === selectedCategory)?.label}`
+                  : 'Semua Events'
+                }
+              </h2>
+              <p className="text-gray-600">
+                {searchTerm
+                  ? `Menampilkan hasil pencarian "${searchTerm}"`
+                  : `Ditemukan ${totalEvents} events tersedia`
+                }
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mt-8">
+              {/* Modern Category Filter */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-gray-700">Kategori:</span>
+                <div className="relative">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => handleCategoryFilter(e.target.value)}
+                    className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-10 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400 cursor-pointer min-w-[180px]"
                   >
-                    <X className="w-4 h-4 mr-2" />
-                    Hapus Semua Filter
-                  </button>
+                    <option value="">Semua Kategori</option>
+                    {categories.map((category) => (
+                      <option key={category.value} value={category.value}>
+                        {category.label}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                  </div>
                 </div>
-              )}
+              </div>
+
+              {/* Modern Sort Filter */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-gray-700">Urutkan:</span>
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={handleSortChange}
+                    className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-10 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400 cursor-pointer min-w-[140px]"
+                  >
+                    <option value="tanggal">📅 Tanggal</option>
+                    <option value="judul">🔤 Judul</option>
+                    <option value="lokasi">📍 Lokasi</option>
+                    <option value="created_at">⭐ Terbaru</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Events Grid */}
+          {loading || isTransitioning ? (
+            <EventListSkeleton count={12} />
+          ) : events.length > 0 ? (
+            <>
+              <div ref={eventsGridRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out ${
+                isTransitioning ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'
+              }`}>
+                {events.map((event, index) => (
+                  <div
+                    key={event.id}
+                    className={`transition-all duration-700 transform ${
+                      hasLoaded || eventsGridVisible
+                        ? 'opacity-100 translate-y-0 scale-100'
+                        : 'opacity-0 translate-y-12 scale-95'
+                    } hover:scale-105 hover:-translate-y-2`}
+                    style={{ 
+                      transitionDelay: `${index * 100}ms`,
+                      animationFillMode: 'both'
+                    }}
+                  >
+                    <EventCard event={event} />
+                  </div>
+                ))}
+              </div>
+              {totalPages > 1 && renderPagination()}
+            </>
+          ) : (
+            <div className="text-center py-20">
+              <div className="max-w-md mx-auto">
+                {/* Simple Icon */}
+                <div className="mb-8">
+                  <div className="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+                    <Calendar className="w-10 h-10 text-gray-400" />
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-semibold text-gray-900">
+                    {searchTerm || selectedCategory ? 'Tidak ada event ditemukan' : 'Belum ada event'}
+                  </h3>
+                  <p className="text-gray-600">
+                    {searchTerm
+                      ? `Tidak ada hasil untuk "${searchTerm}"`
+                      : selectedCategory
+                        ? `Belum ada event untuk kategori ${categories.find(c => c.value === selectedCategory)?.label}`
+                        : 'Event akan segera tersedia'
+                    }
+                  </p>
+
+                  {/* Simple Action Button */}
+                  {(searchTerm || selectedCategory) && (
+                    <div className="mt-6">
+                      <button
+                        onClick={() => {
+                          setSearchTerm('');
+                          setSelectedCategory('');
+                        }}
+                        className="inline-flex items-center px-4 py-2 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Hapus filter
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
-
-        {/* Active Filters Display */}
-        {getActiveFiltersCount() > 0 && (
-          <div className="mb-6 flex flex-wrap gap-2">
-            {selectedCategory && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                {categories.find(c => c.value === selectedCategory)?.label}
-                <button
-                  onClick={() => setSelectedCategory('')}
-                  className="ml-2 text-blue-600 hover:text-blue-800"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )}
-            {selectedDifficulty && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                {selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1)}
-                <button
-                  onClick={() => setSelectedDifficulty('')}
-                  className="ml-2 text-green-600 hover:text-green-800"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )}
-            {priceFilter && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                {priceFilter.charAt(0).toUpperCase() + priceFilter.slice(1)}
-                <button
-                  onClick={() => setPriceFilter('')}
-                  className="ml-2 text-yellow-600 hover:text-yellow-800"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Events Grid */}
-        {loading || isTransitioning ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="relative">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200"></div>
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent absolute top-0 left-0"></div>
-            </div>
-          </div>
-        ) : events.length > 0 ? (
-          <>
-            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-500 ease-in-out ${
-              isTransitioning ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'
-            }`}>
-              {events.map((event, index) => (
-                <div 
-                  key={event.id} 
-                  className="animate-in fade-in slide-in-from-bottom-4"
-                  style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'both' }}
-                >
-                  <EventCard event={event} />
-                </div>
-              ))}
-            </div>
-            {totalPages > 1 && renderPagination()}
-          </>
-        ) : (
-          <div className="text-center py-20">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-12 max-w-md mx-auto">
-              <Calendar className="w-20 h-20 text-gray-400 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Tidak ada event ditemukan
-              </h3>
-              <p className="text-gray-600 mb-6">
-                {searchTerm || getActiveFiltersCount() > 0
-                  ? 'Coba ubah kata kunci pencarian atau filter yang digunakan'
-                  : 'Belum ada event yang tersedia saat ini'
-                }
-              </p>
-              {(searchTerm || getActiveFiltersCount() > 0) && (
-                <button
-                  onClick={clearAllFilters}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-                >
-                  Hapus Semua Filter
-                </button>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

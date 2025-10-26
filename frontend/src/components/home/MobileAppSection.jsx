@@ -48,7 +48,7 @@ const MobileAppSection = () => {
               Mobile App
             </span>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 max-w-4xl mx-auto leading-tight">
-              EventHub Mobile App
+              Evoria Mobile App
             </h2>
           </motion.div>
         </div>
@@ -292,7 +292,7 @@ const MobileAppSection = () => {
                           <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center mb-2">
                             <Calendar className="w-5 h-5 text-white" />
                           </div>
-                          <h3 className="text-sm font-bold text-gray-900">EventHub</h3>
+                          <h3 className="text-sm font-bold text-gray-900">Evoria</h3>
                         </div>
                         <div className="flex gap-2">
                           <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
