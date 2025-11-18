@@ -1,0 +1,137 @@
+/* Skeleton Loading Animations */
+
+/* Enhanced pulse animation */
+@keyframes skeleton-pulse {
+  0% {
+    background-color: #f3f4f6;
+  }
+  50% {
+    background-color: #e5e7eb;
+  }
+  100% {
+    background-color: #f3f4f6;
+  }
+}
+
+/* Shimmer effect */
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Wave effect */
+@keyframes skeleton-wave {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Skeleton base class */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+/* Enhanced skeleton with shimmer */
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.skeleton-shimmer::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: skeleton-shimmer 2s infinite;
+  content: '';
+}
+
+/* Skeleton wave effect */
+.skeleton-wave {
+  position: relative;
+  overflow: hidden;
+  background: #f6f7f8;
+}
+
+.skeleton-wave::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+  animation: skeleton-wave 1.6s infinite;
+  content: '';
+}
+
+/* Fade in animation for content */
+@keyframes skeleton-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skeleton-fade-in {
+  animation: skeleton-fade-in 0.6s ease-out;
+}
+
+/* Staggered animation for lists */
+.skeleton-stagger {
+  animation-delay: calc(var(--stagger-delay, 0) * 100ms);
+}
+
+/* Responsive skeleton sizes */
+@media (max-width: 640px) {
+  .skeleton-responsive {
+    height: 12px;
+  }
+}
+
+@media (min-width: 641px) {
+  .skeleton-responsive {
+    height: 16px;
+  }
+}
+
+/* Dark mode skeleton */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  }
+  
+  .skeleton-shimmer {
+    background-color: #374151;
+  }
+  
+  .skeleton-wave {
+    background: #1f2937;
+  }
+}

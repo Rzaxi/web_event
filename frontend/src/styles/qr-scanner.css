@@ -1,0 +1,70 @@
+/* QR Scanner Simple Styles - No Colors */
+
+/* Hide all default UI elements for clean look */
+#qr-scanner__dashboard_section_csr,
+#qr-scanner__header_message,
+#qr-scanner__dashboard_section_swaplink,
+#qr-scanner__dashboard_section_fsr,
+#qr-scanner__torch_button,
+#qr-scanner__zoom_slider {
+  display: none !important;
+}
+
+/* Simple camera selection */
+#qr-scanner__camera_selection {
+  background: white !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 0.25rem !important;
+  padding: 0.25rem 0.5rem !important;
+  font-size: 0.875rem !important;
+  color: #374151 !important;
+  margin: 0.5rem 0 !important;
+}
+
+/* Clean scan region */
+#qr-scanner__scan_region {
+  border-radius: 0.25rem !important;
+  overflow: hidden !important;
+}
+
+/* Simple video styling */
+#qr-scanner__scan_region video {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 280px !important;
+}
+
+/* Hide file input section */
+#qr-scanner__filescan_input_container {
+  display: none !important;
+}
+
+/* Simple status messages */
+#qr-scanner__status_span {
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: 0.25rem !important;
+  font-size: 0.75rem !important;
+  margin: 0.25rem 0 !important;
+  display: inline-block !important;
+}
+
+/* Clean main container */
+#qr-scanner {
+  background: #000 !important;
+  border-radius: 0.25rem !important;
+  overflow: hidden !important;
+  min-height: 280px !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  #qr-scanner {
+    min-height: 250px !important;
+  }
+  
+  #qr-scanner__scan_region video {
+    min-height: 220px !important;
+  }
+}
