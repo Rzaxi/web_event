@@ -10,8 +10,11 @@ const certificateController = require('../controllers/certificateController');
 const dashboardController = require('../controllers/dashboardController');
 const bookmarkController = require('../controllers/bookmarkController');
 const notificationController = require('../controllers/notificationController');
+<<<<<<< HEAD
 // Temporarily comment out to test
 // const ticketCategoryController = require('../controllers/ticketCategoryController');
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
 // Import middleware
 const { authenticateToken, requireAdmin, sessionTimeout, optionalAuth } = require('../middleware/auth');
@@ -32,8 +35,11 @@ router.get('/auth/check-status', authController.checkVerificationStatus);
 // Public event routes (optional authentication to check registration status)
 router.get('/events', eventController.getEvents);
 router.get('/events/:id', optionalAuth, eventController.getEventById);
+<<<<<<< HEAD
 // Temporarily comment out
 // router.get('/events/:eventId/ticket-categories', ticketCategoryController.getEventTicketCategories);
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
 // Protected routes (require authentication)
 router.use(authenticateToken);
@@ -47,8 +53,11 @@ router.get('/users/events', authController.getUserHistory);
 router.get('/users/events/:id', eventController.getEventById); // Event detail with registration status
 
 // Certificate routes for logged-in user
+<<<<<<< HEAD
 router.get('/users/certificates', certificateController.getUserCertificates);
 router.get('/certificates/:certificateId/download', certificateController.downloadCertificate);
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 router.get('/events/:eventId/certificate-eligibility', userController.getCertificateEligibility);
 router.get('/events/:eventId/certificate/download', userController.downloadCertificate);
 
@@ -56,7 +65,10 @@ router.get('/events/:eventId/certificate/download', userController.downloadCerti
 router.post('/events/:id/register', eventController.registerForEvent);
 router.delete('/events/:id/register', eventController.unregisterFromEvent);
 router.get('/events/:id/registrations', eventRegistrationController.getEventRegistrations);
+<<<<<<< HEAD
 router.get('/events/:id/attendance-token', eventController.getUserAttendanceToken);
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
 // Bookmark routes (require authentication)
 router.post('/bookmarks/:eventId/toggle', bookmarkController.toggleBookmark);

@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 const { Event, EventRegistration, User, DailyAttendance, sequelize } = require('../models');
 // Temporarily comment out TicketCategory to test
 // const { TicketCategory } = require('../models');
+=======
+const { Event, EventRegistration, User, sequelize, Sequelize } = require('../models');
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 const { Op } = require('sequelize');
 
 // Get organizer dashboard data
@@ -13,11 +17,15 @@ const getDashboardData = async (req, res) => {
       where: { created_by: organizerId },
       include: [{
         model: EventRegistration,
+<<<<<<< HEAD
         as: 'registrations',
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         attributes: ['id', 'status']
       }]
     });
 
+<<<<<<< HEAD
     // Helper function to get event status based on date
     const getEventStatus = (event) => {
       if (event.status_event === 'draft') return 'draft';
@@ -54,14 +62,27 @@ const getDashboardData = async (req, res) => {
         ongoingEvents++;
       }
     });
+=======
+    // Calculate statistics
+    const totalEvents = events.length;
+    const activeEvents = events.filter(event => event.status_event === 'published').length;
+    const completedEvents = events.filter(event => event.status_event === 'completed').length;
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     
     // Calculate total participants
     let totalParticipants = 0;
     events.forEach(event => {
+<<<<<<< HEAD
       totalParticipants += event.registrations ? event.registrations.length : 0;
     });
 
     // Get recent events (last 5) with real-time status
+=======
+      totalParticipants += event.EventRegistrations ? event.EventRegistrations.length : 0;
+    });
+
+    // Get recent events (last 5)
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     const recentEvents = events
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 5)
@@ -70,12 +91,19 @@ const getDashboardData = async (req, res) => {
         judul: event.judul,
         tanggal: event.tanggal,
         waktu_mulai: event.waktu_mulai,
+<<<<<<< HEAD
         waktu_selesai: event.waktu_selesai,
         lokasi: event.lokasi,
         kapasitas_peserta: event.kapasitas_peserta,
         registeredCount: event.registrations ? event.registrations.length : 0,
         status_event: event.status_event,
         realTimeStatus: getEventStatus(event) // Status berdasarkan tanggal
+=======
+        lokasi: event.lokasi,
+        kapasitas_peserta: event.kapasitas_peserta,
+        registeredCount: event.EventRegistrations ? event.EventRegistrations.length : 0,
+        status_event: event.status_event
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       }));
 
     res.json({
@@ -84,7 +112,10 @@ const getDashboardData = async (req, res) => {
         stats: {
           totalEvents,
           activeEvents,
+<<<<<<< HEAD
           ongoingEvents,
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
           completedEvents,
           totalParticipants
         },
@@ -105,12 +136,17 @@ const getDashboardData = async (req, res) => {
 const getEvents = async (req, res) => {
   try {
     const organizerId = req.user.id;
+<<<<<<< HEAD
     const { search, status, page = 1, limit = 10 } = req.query;
+=======
+    const { search, status } = req.query;
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
     let whereClause = { created_by: organizerId };
 
     // Add search filter
     if (search) {
+<<<<<<< HEAD
       whereClause.judul = {
         [Op.iLike]: `%${search}%`
       };
@@ -139,10 +175,47 @@ const getEvents = async (req, res) => {
     const eventsWithCount = events.map(event => ({
       ...event.toJSON(),
       registeredCount: event.registrations ? event.registrations.length : 0
+=======
+      whereClause[Op.or] = [
+        { judul: { [Op.like]: `%${search}%` } },
+        { lokasi: { [Op.like]: `%${search}%` } }
+      ];
+    }
+
+    // Add status filter
+    if (status && status !== 'all') {
+      whereClause.status_event = status;
+    }
+
+    const events = await Event.findAll({
+      where: whereClause,
+      include: [{
+        model: EventRegistration,
+        attributes: ['id', 'status']
+      }],
+      order: [['createdAt', 'DESC']]
+    });
+
+    const eventsWithStats = events.map(event => ({
+      id: event.id,
+      judul: event.judul,
+      tanggal: event.tanggal,
+      waktu_mulai: event.waktu_mulai,
+      lokasi: event.lokasi,
+      kategori: event.kategori,
+      kapasitas_peserta: event.kapasitas_peserta,
+      biaya: event.biaya,
+      status_event: event.status_event,
+      deskripsi: event.deskripsi,
+      registeredCount: event.EventRegistrations ? event.EventRegistrations.length : 0,
+      confirmedCount: event.EventRegistrations ? 
+        event.EventRegistrations.filter(reg => reg.status === 'confirmed').length : 0
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     }));
 
     res.json({
       success: true,
+<<<<<<< HEAD
       data: {
         events: eventsWithCount,
         pagination: {
@@ -152,6 +225,9 @@ const getEvents = async (req, res) => {
           itemsPerPage: parseInt(limit)
         }
       }
+=======
+      data: eventsWithStats
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     });
   } catch (error) {
     console.error('Get events error:', error);
@@ -163,6 +239,7 @@ const getEvents = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 // Get single event detail
 const getEventById = async (req, res) => {
   try {
@@ -208,6 +285,8 @@ const getEventById = async (req, res) => {
   }
 };
 
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 // Create new event
 const createEvent = async (req, res) => {
   try {
@@ -216,19 +295,27 @@ const createEvent = async (req, res) => {
       judul,
       deskripsi,
       tanggal,
+<<<<<<< HEAD
       tanggal_selesai,
       waktu_mulai,
       waktu_selesai,
+=======
+      waktu_mulai,
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       lokasi,
       kategori,
       kapasitas_peserta,
       biaya,
+<<<<<<< HEAD
       status_event = 'draft',
       durasi_hari,
       minimum_kehadiran,
       memberikan_sertifikat,
       penyelenggara,
       ticketCategories
+=======
+      status_event = 'draft'
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     } = req.body;
 
     // Validation
@@ -239,6 +326,7 @@ const createEvent = async (req, res) => {
       });
     }
 
+<<<<<<< HEAD
     // Get file paths if files were uploaded
     const flyer_url = req.files?.flyer ? `/uploads/flyers/${req.files.flyer[0].filename}` : null;
     const certificate_template = req.files?.certificate_template ? `/uploads/certificates/${req.files.certificate_template[0].filename}` : null;
@@ -253,18 +341,25 @@ const createEvent = async (req, res) => {
       }
     }
 
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     const event = await Event.create({
       judul,
       deskripsi,
       tanggal,
+<<<<<<< HEAD
       tanggal_selesai,
       waktu_mulai,
       waktu_selesai,
+=======
+      waktu_mulai,
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       lokasi,
       kategori,
       kapasitas_peserta: kapasitas_peserta || 50,
       biaya: biaya || 0,
       status_event,
+<<<<<<< HEAD
       flyer_url,
       sertifikat_template: certificate_template,
       sertifikat_elements: certificate_elements,
@@ -314,6 +409,11 @@ const createEvent = async (req, res) => {
     }
     */
 
+=======
+      created_by: organizerId
+    });
+
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     res.status(201).json({
       success: true,
       message: 'Event berhasil dibuat',
@@ -334,7 +434,11 @@ const updateEvent = async (req, res) => {
   try {
     const organizerId = req.user.id;
     const eventId = req.params.id;
+<<<<<<< HEAD
     const updateData = { ...req.body };
+=======
+    const updateData = req.body;
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
     // Check if event belongs to organizer
     const event = await Event.findOne({
@@ -351,6 +455,7 @@ const updateEvent = async (req, res) => {
       });
     }
 
+<<<<<<< HEAD
     // Handle file uploads
     if (req.files?.flyer) {
       updateData.flyer_url = `/uploads/flyers/${req.files.flyer[0].filename}`;
@@ -390,6 +495,8 @@ const updateEvent = async (req, res) => {
 
     console.log('Updating event with data:', updateData);
 
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     await event.update(updateData);
 
     res.json({
@@ -611,11 +718,15 @@ const getAnalytics = async (req, res) => {
       },
       include: [{
         model: EventRegistration,
+<<<<<<< HEAD
         as: 'registrations',
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         attributes: ['id', 'status']
       }]
     });
 
+<<<<<<< HEAD
     // Generate comprehensive monthly data for the selected time range
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const monthlyData = {};
@@ -692,6 +803,22 @@ const getAnalytics = async (req, res) => {
           growthRate: index === 0 ? 0 : growthRate
         };
       });
+=======
+    // Monthly events data
+    const monthlyData = {};
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    events.forEach(event => {
+      const month = months[new Date(event.createdAt).getMonth()];
+      if (!monthlyData[month]) {
+        monthlyData[month] = { month, events: 0, participants: 0 };
+      }
+      monthlyData[month].events += 1;
+      monthlyData[month].participants += event.EventRegistrations ? event.EventRegistrations.length : 0;
+    });
+
+    const monthlyEvents = Object.values(monthlyData);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
     // Event categories
     const categoryData = {};
@@ -712,12 +839,18 @@ const getAnalytics = async (req, res) => {
     const topEvents = events
       .map(event => ({
         name: event.judul,
+<<<<<<< HEAD
         participants: event.registrations ? event.registrations.length : 0,
         revenue: parseFloat(event.biaya || 0) * (event.registrations ? event.registrations.length : 0)
+=======
+        participants: event.EventRegistrations ? event.EventRegistrations.length : 0,
+        revenue: parseFloat(event.biaya || 0) * (event.EventRegistrations ? event.EventRegistrations.length : 0)
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       }))
       .sort((a, b) => b.participants - a.participants)
       .slice(0, 4);
 
+<<<<<<< HEAD
     // Calculate advanced stats
     const totalEvents = events.length;
     const totalParticipants = events.reduce((sum, event) => 
@@ -803,21 +936,35 @@ const getAnalytics = async (req, res) => {
       attendanceRate: month.participants > 0 ? Math.round((month.participants * 0.8)) : 0 // Mock attendance
     }));
 
+=======
+    // Calculate stats
+    const totalEvents = events.length;
+    const totalParticipants = events.reduce((sum, event) => 
+      sum + (event.EventRegistrations ? event.EventRegistrations.length : 0), 0);
+    const totalRevenue = events.reduce((sum, event) => 
+      sum + (parseFloat(event.biaya || 0) * (event.EventRegistrations ? event.EventRegistrations.length : 0)), 0);
+    const avgParticipants = totalEvents > 0 ? Math.round(totalParticipants / totalEvents) : 0;
+
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     res.json({
       success: true,
       data: {
         monthlyEvents,
         eventCategories,
         topEvents,
+<<<<<<< HEAD
         eventStatusData,
         growthTrend,
         performanceTrend,
         revenueByMonth: Object.values(revenueByMonth),
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         stats: {
           totalEvents,
           totalParticipants,
           totalRevenue,
           avgParticipants,
+<<<<<<< HEAD
           completionRate,
           attendanceRate,
           growthRate,
@@ -829,6 +976,10 @@ const getAnalytics = async (req, res) => {
           averageMonthlyRevenue: monthlyEvents.length > 0 
             ? Math.round(totalRevenue / monthlyEvents.filter(m => m.events > 0).length) 
             : 0
+=======
+          completionRate: 85, // Mock data
+          satisfactionRate: 4.2 // Mock data
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         }
       }
     });
@@ -842,6 +993,7 @@ const getAnalytics = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 // Export analytics data
 const exportAnalytics = async (req, res) => {
   try {
@@ -1118,10 +1270,13 @@ const scanAttendance = async (req, res) => {
     });
   }
 };
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
 module.exports = {
   getDashboardData,
   getEvents,
+<<<<<<< HEAD
   getEventById,
   getParticipants,
   getAnalytics,
@@ -1131,4 +1286,11 @@ module.exports = {
   deleteEvent,
   getEventParticipants,
   scanAttendance
+=======
+  getParticipants,
+  getAnalytics,
+  createEvent,
+  updateEvent,
+  deleteEvent
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 };

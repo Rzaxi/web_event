@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
+=======
+import { useState, useEffect } from 'react';
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
 // Hook untuk lazy loading dengan skeleton
 export const useLazyLoading = (fetchFunction, dependencies = [], delay = 800) => {
@@ -6,6 +10,7 @@ export const useLazyLoading = (fetchFunction, dependencies = [], delay = 800) =>
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+<<<<<<< HEAD
   // Convert dependencies to string to avoid array reference issues
   const depsString = JSON.stringify(dependencies);
 
@@ -13,11 +18,15 @@ export const useLazyLoading = (fetchFunction, dependencies = [], delay = 800) =>
     let isMounted = true;
     let timeoutId = null;
     
+=======
+  useEffect(() => {
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     const loadData = async () => {
       try {
         setLoading(true);
         setError(null);
         
+<<<<<<< HEAD
         // Fetch data first
         const result = await fetchFunction();
         
@@ -36,10 +45,25 @@ export const useLazyLoading = (fetchFunction, dependencies = [], delay = 800) =>
           setLoading(false);
           console.error('Lazy loading error:', err);
         }
+=======
+        // Simulate minimum loading time untuk skeleton effect
+        const [result] = await Promise.all([
+          fetchFunction(),
+          new Promise(resolve => setTimeout(resolve, delay))
+        ]);
+        
+        setData(result);
+      } catch (err) {
+        setError(err);
+        console.error('Lazy loading error:', err);
+      } finally {
+        setLoading(false);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       }
     };
 
     loadData();
+<<<<<<< HEAD
     
     return () => {
       isMounted = false;
@@ -63,6 +87,11 @@ export const useLazyLoading = (fetchFunction, dependencies = [], delay = 800) =>
   };
 
   return { data, loading, error, refetch };
+=======
+  }, dependencies);
+
+  return { data, loading, error, refetch: () => loadData() };
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 };
 
 // Hook untuk infinite scroll lazy loading

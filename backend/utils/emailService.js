@@ -168,6 +168,11 @@ const sendAttendanceTokenEmail = async (email, name, eventTitle, attendanceToken
 
 module.exports = {
   sendVerificationEmail,
+<<<<<<< HEAD
   sendPasswordResetEmail,
   sendAttendanceTokenEmail
+=======
+  sendPasswordResetEmail
+  // sendAttendanceToken functions deprecated - will be removed after new attendance system
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 };

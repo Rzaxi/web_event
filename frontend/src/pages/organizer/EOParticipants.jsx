@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+=======
+import React, { useState, useEffect } from 'react';
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 import { 
   Users, 
   Search,
@@ -18,6 +22,7 @@ import {
 } from 'lucide-react';
 import organizerApi from '../../services/organizerApi';
 import { toast } from 'react-toastify';
+<<<<<<< HEAD
 import LazyWrapper from '../../components/ui/LazyWrapper';
 
 const EOParticipants = () => {
@@ -214,15 +219,93 @@ const EOParticipants = () => {
     setSelectedEvent(event);
     setSearchTerm('');
     setSelectedStatus('all');
+=======
+
+const EOParticipants = () => {
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [participants, setParticipants] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [showDropdown, setShowDropdown] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [participantsLoading, setParticipantsLoading] = useState(false);
+  const [eventSortBy, setEventSortBy] = useState('tanggal');
+  const [participantSortBy, setParticipantSortBy] = useState('nama');
+ 
+
+  // Fetch events on component mount
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        const response = await organizerApi.getEvents();
+        
+        if (response.data.success) {
+          setEvents(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        toast.error('Gagal memuat data event');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  // Fetch participants when event is selected
+  const fetchParticipants = async (eventId) => {
+    try {
+      setParticipantsLoading(true);
+      const response = await organizerApi.getParticipants({
+        search: searchTerm,
+        event_id: eventId,
+        status: selectedStatus
+      });
+      
+      if (response.data.success) {
+        setParticipants(response.data.data.participants || []);
+      }
+    } catch (error) {
+      console.error('Error fetching participants:', error);
+      toast.error('Gagal memuat data peserta');
+    } finally {
+      setParticipantsLoading(false);
+    }
+  };
+
+  // Handle event selection
+  const handleEventSelect = (event) => {
+    setSelectedEvent(event);
+    setParticipants([]);
+    setSearchTerm('');
+    setSelectedStatus('all');
+    fetchParticipants(event.id);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   };
 
   // Handle back to event list
   const handleBackToEvents = () => {
     setSelectedEvent(null);
+<<<<<<< HEAD
+=======
+    setParticipants([]);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     setSearchTerm('');
     setSelectedStatus('all');
   };
 
+<<<<<<< HEAD
+=======
+  // Refetch participants when filters change
+  useEffect(() => {
+    if (selectedEvent) {
+      fetchParticipants(selectedEvent.id);
+    }
+  }, [searchTerm, selectedStatus]);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
   // Format date function
   const formatDate = (dateString) => {
@@ -236,7 +319,11 @@ const EOParticipants = () => {
 
   // Sort events function
   const sortEvents = (events, sortBy) => {
+<<<<<<< HEAD
     if (!events || !Array.isArray(events)) return [];
+=======
+    if (!events) return [];
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     
     return [...events].sort((a, b) => {
       switch (sortBy) {
@@ -261,9 +348,15 @@ const EOParticipants = () => {
     return [...participants].sort((a, b) => {
       switch (sortBy) {
         case 'nama':
+<<<<<<< HEAD
           return (a.nama_lengkap || '').localeCompare(b.nama_lengkap || '');
         case 'email':
           return (a.email || '').localeCompare(b.email || '');
+=======
+          return (a.participant?.nama_lengkap || '').localeCompare(b.participant?.nama_lengkap || '');
+        case 'email':
+          return (a.participant?.email || '').localeCompare(b.participant?.email || '');
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         case 'tanggal':
           return new Date(b.createdAt) - new Date(a.createdAt);
         case 'status':
@@ -333,12 +426,18 @@ const EOParticipants = () => {
   };
 
   const ParticipantCard = ({ participant }) => {
+<<<<<<< HEAD
     // Extract participant data with proper fallbacks
     const nama = participant.nama_lengkap || 'Unknown User';
     const email = participant.email || 'No email';
     const phone = participant.no_handphone || 'No phone';
     const status = participant.status || 'pending';
     const createdAt = participant.createdAt;
+=======
+    const participantData = participant.participant || participant;
+    const nama = participantData.nama_lengkap || 'Unknown';
+    const email = participantData.email || 'No email';
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     
     return (
       <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300">
@@ -385,6 +484,7 @@ const EOParticipants = () => {
       <div className="space-y-2 mb-4">
         <div className="flex items-center text-sm text-gray-600">
           <Phone className="w-4 h-4 mr-2" />
+<<<<<<< HEAD
           {phone}
         </div>
         <div className="flex items-center text-sm text-gray-600">
@@ -396,6 +496,17 @@ const EOParticipants = () => {
           Daftar: {createdAt ? 
             new Date(createdAt).toLocaleDateString('id-ID') : 
             'Unknown date'}
+=======
+          {participantData.no_handphone || 'No phone'}
+        </div>
+        <div className="flex items-center text-sm text-gray-600">
+          <Calendar className="w-4 h-4 mr-2" />
+          {participant.event?.judul || 'No event'}
+        </div>
+        <div className="flex items-center text-sm text-gray-600">
+          <MapPin className="w-4 h-4 mr-2" />
+          Daftar: {participant.createdAt ? new Date(participant.createdAt).toLocaleDateString('id-ID') : 'Unknown date'}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         </div>
       </div>
 
@@ -423,6 +534,19 @@ const EOParticipants = () => {
   );
   };
 
+<<<<<<< HEAD
+=======
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Memuat data event...</p>
+        </div>
+      </div>
+    );
+  }
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
   // Event Selection View
   if (!selectedEvent) {
@@ -441,6 +565,7 @@ const EOParticipants = () => {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<<<<<<< HEAD
           <LazyWrapper
             fetchFunction={fetchEvents}
             SkeletonComponent={() => (
@@ -580,6 +705,73 @@ const EOParticipants = () => {
                             </span>
                           );
                         })()}
+=======
+          {/* Stats & Sorting */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white rounded-2xl p-6 border border-gray-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Total Event Anda</h2>
+                  <p className="text-3xl font-bold text-blue-600 mt-2">{events?.length || 0}</p>
+                </div>
+                <FileText className="w-12 h-12 text-blue-600" />
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 border border-gray-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Urutkan Event
+                  </label>
+                  <select
+                    value={eventSortBy}
+                    onChange={(e) => setEventSortBy(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="tanggal">Tanggal Terbaru</option>
+                    <option value="nama">Nama A-Z</option>
+                    <option value="peserta">Jumlah Peserta</option>
+                    <option value="status">Status</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Events Grid */}
+          {!events || events.length === 0 ? (
+            <div className="bg-white rounded-2xl p-12 border border-gray-100 text-center">
+              <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Belum Ada Event</h3>
+              <p className="text-gray-600">Buat event pertama Anda untuk mulai menerima peserta</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {sortEvents(events, eventSortBy)?.map((event) => (
+                <div
+                  key={event.id}
+                  onClick={() => handleEventSelect(event)}
+                  className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all duration-300 cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between">
+                    {/* Left Section - Event Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1 min-w-0 mr-4">
+                          <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                            {event.judul}
+                          </h3>
+                          <p className="text-sm text-gray-500 mt-1 capitalize">{event.kategori}</p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                          event.status_event === 'published' 
+                            ? 'bg-green-100 text-green-700' 
+                            : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          {event.status_event === 'published' ? 'Aktif' : 'Draft'}
+                        </span>
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -615,9 +807,12 @@ const EOParticipants = () => {
               ))}
             </div>
           )}
+<<<<<<< HEAD
               </div>
             )}
           </LazyWrapper>
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         </div>
       </div>
     );
@@ -642,6 +837,7 @@ const EOParticipants = () => {
                 <p className="text-sm text-gray-600">Kelola peserta event ini</p>
               </div>
             </div>
+<<<<<<< HEAD
             <LazyWrapper
               fetchFunction={fetchParticipants}
               dependencies={participantsDependencies}
@@ -675,11 +871,40 @@ const EOParticipants = () => {
                 </button>
               )}
             </LazyWrapper>
+=======
+            <button
+              onClick={() => {
+                // Export participants for this event
+                const csvContent = [
+                  ['Nama', 'Email', 'No. HP', 'Status', 'Tanggal Daftar'],
+                  ...participants.map(p => [
+                    p.participant?.nama_lengkap || 'N/A',
+                    p.participant?.email || 'N/A',
+                    p.participant?.no_handphone || 'N/A',
+                    getStatusText(p.status),
+                    formatDate(p.createdAt)
+                  ])
+                ].map(row => row.join(',')).join('\n');
+
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `peserta-${selectedEvent.judul}.csv`;
+                a.click();
+              }}
+              className="inline-flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export Data
+            </button>
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<<<<<<< HEAD
         <LazyWrapper
           fetchFunction={fetchParticipants}
           dependencies={participantsDependencies}
@@ -891,6 +1116,114 @@ const EOParticipants = () => {
             </>
           )}
         </LazyWrapper>
+=======
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-2xl p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Peserta</p>
+                <p className="text-2xl font-bold text-gray-900">{participants?.length || 0}</p>
+              </div>
+              <Users className="w-8 h-8 text-blue-600" />
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Terkonfirmasi</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {participants?.filter(p => p.status === 'confirmed').length || 0}
+                </p>
+              </div>
+              <UserCheck className="w-8 h-8 text-green-600" />
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Menunggu</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {participants?.filter(p => p.status === 'pending').length || 0}
+                </p>
+              </div>
+              <Clock className="w-8 h-8 text-yellow-600" />
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Dibatalkan</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {participants?.filter(p => p.status === 'cancelled').length || 0}
+                </p>
+              </div>
+              <UserX className="w-8 h-8 text-red-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Filters & Sorting */}
+        <div className="bg-white rounded-2xl p-6 border border-gray-100 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Cari nama atau email peserta..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Status Filter */}
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">Semua Status</option>
+              <option value="confirmed">Terkonfirmasi</option>
+              <option value="pending">Menunggu</option>
+              <option value="cancelled">Dibatalkan</option>
+            </select>
+
+            {/* Sort Participants */}
+            <select
+              value={participantSortBy}
+              onChange={(e) => setParticipantSortBy(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="nama">Urutkan: Nama A-Z</option>
+              <option value="email">Urutkan: Email A-Z</option>
+              <option value="tanggal">Urutkan: Tanggal Daftar</option>
+              <option value="status">Urutkan: Status</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Participants List */}
+        {participantsLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-gray-600">Memuat data peserta...</span>
+          </div>
+        ) : !participants || participants.length === 0 ? (
+          <div className="bg-white rounded-2xl p-12 border border-gray-100 text-center">
+            <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Belum Ada Peserta</h3>
+            <p className="text-gray-600">Belum ada yang mendaftar untuk event ini</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortParticipants(participants, participantSortBy)?.map((participant) => (
+              <ParticipantCard key={participant.id} participant={participant} />
+            ))}
+          </div>
+        )}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       </div>
     </div>
   );

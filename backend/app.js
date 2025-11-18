@@ -58,7 +58,10 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+<<<<<<< HEAD
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
 // Routes
 app.use('/', indexRouter);

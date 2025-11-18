@@ -8,14 +8,21 @@ const organizerApi = {
   getEvents: (params = {}) => {
     const searchParams = new URLSearchParams();
     if (params.search) searchParams.append('search', params.search);
+<<<<<<< HEAD
     if (params.status && params.status !== 'all') searchParams.append('status', params.status);
+=======
+    if (params.status) searchParams.append('status', params.status);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     
     const queryString = searchParams.toString();
     return api.get(`/organizer/events${queryString ? `?${queryString}` : ''}`);
   },
 
+<<<<<<< HEAD
   getEventById: (id) => api.get(`/organizer/events/${id}`),
   
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   createEvent: (eventData) => api.post('/organizer/events', eventData),
   
   updateEvent: (id, eventData) => api.put(`/organizer/events/${id}`, eventData),
@@ -33,6 +40,7 @@ const organizerApi = {
     return api.get(`/organizer/participants${queryString ? `?${queryString}` : ''}`);
   },
 
+<<<<<<< HEAD
   // Get participants for specific event
   getEventParticipants: (eventId) => {
     return api.get(`/organizer/events/${eventId}/participants`);
@@ -96,4 +104,12 @@ const organizerApi = {
 };
 
 export { organizerApi as organizerAPI };
+=======
+  // Analytics
+  getAnalytics: (timeRange = '6months') => {
+    return api.get(`/organizer/analytics?timeRange=${timeRange}`);
+  }
+};
+
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 export default organizerApi;

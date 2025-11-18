@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
 const authenticateToken = async (req, res, next) => {
+<<<<<<< HEAD
   console.log('=== AUTHENTICATION CHECK ===');
   console.log('Request URL:', req.originalUrl);
   console.log('Request Method:', req.method);
@@ -14,11 +15,18 @@ const authenticateToken = async (req, res, next) => {
 
   if (!token) {
     console.log('❌ No token provided');
+=======
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     return res.status(401).json({ message: 'Access token required' });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+<<<<<<< HEAD
     console.log('Token decoded successfully:', { userId: decoded.userId, email: decoded.email, role: decoded.role });
     
     const user = await User.findByPk(decoded.userId);
@@ -26,14 +34,24 @@ const authenticateToken = async (req, res, next) => {
     
     if (!user) {
       console.log('❌ User not found in database');
+=======
+    const user = await User.findByPk(decoded.userId);
+    
+    if (!user) {
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       return res.status(401).json({ message: 'Invalid token' });
     }
 
     req.user = user;
+<<<<<<< HEAD
     console.log('✅ Authentication successful');
     next();
   } catch (error) {
     console.log('❌ Token verification failed:', error.message);
+=======
+    next();
+  } catch (error) {
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     return res.status(403).json({ message: 'Invalid or expired token' });
   }
 };

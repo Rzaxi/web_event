@@ -6,12 +6,19 @@ import {
   Users, 
   BarChart3, 
   UserCheck,
+<<<<<<< HEAD
   Wallet,
   Settings,
   LogOut,
   ArrowLeft,
   X,
   Award
+=======
+  Settings,
+  LogOut,
+  ArrowLeft,
+  X
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 } from 'lucide-react';
 
 const EOSidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -25,8 +32,11 @@ const EOSidebar = ({ sidebarOpen, setSidebarOpen }) => {
     { name: 'Peserta', href: '/organizer/participants', icon: Users },
     { name: 'Analytics', href: '/organizer/analytics', icon: BarChart3 },
     { name: 'Attendance', href: '/organizer/attendance', icon: UserCheck },
+<<<<<<< HEAD
     { name: 'Sertifikat', href: '/organizer/certificates', icon: Award },
     { name: 'Keuangan', href: '/organizer/finance', icon: Wallet },
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   ];
 
   const handleLogout = () => {

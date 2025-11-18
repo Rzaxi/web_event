@@ -18,6 +18,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import organizerApi from '../../services/organizerApi';
 import { toast } from 'react-toastify';
+<<<<<<< HEAD
 import LazyWrapper from '../../components/ui/LazyWrapper';
 import { DashboardStatsSkeleton, EventListSkeleton } from '../../components/ui/SkeletonLoader';
 
@@ -79,12 +80,35 @@ const EODashboard = () => {
         toast.success('Event berhasil dihapus');
         // Refresh data
         const response = await organizerApi.getDashboardData();
+=======
+
+const EODashboard = () => {
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+  const [events, setEvents] = useState([]);
+  const [stats, setStats] = useState({
+    totalEvents: 0,
+    totalParticipants: 0,
+    activeEvents: 0,
+    completedEvents: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // Fetch dashboard data from API
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const response = await organizerApi.getDashboardData();
+        
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         if (response.data.success) {
           const { stats: apiStats, recentEvents } = response.data.data;
           setStats(apiStats);
           setEvents(recentEvents);
         }
       } catch (error) {
+<<<<<<< HEAD
         console.error('Error deleting event:', error);
         toast.error('Gagal menghapus event');
       }
@@ -100,6 +124,17 @@ const EODashboard = () => {
   const handleExportParticipants = (eventId) => {
     navigate(`/organizer/participants?event=${eventId}&export=true`);
   };
+=======
+        console.error('Error fetching dashboard data:', error);
+        toast.error('Gagal memuat data dashboard');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
   const StatCard = ({ icon: Icon, title, value, subtitle, trend }) => (
     <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300">
@@ -120,6 +155,7 @@ const EODashboard = () => {
     </div>
   );
 
+<<<<<<< HEAD
   const EventCard = ({ event }) => {
     // Get status based on real-time date
     const getStatusDisplay = (event) => {
@@ -169,6 +205,43 @@ const EODashboard = () => {
             {statusDisplay.text}
           </span>
         </div>
+=======
+  const EventCard = ({ event }) => (
+    <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{event.judul}</h3>
+          <div className="space-y-1">
+            <div className="flex items-center text-sm text-gray-600">
+              <Calendar className="w-4 h-4 mr-2" />
+              {new Date(event.tanggal).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+              })}
+            </div>
+            <div className="flex items-center text-sm text-gray-600">
+              <Clock className="w-4 h-4 mr-2" />
+              {event.waktu_mulai} WIB
+            </div>
+            <div className="flex items-center text-sm text-gray-600">
+              <MapPin className="w-4 h-4 mr-2" />
+              {event.lokasi}
+            </div>
+          </div>
+        </div>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+          event.status_event === 'published' 
+            ? 'bg-green-100 text-green-800' 
+            : event.status_event === 'completed'
+            ? 'bg-gray-100 text-gray-800'
+            : 'bg-yellow-100 text-yellow-800'
+        }`}>
+          {event.status_event === 'published' ? 'Aktif' : 
+           event.status_event === 'completed' ? 'Selesai' : 'Draft'}
+        </span>
+      </div>
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
       <div className="mb-4">
         <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
@@ -185,6 +258,7 @@ const EODashboard = () => {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
+<<<<<<< HEAD
           <button 
             onClick={() => handleViewEvent(event.id)}
             className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -204,10 +278,20 @@ const EODashboard = () => {
             className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             title="Hapus Event"
           >
+=======
+          <button className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+            <Eye className="w-4 h-4" />
+          </button>
+          <button className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+            <Edit className="w-4 h-4" />
+          </button>
+          <button className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
         <div className="flex items-center space-x-2">
+<<<<<<< HEAD
           <button 
             onClick={() => handleAttendance(event.id)}
             className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
@@ -220,13 +304,23 @@ const EODashboard = () => {
             className="p-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
             title="Export Data Peserta"
           >
+=======
+          <button className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
+            <UserCheck className="w-4 h-4" />
+          </button>
+          <button className="p-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
             <Download className="w-4 h-4" />
           </button>
         </div>
       </div>
     </div>
+<<<<<<< HEAD
     );
   };
+=======
+  );
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -250,6 +344,7 @@ const EODashboard = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<<<<<<< HEAD
         <LazyWrapper
           fetchFunction={fetchDashboardData}
           SkeletonComponent={() => (
@@ -386,6 +481,87 @@ const EODashboard = () => {
             </div>
           )}
         </LazyWrapper>
+=======
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            icon={Calendar}
+            title="Total Event"
+            value={stats.totalEvents}
+            subtitle="Semua event yang dibuat"
+            trend="+12%"
+          />
+          <StatCard
+            icon={Users}
+            title="Total Peserta"
+            value={stats.totalParticipants}
+            subtitle="Dari semua event"
+            trend="+8%"
+          />
+          <StatCard
+            icon={BarChart3}
+            title="Event Aktif"
+            value={stats.activeEvents}
+            subtitle="Sedang berjalan"
+          />
+          <StatCard
+            icon={TrendingUp}
+            title="Event Selesai"
+            value={stats.completedEvents}
+            subtitle="Event yang sudah selesai"
+          />
+        </div>
+
+        {/* Events Section */}
+        <div className="bg-white rounded-2xl border border-gray-100">
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">Event Terbaru</h2>
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Cari event..."
+                    className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <button className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                  <Filter className="w-4 h-4 text-gray-600" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6">
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+                <p className="text-gray-600">Memuat data...</p>
+              </div>
+            ) : events.length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {events.map(event => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Belum Ada Event</h3>
+                <p className="text-gray-600 mb-6">Mulai buat event pertama Anda</p>
+                <button
+                  onClick={() => navigate('/organizer/events/create')}
+                  className="inline-flex items-center px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Buat Event Baru
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       </div>
     </div>
   );

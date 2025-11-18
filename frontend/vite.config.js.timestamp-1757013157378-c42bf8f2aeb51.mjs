@@ -1,4 +1,8 @@
+<<<<<<< HEAD
  // vite.config.js
+=======
+// vite.config.js
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 import { defineConfig } from "file:///C:/Users/rajib/Documents/ujikom/project_files/event_rajib%20(3)/event_rajib/frontend/node_modules/vite/dist/node/index.js";
 import react from "file:///C:/Users/rajib/Documents/ujikom/project_files/event_rajib%20(3)/event_rajib/frontend/node_modules/@vitejs/plugin-react/dist/index.js";
 import path from "path";

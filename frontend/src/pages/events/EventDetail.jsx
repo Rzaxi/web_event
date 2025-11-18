@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useCallback } from 'react';
+=======
+import React, { useState, useEffect } from 'react';
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, Clock, ArrowLeft, UserPlus, UserMinus, Star, Award, DollarSign, Zap, Share2, Heart, FileText, Shield, AlertTriangle, CheckCircle, Bookmark } from 'lucide-react';
 import { eventsAPI } from '../../services/api';
@@ -20,6 +24,7 @@ const EventDetail = () => {
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [relatedEvents, setRelatedEvents] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(false);
+<<<<<<< HEAD
   const [eventCategory, setEventCategory] = useState(null);
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -67,6 +72,10 @@ const EventDetail = () => {
     }
   }, [id]); // Only depend on id
 
+=======
+  const user = JSON.parse(localStorage.getItem('user'));
+
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   // Lock body scroll when modal is open
   useEffect(() => {
     if (showCancelModal || showConfirmModal) {
@@ -84,6 +93,7 @@ const EventDetail = () => {
     };
   }, [showCancelModal, showConfirmModal]);
 
+<<<<<<< HEAD
   // Reset state when event ID changes
   useEffect(() => {
     setEventCategory(null);
@@ -97,21 +107,32 @@ const EventDetail = () => {
     }
   }, [eventCategory, fetchRelatedEvents]); // Re-fetch when event category changes
 
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   const fetchEventDetail = async () => {
     try {
       const response = await eventsAPI.getById(id);
       // Set registration status from response
       setIsRegistered(response.data.isRegistered || false);
       
+<<<<<<< HEAD
       // Set event category to trigger related events fetch
       setEventCategory(response.data.kategori);
       
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       // Check bookmark status if user is logged in AND has valid token
       const token = localStorage.getItem('token');
       if (user && token) {
         await checkBookmarkStatus();
       }
       
+<<<<<<< HEAD
+=======
+      // Fetch related events
+      await fetchRelatedEvents(response.data.kategori);
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       return response.data;
     } catch (error) {
       toast.error('Gagal memuat detail event');
@@ -120,6 +141,67 @@ const EventDetail = () => {
     }
   };
 
+<<<<<<< HEAD
+=======
+  const fetchRelatedEvents = async (kategori) => {
+    try {
+      setLoadingRelated(true);
+      console.log('Fetching related events for category:', kategori);
+      
+      // Get all events first
+      const response = await eventsAPI.getAll();
+      console.log('All events response:', response.data);
+      
+      let allEvents = [];
+      
+      // Handle backend response structure: response.data.data.events
+      if (response.data.success && response.data.data && response.data.data.events) {
+        allEvents = response.data.data.events;
+      } else if (response.data.events) {
+        allEvents = response.data.events;
+      } else if (Array.isArray(response.data)) {
+        allEvents = response.data;
+      } else {
+        console.log('Unexpected response structure:', response.data);
+        setRelatedEvents([]);
+        return;
+      }
+      
+      console.log('All events:', allEvents);
+      console.log('Current event ID:', id);
+      console.log('Looking for category:', kategori);
+      
+      // Filter by category and exclude current event
+      let filtered = allEvents.filter(event => {
+        const isSameCategory = event.kategori === kategori;
+        const isDifferentEvent = event.id !== parseInt(id);
+        console.log(`Event ${event.id}: category=${event.kategori}, same=${isSameCategory}, different=${isDifferentEvent}`);
+        return isSameCategory && isDifferentEvent;
+      });
+      
+      console.log('Filtered events by category:', filtered);
+      
+      // If no events in same category, show other recent events (excluding current)
+      if (filtered.length === 0) {
+        filtered = allEvents.filter(event => event.id !== parseInt(id));
+        console.log('No events in same category, showing other events:', filtered);
+      }
+      
+      // Take only first 6 events
+      const limitedEvents = filtered.slice(0, 6);
+      setRelatedEvents(limitedEvents);
+      
+      console.log('Final related events to display:', limitedEvents);
+      
+    } catch (error) {
+      console.error('Error fetching related events:', error);
+      setRelatedEvents([]);
+    } finally {
+      setLoadingRelated(false);
+    }
+  };
+
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   const checkBookmarkStatus = async () => {
     try {
       const token = localStorage.getItem('token');

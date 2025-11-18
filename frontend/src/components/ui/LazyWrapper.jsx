@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLazyLoading } from '../../hooks/useLazyLoading';
 
+<<<<<<< HEAD
 // Default skeleton component
 const DefaultSkeleton = () => (
   <div className="animate-pulse">
@@ -10,11 +11,17 @@ const DefaultSkeleton = () => (
   </div>
 );
 
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 // Wrapper component untuk lazy loading dengan skeleton
 const LazyWrapper = ({ 
   children, 
   fetchFunction, 
+<<<<<<< HEAD
   SkeletonComponent = DefaultSkeleton, 
+=======
+  SkeletonComponent, 
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   dependencies = [], 
   delay = 1000,
   ...props 

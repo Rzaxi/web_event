@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
+=======
+import React from 'react';
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 import { Link } from 'react-router-dom';
 import { 
   Calendar, 
@@ -14,9 +18,12 @@ import {
 } from 'lucide-react';
 
 const EventCard = ({ event, featured = false, variant = 'light' }) => {
+<<<<<<< HEAD
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   if (!event) {
     return null;
   }
@@ -93,6 +100,7 @@ const EventCard = ({ event, featured = false, variant = 'light' }) => {
            style={{ height: '450px' }}>
         {/* Header Section - FOTO LEBIH BESAR */}
         <div className="relative overflow-hidden bg-gray-200" style={{ height: '280px' }}>
+<<<<<<< HEAD
           {/* Gambar dengan penanganan error CORB yang efisien */}
           {flyer_url && !imageError ? (
             <>
@@ -119,6 +127,17 @@ const EventCard = ({ event, featured = false, variant = 'light' }) => {
           ) : (
             /* Fallback jika tidak ada gambar atau error */
             <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
+=======
+          {/* Background Image - Clean tanpa overlay */}
+          {flyer_url ? (
+            <img 
+              src={flyer_url} 
+              alt={judul}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
               <CategoryIcon className="w-12 h-12 text-gray-500" />
             </div>
           )}

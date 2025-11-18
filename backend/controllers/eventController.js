@@ -5,7 +5,10 @@ const path = require('path');
 const { Op } = require('sequelize');
 const XLSX = require('xlsx');
 const { createNotification, NOTIFICATION_TYPES } = require('./notificationController');
+<<<<<<< HEAD
 const { sendAttendanceTokenEmail } = require('../utils/emailService');
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
 // Get all events (public)
 const getEvents = async (req, res) => {
@@ -72,11 +75,15 @@ const getEvents = async (req, res) => {
         return {
           ...eventData,
           participantCount,
+<<<<<<< HEAD
           flyer_url: eventData.flyer_url ? (
             eventData.flyer_url.startsWith('http')
               ? eventData.flyer_url
               : `http://localhost:3000${eventData.flyer_url}`
           ) : null
+=======
+          flyer_url: eventData.flyer_url ? `http://localhost:3000${eventData.flyer_url}` : null
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         };
       })
     );
@@ -140,11 +147,15 @@ const getEventById = async (req, res) => {
       ...eventData,
       participantCount,
       isRegistered,
+<<<<<<< HEAD
       flyer_url: eventData.flyer_url ? (
         eventData.flyer_url.startsWith('http')
           ? eventData.flyer_url
           : `http://localhost:3000${eventData.flyer_url}`
       ) : null
+=======
+      flyer_url: eventData.flyer_url ? `http://localhost:3000${eventData.flyer_url}` : null
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     });
   } catch (error) {
     console.error('Get event by ID error:', error);
@@ -363,6 +374,7 @@ const registerForEvent = async (req, res) => {
       return res.status(400).json({ message: 'Anda sudah terdaftar untuk event ini' });
     }
 
+<<<<<<< HEAD
     // Generate 10-digit attendance token
     const generateAttendanceToken = () => {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -380,6 +392,12 @@ const registerForEvent = async (req, res) => {
       event_id: id,
       user_id: userId,
       attendance_token: attendanceToken
+=======
+    // Create registration
+    await EventRegistration.create({
+      event_id: id,
+      user_id: userId
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     });
 
     // Create notification for successful registration
@@ -391,6 +409,7 @@ const registerForEvent = async (req, res) => {
       id
     );
 
+<<<<<<< HEAD
     // Send attendance token email
     try {
       await sendAttendanceTokenEmail(
@@ -408,6 +427,10 @@ const registerForEvent = async (req, res) => {
     res.status(201).json({
       message: 'Berhasil mendaftar event',
       attendance_token: attendanceToken
+=======
+    res.status(201).json({ 
+      message: 'Berhasil mendaftar event'
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     });
   } catch (error) {
     console.error('Register event error:', error);
@@ -415,6 +438,7 @@ const registerForEvent = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 // Get user's attendance token for event
 const getUserAttendanceToken = async (req, res) => {
   try {
@@ -447,6 +471,8 @@ const getUserAttendanceToken = async (req, res) => {
   }
 };
 
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 // Unregister from event (User only)
 const unregisterFromEvent = async (req, res) => {
   try {
@@ -455,7 +481,11 @@ const unregisterFromEvent = async (req, res) => {
 
     // Get event details before deleting registration
     const event = await Event.findByPk(id);
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     // Find and delete registration
     const registration = await EventRegistration.findOne({
       where: {
@@ -628,7 +658,10 @@ module.exports = {
   deleteEvent,
   registerForEvent,
   unregisterFromEvent,
+<<<<<<< HEAD
   getUserAttendanceToken,
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   exportEvents,
   exportEventParticipants,
   issueCertificates,

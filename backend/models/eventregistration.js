@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'event_id',
         as: 'Event'
       });
+<<<<<<< HEAD
       // Optional association - only if TicketCategory model exists
       if (models.TicketCategory) {
         EventRegistration.belongsTo(models.TicketCategory, { 
@@ -25,6 +26,8 @@ module.exports = (sequelize, DataTypes) => {
           as: 'TicketCategory'
         });
       }
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     }
   }
   EventRegistration.init({
@@ -44,6 +47,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
+<<<<<<< HEAD
     ticket_category_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -53,12 +57,18 @@ module.exports = (sequelize, DataTypes) => {
       },
       comment: 'ID kategori tiket yang dipilih saat registrasi'
     },
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     sertifikat_url: {
       type: DataTypes.STRING,
       allowNull: true
     },
     status: {
+<<<<<<< HEAD
       type: DataTypes.ENUM('pending', 'confirmed', 'cancelled', 'attended'),
+=======
+      type: DataTypes.ENUM('pending', 'confirmed', 'cancelled'),
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       defaultValue: 'confirmed',
       allowNull: false
     },
@@ -66,11 +76,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(10),
       allowNull: true,
       comment: '10-digit attendance token sent via email during registration'
+<<<<<<< HEAD
     },
     attended_at: {
       type: DataTypes.DATE,
       allowNull: true,
       comment: 'Timestamp when participant attended the event'
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     }
   }, {
     sequelize,

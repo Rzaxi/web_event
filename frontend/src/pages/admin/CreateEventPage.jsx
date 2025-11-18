@@ -82,7 +82,11 @@ const CreateEventPage = () => {
         }));
         return;
       }
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       if (file.size > 5 * 1024 * 1024) {
         setErrors(prev => ({
           ...prev,
@@ -90,7 +94,11 @@ const CreateEventPage = () => {
         }));
         return;
       }
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       setFlyer(file);
       setErrors(prev => ({
         ...prev,
@@ -101,6 +109,7 @@ const CreateEventPage = () => {
 
   const validateForm = () => {
     const newErrors = {};
+<<<<<<< HEAD
 
     if (!formData.title.trim()) {
       newErrors.title = 'Judul event wajib diisi';
@@ -110,6 +119,17 @@ const CreateEventPage = () => {
       newErrors.description = 'Deskripsi event wajib diisi';
     }
 
+=======
+    
+    if (!formData.title.trim()) {
+      newErrors.title = 'Judul event wajib diisi';
+    }
+    
+    if (!formData.description.trim()) {
+      newErrors.description = 'Deskripsi event wajib diisi';
+    }
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     if (!formData.date) {
       newErrors.date = 'Tanggal event wajib diisi';
     } else {
@@ -117,11 +137,16 @@ const CreateEventPage = () => {
       const today = new Date();
       const diffTime = eventDate - today;
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       if (diffDays < 3) {
         newErrors.date = 'Event hanya dapat dibuat minimal H-3 dari tanggal pelaksanaan';
       }
     }
+<<<<<<< HEAD
 
     if (!formData.time) {
       newErrors.time = 'Waktu event wajib diisi';
@@ -135,12 +160,28 @@ const CreateEventPage = () => {
       newErrors.maxParticipants = 'Kapasitas peserta minimal 1 orang';
     }
 
+=======
+    
+    if (!formData.time) {
+      newErrors.time = 'Waktu event wajib diisi';
+    }
+    
+    if (!formData.location.trim()) {
+      newErrors.location = 'Lokasi event wajib diisi';
+    }
+    
+    if (!formData.maxParticipants || formData.maxParticipants < 1) {
+      newErrors.maxParticipants = 'Kapasitas peserta minimal 1 orang';
+    }
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
 
     if (!validateForm()) {
       return;
@@ -152,6 +193,19 @@ const CreateEventPage = () => {
       const adminToken = localStorage.getItem('adminToken');
       const formDataToSend = new FormData();
 
+=======
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      const adminToken = localStorage.getItem('adminToken');
+      const formDataToSend = new FormData();
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       formDataToSend.append('title', formData.title);
       formDataToSend.append('description', formData.description);
       formDataToSend.append('date', formData.date);
@@ -164,11 +218,19 @@ const CreateEventPage = () => {
       formDataToSend.append('minimum_kehadiran', formData.minimum_kehadiran);
       formDataToSend.append('memberikan_sertifikat', formData.memberikan_sertifikat);
       formDataToSend.append('tanggal_selesai', formData.tanggal_selesai);
+<<<<<<< HEAD
 
       if (flyer) {
         formDataToSend.append('flyer', flyer);
       }
 
+=======
+      
+      if (flyer) {
+        formDataToSend.append('flyer', flyer);
+      }
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       const response = await fetch('http://localhost:3000/admin/events', {
         method: 'POST',
         headers: {
@@ -176,16 +238,26 @@ const CreateEventPage = () => {
         },
         body: formDataToSend
       });
+<<<<<<< HEAD
 
       const data = await response.json();
 
+=======
+      
+      const data = await response.json();
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       if (data.success) {
         alert('Event berhasil dibuat!');
         navigate('/admin/events');
       } else {
         alert(data.message || 'Gagal membuat event');
       }
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     } catch (error) {
       console.error('Error creating event:', error);
       alert('Gagal membuat event. Silakan coba lagi.');
@@ -223,7 +295,11 @@ const CreateEventPage = () => {
             {/* Basic Info */}
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Informasi Dasar</h2>
+<<<<<<< HEAD
 
+=======
+              
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
               <div className="grid grid-cols-1 gap-6">
                 {/* Title */}
                 <div>
@@ -235,8 +311,14 @@ const CreateEventPage = () => {
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
+<<<<<<< HEAD
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.title ? 'border-red-500' : 'border-gray-300'
                       }`}
+=======
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.title ? 'border-red-500' : 'border-gray-300'
+                    }`}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                     placeholder="Masukkan judul event"
                   />
                   {errors.title && (
@@ -254,8 +336,14 @@ const CreateEventPage = () => {
                     value={formData.description}
                     onChange={handleInputChange}
                     rows={6}
+<<<<<<< HEAD
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.description ? 'border-red-500' : 'border-gray-300'
                       }`}
+=======
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.description ? 'border-red-500' : 'border-gray-300'
+                    }`}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                     placeholder="Masukkan deskripsi lengkap event"
                   />
                   {errors.description && (
@@ -268,7 +356,11 @@ const CreateEventPage = () => {
             {/* Event Details */}
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Detail Event</h2>
+<<<<<<< HEAD
 
+=======
+              
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Date */}
                 <div>
@@ -281,8 +373,14 @@ const CreateEventPage = () => {
                     name="date"
                     value={formData.date}
                     onChange={handleInputChange}
+<<<<<<< HEAD
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.date ? 'border-red-500' : 'border-gray-300'
                       }`}
+=======
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.date ? 'border-red-500' : 'border-gray-300'
+                    }`}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                   />
                   {errors.date && (
                     <p className="mt-1 text-sm text-red-600">{errors.date}</p>
@@ -300,8 +398,14 @@ const CreateEventPage = () => {
                     name="time"
                     value={formData.time}
                     onChange={handleInputChange}
+<<<<<<< HEAD
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.time ? 'border-red-500' : 'border-gray-300'
                       }`}
+=======
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.time ? 'border-red-500' : 'border-gray-300'
+                    }`}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                   />
                   {errors.time && (
                     <p className="mt-1 text-sm text-red-600">{errors.time}</p>
@@ -319,8 +423,14 @@ const CreateEventPage = () => {
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
+<<<<<<< HEAD
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.location ? 'border-red-500' : 'border-gray-300'
                       }`}
+=======
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.location ? 'border-red-500' : 'border-gray-300'
+                    }`}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                     placeholder="Masukkan lokasi event"
                   />
                   {errors.location && (
@@ -340,8 +450,14 @@ const CreateEventPage = () => {
                     value={formData.maxParticipants}
                     onChange={handleInputChange}
                     min="1"
+<<<<<<< HEAD
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.maxParticipants ? 'border-red-500' : 'border-gray-300'
                       }`}
+=======
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.maxParticipants ? 'border-red-500' : 'border-gray-300'
+                    }`}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                     placeholder="Masukkan kapasitas peserta"
                   />
                   {errors.maxParticipants && (
@@ -354,7 +470,11 @@ const CreateEventPage = () => {
             {/* Category & Difficulty */}
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Kategori & Tingkat</h2>
+<<<<<<< HEAD
 
+=======
+              
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Category */}
                 <div className="relative">
@@ -381,8 +501,14 @@ const CreateEventPage = () => {
                               setFormData(prev => ({ ...prev, kategori: option.value }));
                               setKategoriDropdownOpen(false);
                             }}
+<<<<<<< HEAD
                             className={`w-full px-4 py-2 text-left hover:bg-blue-50 ${formData.kategori === option.value ? 'bg-blue-100 text-blue-700' : 'text-gray-700'
                               }`}
+=======
+                            className={`w-full px-4 py-2 text-left hover:bg-blue-50 ${
+                              formData.kategori === option.value ? 'bg-blue-100 text-blue-700' : 'text-gray-700'
+                            }`}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                           >
                             {option.label}
                           </button>
@@ -417,8 +543,14 @@ const CreateEventPage = () => {
                               setFormData(prev => ({ ...prev, tingkat_kesulitan: option.value }));
                               setTingkatDropdownOpen(false);
                             }}
+<<<<<<< HEAD
                             className={`w-full px-4 py-2 text-left hover:bg-blue-50 ${formData.tingkat_kesulitan === option.value ? 'bg-blue-100 text-blue-700' : 'text-gray-700'
                               }`}
+=======
+                            className={`w-full px-4 py-2 text-left hover:bg-blue-50 ${
+                              formData.tingkat_kesulitan === option.value ? 'bg-blue-100 text-blue-700' : 'text-gray-700'
+                            }`}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                           >
                             {option.label}
                           </button>
@@ -433,7 +565,11 @@ const CreateEventPage = () => {
             {/* Certificate Settings */}
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Pengaturan Sertifikat</h2>
+<<<<<<< HEAD
 
+=======
+              
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
               <div className="space-y-6">
                 {/* Certificate Toggle */}
                 <div>
@@ -524,7 +660,11 @@ const CreateEventPage = () => {
             {/* Flyer Upload */}
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Media</h2>
+<<<<<<< HEAD
 
+=======
+              
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <FileImage className="inline h-4 w-4 mr-1" />

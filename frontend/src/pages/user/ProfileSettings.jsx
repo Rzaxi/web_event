@@ -93,6 +93,7 @@ const ProfileSettings = () => {
   const fetchCertificates = async () => {
     try {
       const response = await userAPI.getMyCertificates();
+<<<<<<< HEAD
       console.log('Certificates response:', response.data);
       
       if (response.data.success) {
@@ -102,6 +103,11 @@ const ProfileSettings = () => {
       }
     } catch (error) {
       console.error('Fetch certificates error:', error);
+=======
+      setCertificates(response.data || []);
+    } catch (error) {
+      // Silently handle - endpoint might not be implemented yet
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       setCertificates([]);
     }
   };

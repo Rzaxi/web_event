@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import {
   Plus,
   Edit,
@@ -7,6 +8,15 @@ import {
   Eye,
   Calendar,
   Users,
+=======
+import { 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Eye, 
+  Calendar, 
+  Users, 
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   Clock,
   AlertTriangle,
   Search,
@@ -43,7 +53,11 @@ const AdminEvents = () => {
         }
       });
       const data = await response.json();
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       if (data.success) {
         setEvents(data.events || []);
       } else {
@@ -117,7 +131,11 @@ const AdminEvents = () => {
   const getEventStatus = (event) => {
     const now = new Date();
     const eventDateTime = new Date(`${event.date} ${event.time}`);
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     if (now > eventDateTime) {
       return { status: 'completed', label: 'Selesai', color: 'bg-gray-100 text-gray-800' };
     } else {
@@ -134,7 +152,11 @@ const AdminEvents = () => {
         }
       });
       const data = await response.json();
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       if (data.success) {
         const participants = data.participants.map(p => ({
           'Nama': p.user.name,
@@ -145,18 +167,30 @@ const AdminEvents = () => {
           'Tanggal Daftar': new Date(p.registrationDate).toLocaleDateString('id-ID'),
           'Status Kehadiran': p.attendanceStatus
         }));
+<<<<<<< HEAD
 
         const worksheet = XLSX.utils.json_to_sheet(participants);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Participants');
 
+=======
+        
+        const worksheet = XLSX.utils.json_to_sheet(participants);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Participants');
+        
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
         const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         saveAs(blob, `peserta-${eventTitle.replace(/\s+/g, '-').toLowerCase()}.xlsx`);
       } else {
         alert('Gagal mengambil data peserta');
       }
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     } catch (error) {
       console.error('Error exporting participants:', error);
       alert('Gagal mengekspor data peserta. Silakan coba lagi.');
@@ -165,7 +199,11 @@ const AdminEvents = () => {
 
   const deleteEvent = async (eventId) => {
     if (!confirm('Apakah Anda yakin ingin menghapus event ini?')) return;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     try {
       const adminToken = localStorage.getItem('adminToken');
       const response = await fetch(`http://localhost:3000/admin/events/${eventId}`, {
@@ -174,9 +212,15 @@ const AdminEvents = () => {
           'Authorization': `Bearer ${adminToken}`
         }
       });
+<<<<<<< HEAD
 
       const data = await response.json();
 
+=======
+      
+      const data = await response.json();
+      
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       if (data.success) {
         setEvents(events.filter(event => event.id !== eventId));
         alert('Event berhasil dihapus');
@@ -191,10 +235,17 @@ const AdminEvents = () => {
 
   const filteredEvents = events.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+<<<<<<< HEAD
       event.description.toLowerCase().includes(searchTerm.toLowerCase());
 
     if (statusFilter === 'all') return matchesSearch;
 
+=======
+                         event.description.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (statusFilter === 'all') return matchesSearch;
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     const eventStatus = getEventStatus(event);
     return matchesSearch && eventStatus.status === statusFilter;
   });
@@ -269,7 +320,11 @@ const AdminEvents = () => {
           {filteredEvents.map(event => {
             const eventStatus = getEventStatus(event);
             const canCreate = canCreateEvent(event.date);
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
             return (
               <div key={event.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <div className="flex justify-between items-start">
@@ -280,9 +335,15 @@ const AdminEvents = () => {
                         {eventStatus.label}
                       </span>
                     </div>
+<<<<<<< HEAD
 
                     <p className="text-gray-600 text-sm line-clamp-2 mb-3">{event.description}</p>
 
+=======
+                    
+                    <p className="text-gray-600 text-sm line-clamp-2 mb-3">{event.description}</p>
+                    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                     {/* Category and Difficulty Tags */}
                     <div className="flex items-center space-x-2 mb-3">
                       {event.kategori && (
@@ -298,7 +359,11 @@ const AdminEvents = () => {
                         </span>
                       )}
                     </div>
+<<<<<<< HEAD
 
+=======
+                    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                     <div className="flex items-center text-sm text-gray-500 mb-3">
                       <Calendar className="h-4 w-4 mr-1" />
                       <span className="mr-4">{new Date(event.date).toLocaleDateString('id-ID')}</span>
@@ -324,7 +389,11 @@ const AdminEvents = () => {
                     >
                       <FileSpreadsheet className="h-4 w-4" />
                     </button>
+<<<<<<< HEAD
 
+=======
+                    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                     <button
                       onClick={() => navigate(`/admin/events/${event.id}`)}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -332,7 +401,11 @@ const AdminEvents = () => {
                     >
                       <Eye className="h-4 w-4" />
                     </button>
+<<<<<<< HEAD
 
+=======
+                    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                     <button
                       onClick={() => navigate(`/admin/events/${event.id}/edit`)}
                       className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
@@ -340,7 +413,11 @@ const AdminEvents = () => {
                     >
                       <Edit className="h-4 w-4" />
                     </button>
+<<<<<<< HEAD
 
+=======
+                    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                     <button
                       onClick={() => deleteEvent(event.id)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -358,7 +435,11 @@ const AdminEvents = () => {
                     <span>{event.registeredCount}/{event.maxParticipants}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
+<<<<<<< HEAD
                     <div
+=======
+                    <div 
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                       className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${(event.registeredCount / event.maxParticipants) * 100}%` }}
                     ></div>

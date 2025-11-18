@@ -8,7 +8,10 @@ import './styles/skeleton.css';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import ScrollToTop from './components/common/ScrollToTop';
+<<<<<<< HEAD
 import AutoLogoutProvider from './components/common/AutoLogoutProvider';
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
 // Pages
 import Home from './pages/Home';
@@ -46,6 +49,7 @@ import OrganizerRoute from './components/auth/OrganizerRoute';
 import EODashboard from './pages/organizer/EODashboard';
 import EOEvents from './pages/organizer/EOEvents';
 import CreateEvent from './pages/organizer/CreateEvent';
+<<<<<<< HEAD
 import EditEvent from './pages/organizer/EditEvent';
 import EOParticipants from './pages/organizer/EOParticipants';
 import EOAnalytics from './pages/organizer/EOAnalytics';
@@ -53,6 +57,11 @@ import EOAttendance from './pages/organizer/EOAttendance';
 import CertificateManagement from './pages/organizer/CertificateManagement';
 import EOFinance from './pages/organizer/EOFinance';
 import OrganizerEventDetail from './pages/organizer/EventDetail';
+=======
+import EOParticipants from './pages/organizer/EOParticipants';
+import EOAnalytics from './pages/organizer/EOAnalytics';
+import EOAttendance from './pages/organizer/EOAttendance';
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 import EOLayout from './components/organizer/EOLayout';
 
 // Layout component to conditionally show header/footer
@@ -91,10 +100,16 @@ function Layout({ children }) {
 function App() {
   return (
     <Router>
+<<<<<<< HEAD
       <AutoLogoutProvider>
         <ScrollToTop />
         <Layout>
           <Routes>
+=======
+      <ScrollToTop />
+      <Layout>
+        <Routes>
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
           <Route path="/" element={<Home />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetail />} />
@@ -130,6 +145,7 @@ function App() {
             <Route index element={<OrganizerRoute><EODashboard /></OrganizerRoute>} />
             <Route path="events" element={<OrganizerRoute><EOEvents /></OrganizerRoute>} />
             <Route path="events/create" element={<OrganizerRoute><CreateEvent /></OrganizerRoute>} />
+<<<<<<< HEAD
             <Route path="events/:id" element={<OrganizerRoute><OrganizerEventDetail /></OrganizerRoute>} />
             <Route path="events/:id/edit" element={<OrganizerRoute><EditEvent /></OrganizerRoute>} />
             <Route path="participants" element={<OrganizerRoute><EOParticipants /></OrganizerRoute>} />
@@ -137,6 +153,11 @@ function App() {
             <Route path="attendance" element={<OrganizerRoute><EOAttendance /></OrganizerRoute>} />
             <Route path="certificates" element={<OrganizerRoute><CertificateManagement /></OrganizerRoute>} />
             <Route path="finance" element={<OrganizerRoute><EOFinance /></OrganizerRoute>} />
+=======
+            <Route path="participants" element={<OrganizerRoute><EOParticipants /></OrganizerRoute>} />
+            <Route path="analytics" element={<OrganizerRoute><EOAnalytics /></OrganizerRoute>} />
+            <Route path="attendance" element={<OrganizerRoute><EOAttendance /></OrganizerRoute>} />
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
           </Route>
 
           {/* Admin Login Route */}
@@ -146,6 +167,7 @@ function App() {
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+<<<<<<< HEAD
         </Layout>
 
         <ToastContainer
@@ -161,6 +183,22 @@ function App() {
           theme="light"
         />
       </AutoLogoutProvider>
+=======
+      </Layout>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     </Router>
   );
 }

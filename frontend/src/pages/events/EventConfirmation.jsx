@@ -9,10 +9,16 @@ const EventConfirmation = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
+<<<<<<< HEAD
   const [ticketCategories, setTicketCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
   const [selectedTicketType, setSelectedTicketType] = useState('');
+=======
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [selectedTicketType, setSelectedTicketType] = useState('regular');
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -35,6 +41,7 @@ const EventConfirmation = () => {
 
   const fetchEventDetail = async () => {
     try {
+<<<<<<< HEAD
       const [eventResponse, categoriesResponse] = await Promise.all([
         eventsAPI.getById(id),
         eventsAPI.getTicketCategories(id)
@@ -50,6 +57,11 @@ const EventConfirmation = () => {
       }
     } catch (error) {
       console.error('Fetch error:', error);
+=======
+      const response = await eventsAPI.getById(id);
+      setEvent(response.data);
+    } catch (error) {
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       toast.error('Gagal memuat detail event');
       navigate('/events');
     } finally {
@@ -85,6 +97,7 @@ const EventConfirmation = () => {
     }
   };
 
+<<<<<<< HEAD
   // Transform ticket categories for display
   const ticketTypes = ticketCategories.map(category => ({
     id: category.id.toString(),
@@ -99,6 +112,29 @@ const EventConfirmation = () => {
     quota: category.quota,
     soldCount: category.sold_count || 0
   }));
+=======
+  const ticketTypes = [
+    {
+      id: 'early-bird',
+      name: 'Early Bird',
+      price: event?.biaya ? Math.floor(event.biaya * 0.8) : 0,
+      originalPrice: event?.biaya || 0,
+      description: 'Penawaran pertama dan paling ramah kantong yang ditawarkan oleh Svara team jauh sebelum harga normal diberlakukan.',
+      status: 'Habis',
+      available: false,
+      badge: 'HEMAT 20%'
+    },
+    {
+      id: 'regular',
+      name: 'Regular',
+      price: event?.biaya || 0,
+      description: 'Tiket reguler dengan harga standar untuk mengikuti event ini.',
+      status: 'Tersedia',
+      available: true,
+      badge: null
+    }
+  ];
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
   if (isLoading) {
     return (
@@ -171,6 +207,7 @@ const EventConfirmation = () => {
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-lg font-semibold text-gray-900">{ticket.name}</h3>
                           {ticket.badge && (
+<<<<<<< HEAD
                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                               ticket.badgeColor === 'green' ? 'bg-green-100 text-green-800' :
                               ticket.badgeColor === 'blue' ? 'bg-blue-100 text-blue-800' :
@@ -179,6 +216,9 @@ const EventConfirmation = () => {
                               ticket.badgeColor === 'purple' ? 'bg-purple-100 text-purple-800' :
                               'bg-green-100 text-green-800'
                             }`}>
+=======
+                            <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                               {ticket.badge}
                             </span>
                           )}
@@ -189,6 +229,7 @@ const EventConfirmation = () => {
                           }`}>
                             {ticket.status}
                           </span>
+<<<<<<< HEAD
                           {ticket.quota && (
                             <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
                               {ticket.soldCount}/{ticket.quota} terjual
@@ -197,6 +238,17 @@ const EventConfirmation = () => {
                         </div>
                         
                         <p className="text-gray-600 text-sm mb-4">{ticket.description}</p>
+=======
+                        </div>
+                        
+                        <p className="text-gray-600 text-sm mb-4">{ticket.description}</p>
+                        
+                        {ticket.id === 'early-bird' && (
+                          <div className="text-blue-600 text-sm font-medium">
+                            Tampilkan Lebih Banyak
+                          </div>
+                        )}
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                       </div>
                       
                       <div className="text-right">

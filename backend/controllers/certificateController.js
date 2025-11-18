@@ -1,4 +1,5 @@
 // Certificate Controller
+<<<<<<< HEAD
 const { Event, EventRegistration, User, Certificate, CertificateIssued, DailyAttendance, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const path = require('path');
@@ -6,6 +7,12 @@ const fs = require('fs').promises;
 const { createCanvas, loadImage } = require('canvas');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
+=======
+// TODO: Implement new certificate logic based on new attendance system
+
+const { Event, EventRegistration, User } = require('../models');
+const { Op } = require('sequelize');
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
 // Check if user is eligible for certificate
 // TODO: Update with new attendance logic
@@ -75,6 +82,7 @@ const issueCertificatesForEvent = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 // Save certificate template
 const saveCertificateTemplate = async (req, res) => {
   try {
@@ -1245,10 +1253,13 @@ const fixCertificateData = async (req, res) => {
   }
 };
 
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 module.exports = {
   checkCertificateEligibility,
   markDailyAttendance,
   getEventAttendanceSummary,
+<<<<<<< HEAD
   issueCertificatesForEvent,
   saveCertificateTemplate,
   getCertificateTemplate,
@@ -1263,4 +1274,7 @@ module.exports = {
   bulkGenerateCertificates,
   debugCertificates,
   fixCertificateData
+=======
+  issueCertificatesForEvent
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 };

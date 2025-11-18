@@ -27,6 +27,7 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+<<<<<<< HEAD
 // Configure response interceptor to handle expected validation responses and auto logout
 api.interceptors.response.use(
     (response) => response,
@@ -81,6 +82,12 @@ api.interceptors.response.use(
             return Promise.reject(error);
         }
         
+=======
+// Configure response interceptor to handle expected validation responses
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         // Don't treat 400 Bad Request as errors for attendance checks - these are expected validation responses
         if (error.response?.status === 400 && error.config?.url?.includes('/attendance/check')) {
             // Return the error response as if it was successful, but mark it as validation
@@ -90,7 +97,10 @@ api.interceptors.response.use(
                 isValidation: true
             });
         }
+<<<<<<< HEAD
         
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         return Promise.reject(error);
     }
 );
@@ -115,25 +125,45 @@ export const userAPI = {
     getProfile: () => api.get('/users/profile'),
     updateProfile: (userData) => api.put('/users/profile', userData),
     changePassword: (passwordData) => api.put('/users/change-password', passwordData),
+<<<<<<< HEAD
     getMyEvents: () => axios.get('http://localhost:3000/api/users/events', {
+=======
+    getMyEvents: () => axios.get('http://localhost:3000/users/events', {
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'
         }
+<<<<<<< HEAD
     }), // Fixed: add /api prefix
     getMyCertificates: () => axios.get('http://localhost:3000/api/users/certificates', {
+=======
+    }), // Direct call to correct endpoint
+    getMyCertificates: () => axios.get('http://localhost:3000/users/certificates', {
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'
         }
+<<<<<<< HEAD
     }), // Fixed: add /api prefix
+=======
+    }), // Direct call to correct endpoint
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 };
 
 // Events API (User/Public - hanya read dan register)
 export const eventsAPI = {
     getAll: (params) => publicApi.get('/events', { params }), // Use public API for listing
+<<<<<<< HEAD
     getById: (id) => api.get(`/events/${id}`),
     getTicketCategories: (eventId) => api.get(`/events/${eventId}/ticket-categories`),
+=======
+    getById: (id) => {
+        // Use authenticated API to get registration status (optionalAuth middleware)
+        return api.get(`/events/${id}`); // Sends token if available, backend handles optional auth
+    },
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     register: (eventId) => api.post(`/events/${eventId}/register`), // Auth required for registration
     unregister: (eventId) => api.delete(`/events/${eventId}/register`), // Auth required
 };

@@ -31,7 +31,11 @@ const adminLogin = async (req, res) => {
           role: 'admin' 
         },
         process.env.JWT_SECRET || 'your-secret-key',
+<<<<<<< HEAD
         { expiresIn: '1h' }
+=======
+        { expiresIn: '24h' }
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       );
 
       return res.json({
@@ -80,7 +84,11 @@ const adminLogin = async (req, res) => {
         role: admin.role 
       },
       process.env.JWT_SECRET,
+<<<<<<< HEAD
       { expiresIn: '1h' }
+=======
+      { expiresIn: '24h' }
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     );
 
     res.json({

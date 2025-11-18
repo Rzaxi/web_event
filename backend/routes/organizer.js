@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+<<<<<<< HEAD
 const multer = require('multer');
 const path = require('path');
 const organizerController = require('../controllers/organizerController');
@@ -46,6 +47,16 @@ const checkOrganizerRole = (req, res, next) => {
   
   if (!req.user) {
     console.log('❌ User not authenticated');
+=======
+const organizerController = require('../controllers/organizerController');
+const { authenticateToken } = require('../middleware/auth');
+
+// Middleware to check if user is an event organizer
+const checkOrganizerRole = (req, res, next) => {
+  console.log('Checking organizer role for user:', req.user?.id, 'Role:', req.user?.role);
+  
+  if (!req.user) {
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     return res.status(403).json({
       success: false,
       message: 'User not authenticated'
@@ -53,6 +64,7 @@ const checkOrganizerRole = (req, res, next) => {
   }
 
   const userRole = req.user.role || '';
+<<<<<<< HEAD
   console.log('Processing role:', userRole);
   
   const isOrganizer = userRole.includes('event_organizer') || // Allow all event_organizer variants
@@ -64,6 +76,14 @@ const checkOrganizerRole = (req, res, next) => {
 
   if (!isOrganizer) {
     console.log('❌ Access denied for role:', userRole);
+=======
+  const isOrganizer = userRole.includes('event_organizer_basic') || 
+                     userRole.includes('event_organizer_pro') ||
+                     userRole === 'admin'; // Allow admin for testing
+
+  if (!isOrganizer) {
+    console.log('Access denied for role:', userRole);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     return res.status(403).json({
       success: false,
       message: 'Access denied. Event Organizer subscription required. Please upgrade your account.',
@@ -71,7 +91,11 @@ const checkOrganizerRole = (req, res, next) => {
     });
   }
   
+<<<<<<< HEAD
   console.log('✅ Organizer role check passed');
+=======
+  console.log('Organizer role check passed');
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   next();
 };
 
@@ -82,6 +106,7 @@ router.use(checkOrganizerRole);
 // Dashboard routes
 router.get('/dashboard', organizerController.getDashboardData);
 
+<<<<<<< HEAD
 // Event management routes
 router.get('/events', organizerController.getEvents);
 router.get('/events/:id', organizerController.getEventById);
@@ -93,6 +118,12 @@ router.put('/events/:id', upload.fields([
   { name: 'flyer', maxCount: 1 },
   { name: 'certificate_template', maxCount: 1 }
 ]), organizerController.updateEvent);
+=======
+// Events routes
+router.get('/events', organizerController.getEvents);
+router.post('/events', organizerController.createEvent);
+router.put('/events/:id', organizerController.updateEvent);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 router.delete('/events/:id', organizerController.deleteEvent);
 
 // Participants routes
@@ -100,6 +131,7 @@ router.get('/participants', organizerController.getParticipants);
 
 // Analytics routes
 router.get('/analytics', organizerController.getAnalytics);
+<<<<<<< HEAD
 router.get('/analytics/export', organizerController.exportAnalytics);
 
 // Attendance routes
@@ -135,5 +167,7 @@ router.post('/events/:eventId/ticket-categories', ticketCategoryController.creat
 router.put('/events/:eventId/ticket-categories/:categoryId', ticketCategoryController.updateTicketCategory);
 router.delete('/events/:eventId/ticket-categories/:categoryId', ticketCategoryController.deleteTicketCategory);
 */
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
 module.exports = router;

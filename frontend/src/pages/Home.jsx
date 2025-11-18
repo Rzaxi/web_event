@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useCallback } from 'react';
+=======
+import React, { useState, useEffect } from 'react';
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 import { Link } from 'react-router-dom';
 import { Calendar, Users, Award, ArrowRight, CheckCircle, Star, MapPin, Clock } from 'lucide-react';
 import Hero from 'src/components/home/Hero';
@@ -21,6 +25,7 @@ const Home = () => {
   const [showProfilePopup, setShowProfilePopup] = useState(false);
 
   // Lazy loading untuk events
+<<<<<<< HEAD
   const fetchEvents = useCallback(async () => {
     try {
       const response = await eventsAPI.getAll();
@@ -32,6 +37,14 @@ const Home = () => {
   }, []);
 
   const { data: events, loading } = useLazyLoading(fetchEvents, [], 800);
+=======
+  const fetchEvents = async () => {
+    const response = await eventsAPI.getAll();
+    return response.data?.data?.events || response.data?.events || [];
+  };
+
+  const { data: events, loading } = useLazyLoading(fetchEvents, [], 1200);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
   const featuredEvents = (events || []).slice(0, 3);
   const [eventsRef, visibleEvents] = useStaggeredAnimation(featuredEvents, 150);

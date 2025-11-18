@@ -11,12 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Event.belongsTo(models.User, { foreignKey: 'created_by', as: 'creator' });
+<<<<<<< HEAD
       Event.hasMany(models.EventRegistration, { foreignKey: 'event_id', as: 'registrations' });
       Event.hasMany(models.CertificateIssued, { foreignKey: 'event_id', as: 'certificates' });
       // Optional association - only if TicketCategory model exists
       if (models.TicketCategory) {
         Event.hasMany(models.TicketCategory, { foreignKey: 'event_id', as: 'ticketCategories' });
       }
+=======
+      Event.hasMany(models.EventRegistration, { foreignKey: 'event_id' });
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     }
   }
   Event.init({
@@ -50,6 +54,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
+<<<<<<< HEAD
     sertifikat_elements: {
       type: DataTypes.TEXT,
       allowNull: true,
@@ -62,6 +67,8 @@ module.exports = (sequelize, DataTypes) => {
         this.setDataValue('sertifikat_elements', value ? JSON.stringify(value) : null);
       }
     },
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     deskripsi: {
       type: DataTypes.TEXT,
       allowNull: true

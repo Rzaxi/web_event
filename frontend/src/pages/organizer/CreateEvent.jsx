@@ -12,12 +12,16 @@ import {
   Image,
   Award,
   Settings,
+<<<<<<< HEAD
   CheckCircle,
   Ticket,
   Plus,
   Trash2,
   Edit,
   Percent
+=======
+  CheckCircle
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 } from 'lucide-react';
 import organizerApi from '../../services/organizerApi';
 import { toast } from 'react-toastify';
@@ -25,6 +29,7 @@ import { toast } from 'react-toastify';
 const CreateEvent = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+<<<<<<< HEAD
   const [flyerFile, setFlyerFile] = useState(null);
   const [flyerPreview, setFlyerPreview] = useState(null);
   const [certificateFile, setCertificateFile] = useState(null);
@@ -34,6 +39,8 @@ const CreateEvent = () => {
     { id: 'signature', label: 'Tanda Tangan', x: 50, y: 70, fontSize: 16, color: '#000000' }
   ]);
   const [selectedElement, setSelectedElement] = useState(null);
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   const [formData, setFormData] = useState({
     judul: '',
     deskripsi: '',
@@ -42,6 +49,11 @@ const CreateEvent = () => {
     waktu_mulai: '',
     waktu_selesai: '',
     lokasi: '',
+<<<<<<< HEAD
+=======
+    flyer_url: '',
+    sertifikat_template: '',
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     kategori: 'webinar',
     kapasitas_peserta: 50,
     biaya: 0,
@@ -52,6 +64,7 @@ const CreateEvent = () => {
     penyelenggara: ''
   });
 
+<<<<<<< HEAD
   const [ticketCategories, setTicketCategories] = useState([
     {
       id: 1,
@@ -81,6 +94,8 @@ const CreateEvent = () => {
     }
   ]);
 
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -89,6 +104,7 @@ const CreateEvent = () => {
     }));
   };
 
+<<<<<<< HEAD
   // Handle flyer file upload
   const handleFlyerChange = (e) => {
     const file = e.target.files[0];
@@ -176,6 +192,8 @@ const CreateEvent = () => {
     return originalPrice - (originalPrice * discount / 100);
   };
 
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -184,6 +202,7 @@ const CreateEvent = () => {
       return;
     }
 
+<<<<<<< HEAD
     // Validate ticket categories
     if (ticketCategories.length === 0) {
       toast.error('Minimal harus ada satu kategori tiket');
@@ -233,16 +252,28 @@ const CreateEvent = () => {
       }
       
       const response = await organizerApi.createEvent(formDataToSend);
+=======
+    try {
+      setLoading(true);
+      const response = await organizerApi.createEvent(formData);
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       
       if (response.data.success) {
         toast.success('Event berhasil dibuat!');
         navigate('/organizer/events');
+<<<<<<< HEAD
       } else {
         toast.error(response.data.message || 'Gagal membuat event');
       }
     } catch (error) {
       console.error('Error creating event:', error);
       toast.error('Terjadi kesalahan saat membuat event');
+=======
+      }
+    } catch (error) {
+      console.error('Error creating event:', error);
+      toast.error(error.response?.data?.message || 'Gagal membuat event');
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     } finally {
       setLoading(false);
     }
@@ -422,6 +453,7 @@ const CreateEvent = () => {
             </div>
           </div>
 
+<<<<<<< HEAD
           {/* Ticket Categories */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
             <div className="flex items-center justify-between mb-6">
@@ -831,12 +863,51 @@ const CreateEvent = () => {
                 </div>
               </div>
             )}
+=======
+          {/* Capacity & Pricing */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Kapasitas & Harga</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Users className="w-4 h-4 inline mr-2" />
+                  Kapasitas Peserta
+                </label>
+                <input
+                  type="number"
+                  name="kapasitas_peserta"
+                  value={formData.kapasitas_peserta}
+                  onChange={handleInputChange}
+                  min="1"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <DollarSign className="w-4 h-4 inline mr-2" />
+                  Biaya Pendaftaran (Rp)
+                </label>
+                <input
+                  type="number"
+                  name="biaya"
+                  value={formData.biaya}
+                  onChange={handleInputChange}
+                  min="0"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="0 untuk gratis"
+                />
+              </div>
+            </div>
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
           </div>
 
           {/* Media & Files */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-6">Media & File</h2>
             
+<<<<<<< HEAD
             <div className="grid grid-cols-1 gap-6">
               {/* Flyer Upload */}
               <div>
@@ -880,6 +951,104 @@ const CreateEvent = () => {
                       <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
                     </div>
                   )}
+=======
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Image className="w-4 h-4 inline mr-2" />
+                  URL Flyer Event
+                </label>
+                <input
+                  type="url"
+                  name="flyer_url"
+                  value={formData.flyer_url}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="https://example.com/flyer.jpg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Award className="w-4 h-4 inline mr-2" />
+                  Template Sertifikat
+                </label>
+                <input
+                  type="text"
+                  name="sertifikat_template"
+                  value={formData.sertifikat_template}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Nama template sertifikat"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Settings className="w-4 h-4 inline mr-2" />
+                  Penyelenggara
+                </label>
+                <input
+                  type="text"
+                  name="penyelenggara"
+                  value={formData.penyelenggara}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Nama penyelenggara event"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Event Settings */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Pengaturan Event</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Durasi Hari
+                </label>
+                <input
+                  type="number"
+                  name="durasi_hari"
+                  value={formData.durasi_hari}
+                  onChange={handleInputChange}
+                  min="1"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Minimum Kehadiran
+                </label>
+                <input
+                  type="number"
+                  name="minimum_kehadiran"
+                  value={formData.minimum_kehadiran}
+                  onChange={handleInputChange}
+                  min="1"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex items-center">
+                <div className="flex items-center h-5">
+                  <input
+                    type="checkbox"
+                    name="memberikan_sertifikat"
+                    checked={formData.memberikan_sertifikat}
+                    onChange={handleInputChange}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label className="font-medium text-gray-700 flex items-center">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Memberikan Sertifikat
+                  </label>
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                 </div>
               </div>
             </div>

@@ -10,7 +10,10 @@ const EventTicket = () => {
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [registration, setRegistration] = useState(null);
+<<<<<<< HEAD
   const [attendanceToken, setAttendanceToken] = useState(null);
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   const [isLoading, setIsLoading] = useState(true);
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -21,6 +24,7 @@ const EventTicket = () => {
       return;
     }
     fetchTicketData();
+<<<<<<< HEAD
   }, [id, registrationId]);
 
   const fetchTicketData = async () => {
@@ -35,12 +39,25 @@ const EventTicket = () => {
         fetch(`/api/events/${id}/attendance-token`, {
           headers: {
             'Authorization': `Bearer ${token}`
+=======
+  }, [id, registrationId, user, navigate]);
+
+  const fetchTicketData = async () => {
+    try {
+      const [eventResponse, registrationResponse] = await Promise.all([
+        eventsAPI.getById(id),
+        // Assuming we have an API to get registration details
+        fetch(`/api/registrations/${registrationId}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
           }
         }).then(res => res.json())
       ]);
       
       setEvent(eventResponse.data);
       
+<<<<<<< HEAD
       if (tokenResponse.success) {
         setAttendanceToken(tokenResponse.attendance_token);
       }
@@ -49,6 +66,12 @@ const EventTicket = () => {
       const consistentHash = btoa(`${registrationId}-${id}-${user.id}`).replace(/[^a-zA-Z0-9]/g, '').substr(0, 9);
       
       setRegistration({
+=======
+      // Generate consistent nomor_faktur based on registrationId and eventId
+      const consistentHash = btoa(`${registrationId}-${id}-${user.id}`).replace(/[^a-zA-Z0-9]/g, '').substr(0, 9);
+      
+      setRegistration(registrationResponse.data || {
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         id: registrationId,
         nomor_faktur: `yp-${registrationId.replace(/[^0-9]/g, '').substr(-8)}-${consistentHash}`,
         tanggal_transaksi: '2025-10-22T08:28:00Z',
@@ -82,6 +105,7 @@ const EventTicket = () => {
   };
 
   const generateQRData = () => {
+<<<<<<< HEAD
     // Use attendance token from database
     return attendanceToken || 'LOADING...';
   };
@@ -89,6 +113,14 @@ const EventTicket = () => {
   const getAttendanceToken = () => {
     // Return attendance token from database or fallback
     return attendanceToken || 'LOADING...';
+=======
+    return JSON.stringify({
+      eventId: id,
+      registrationId: registration?.id,
+      userId: user.id,
+      nomorFaktur: registration?.nomor_faktur
+    });
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
   };
 
   const handleDownloadTicket = () => {
@@ -239,13 +271,18 @@ const EventTicket = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">QR Code E-Tiket</h3>
               <p className="text-sm text-gray-600 mb-8">Tunjukkan QR code ini saat masuk ke lokasi event</p>
               
+<<<<<<< HEAD
               <div className="inline-block p-6 bg-white border-2 border-gray-200 rounded-2xl mb-4">
+=======
+              <div className="inline-block p-6 bg-white border-2 border-gray-200 rounded-2xl mb-8">
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                 <QRCode
                   value={generateQRData()}
                   size={160}
                   style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                 />
               </div>
+<<<<<<< HEAD
 
               {/* Attendance Code */}
               <div className="mb-8">
@@ -261,6 +298,8 @@ const EventTicket = () => {
                   </p>
                 </div>
               </div>
+=======
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
               
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
@@ -282,7 +321,11 @@ const EventTicket = () => {
               
               <div className="mt-6 p-4 bg-gray-50 rounded-xl text-left max-w-md mx-auto">
                 <p className="text-xs text-gray-600">
+<<<<<<< HEAD
                   <strong>Catatan:</strong> Simpan e-tiket ini dengan baik. Tunjukkan QR code atau berikan kode kehadiran kepada panitia untuk masuk ke lokasi event.
+=======
+                  <strong>Catatan:</strong> Simpan e-tiket ini dengan baik. QR code diperlukan untuk masuk ke lokasi event.
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
                 </p>
               </div>
             </div>

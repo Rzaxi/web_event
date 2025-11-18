@@ -9,6 +9,7 @@ const Skeleton = ({ className = '', width = 'w-full', height = 'h-4', rounded = 
   );
 };
 
+<<<<<<< HEAD
 // Event Card Skeleton - Disesuaikan dengan EventCard design
 export const EventCardSkeleton = () => {
   return (
@@ -60,16 +61,65 @@ export const EventCardSkeleton = () => {
 
           {/* Action Arrow */}
           <Skeleton width="w-8" height="h-8" rounded="rounded-full" />
+=======
+// Event Card Skeleton
+export const EventCardSkeleton = () => {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200 animate-pulse">
+      {/* Image Skeleton */}
+      <div className="h-48 bg-gray-200"></div>
+      
+      {/* Content Skeleton */}
+      <div className="p-5 space-y-3">
+        {/* Title */}
+        <Skeleton height="h-6" width="w-3/4" />
+        
+        {/* Description */}
+        <Skeleton height="h-4" width="w-full" />
+        <Skeleton height="h-4" width="w-5/6" />
+        
+        {/* Meta Info */}
+        <div className="space-y-3 mt-4">
+          <div className="flex items-center space-x-2">
+            <Skeleton width="w-4" height="h-4" rounded="rounded-full" />
+            <Skeleton height="h-4" width="w-2/3" />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Skeleton width="w-4" height="h-4" rounded="rounded-full" />
+            <Skeleton height="h-4" width="w-1/2" />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Skeleton width="w-4" height="h-4" rounded="rounded-full" />
+            <Skeleton height="h-4" width="w-3/4" />
+          </div>
+        </div>
+        
+        {/* Progress Bar */}
+        <div className="mt-4">
+          <Skeleton height="h-2" width="w-full" rounded="rounded-full" />
+        </div>
+        
+        {/* Button */}
+        <div className="mt-4">
+          <Skeleton height="h-12" width="w-full" rounded="rounded-xl" />
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         </div>
       </div>
     </div>
   );
 };
 
+<<<<<<< HEAD
 // Event List Skeleton - Sesuai dengan Home.jsx featured events grid
 export const EventListSkeleton = ({ count = 3 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+=======
+// Event List Skeleton
+export const EventListSkeleton = ({ count = 4 }) => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       {Array.from({ length: count }).map((_, index) => (
         <EventCardSkeleton key={index} />
       ))}

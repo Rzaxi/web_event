@@ -200,11 +200,19 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Email atau password salah' });
     }
 
+<<<<<<< HEAD
     // Generate JWT token with 1 hour expiration
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
+=======
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     );
 
     // Set session

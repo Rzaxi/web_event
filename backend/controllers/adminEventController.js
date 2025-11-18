@@ -10,7 +10,11 @@ const getAllEvents = async (req, res) => {
     const offset = (page - 1) * limit;
 
     let whereClause = {};
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     if (search) {
       whereClause = {
         [Op.or]: [
@@ -55,11 +59,15 @@ const getAllEvents = async (req, res) => {
       maxParticipants: event.kapasitas_peserta,
       registeredCount: event.EventRegistrations ? event.EventRegistrations.length : 0,
       flyer: event.flyer_url,
+<<<<<<< HEAD
       flyer_url: event.flyer_url ? (
         event.flyer_url.startsWith('http')
           ? event.flyer_url
           : `http://localhost:3000${event.flyer_url}`
       ) : null,
+=======
+      flyer_url: event.flyer_url ? `http://localhost:3000${event.flyer_url}` : null,
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       kategori: event.kategori,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt
@@ -88,12 +96,21 @@ const getAllEvents = async (req, res) => {
 // Create New Event
 const createEvent = async (req, res) => {
   try {
+<<<<<<< HEAD
     const {
       title,
       description,
       date,
       time,
       location,
+=======
+    const { 
+      title, 
+      description, 
+      date, 
+      time, 
+      location, 
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       maxParticipants,
       kategori,
       durasi_hari,
@@ -172,7 +189,11 @@ const updateEvent = async (req, res) => {
     // Check if event has already started
     const eventDateTime = new Date(`${event.tanggal} ${event.waktu_mulai || '00:00'}`);
     const now = new Date();
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     if (now >= eventDateTime) {
       return res.status(400).json({
         success: false,
@@ -249,7 +270,11 @@ const deleteEvent = async (req, res) => {
     // Check if event has already started
     const eventDateTime = new Date(`${event.tanggal} ${event.waktu_mulai || '00:00'}`);
     const now = new Date();
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     if (now >= eventDateTime) {
       return res.status(400).json({
         success: false,
@@ -301,7 +326,11 @@ const getEventParticipants = async (req, res) => {
     }
 
     const participants = await EventRegistration.findAll({
+<<<<<<< HEAD
       where: {
+=======
+      where: { 
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
         event_id: id,
         status: 'confirmed'
       },
@@ -440,11 +469,15 @@ const getEventById = async (req, res) => {
       maxParticipants: event.kapasitas_peserta,
       registeredCount: event.EventRegistrations ? event.EventRegistrations.length : 0,
       flyer: event.flyer_url,
+<<<<<<< HEAD
       flyer_url: event.flyer_url ? (
         event.flyer_url.startsWith('http')
           ? event.flyer_url
           : `http://localhost:3000${event.flyer_url}`
       ) : null,
+=======
+      flyer_url: event.flyer_url ? `http://localhost:3000${event.flyer_url}` : null,
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
       kategori: event.kategori,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt
@@ -468,14 +501,22 @@ const getEventById = async (req, res) => {
 const getEventOptions = async (req, res) => {
   try {
     const { Event } = require('../models');
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
     // Get unique categories from database
     const categories = await Event.findAll({
       attributes: ['kategori'],
       group: ['kategori'],
       raw: true
     });
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2abfda7ee534c6e755ec7078e95159ca67f32216
 
     // Default options if database is empty
     const defaultCategories = [
